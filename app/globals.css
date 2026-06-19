@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0a0a0b;
+  --background-alt: #f7f5f1;
+  --foreground: #f5f4f2;
+  --foreground-on-light: #14140f;
+  --muted: #18181a;
+  --muted-foreground: #9a988f;
+  --border: #2a2a2d;
+  --accent-gold: #c9a227;
+  --accent-gold-hover: #e0b937;
+  --accent-blue: #0e1c36;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-accent-gold: var(--accent-gold);
+  --color-accent-blue: var(--accent-blue);
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-fraunces);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, sans-serif;
+}
+
+.section-light {
+  background: var(--background-alt);
+  color: var(--foreground-on-light);
+}
+
+.section-light .text-muted-foreground,
+.section-light p {
+  color: #5c5a52;
+}
+
+.container-px {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .container-px {
+    padding-left: 4rem;
+    padding-right: 4rem;
+  }
+}
