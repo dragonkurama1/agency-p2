@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DeleteButton } from "@/components/dashboard/delete-button";
 import { CsvExportButton } from "@/components/dashboard/csv-export-button";
+import { parseBool } from "@/lib/parse";
 
 function truncate(value: string, max = 60) {
   if (!value) return "—";
@@ -58,8 +59,8 @@ export function EntityTable({ entityKey, config, rows }: { entityKey: string; co
                   return (
                     <td key={col} className="px-4 py-3">
                       {field?.type === "boolean" ? (
-                        <Badge className={value === "true" ? "" : "border-[var(--border)] bg-transparent text-muted-foreground"}>
-                          {value === "true" ? "Actif" : "Inactif"}
+                        <Badge className={parseBool(value, false) ? "" : "border-[var(--border)] bg-transparent text-muted-foreground"}>
+                          {parseBool(value, false) ? "Actif" : "Inactif"}
                         </Badge>
                       ) : (
                         truncate(value)

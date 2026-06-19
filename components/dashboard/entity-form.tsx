@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { AlertCircle } from "lucide-react";
 import type { EntityConfig } from "@/lib/entities";
 import type { ContentState } from "@/actions/content";
+import { parseBool } from "@/lib/parse";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -42,7 +43,7 @@ export function EntityForm({
                   id={field.key}
                   name={field.key}
                   type="checkbox"
-                  defaultChecked={values[field.key] === "true" || values[field.key] === undefined}
+                  defaultChecked={parseBool(values[field.key])}
                   className="size-4 rounded border-[var(--border)]"
                 />
                 Actif
