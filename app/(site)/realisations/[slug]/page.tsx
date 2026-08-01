@@ -111,7 +111,7 @@ export default async function ProjectDetailPage({ params }: Props) {
           {/* ── Colonne principale ──────────────────────────────────────── */}
           <div>
             {/* En-tête */}
-            <span className="text-xs font-semibold uppercase tracking-widest text-[var(--accent-gold)]">
+            <span className="text-xs font-semibold uppercase tracking-widest text-[var(--accent-gold-text)]">
               {project.sector}
             </span>
             <h1 className="mt-3 font-serif text-4xl sm:text-5xl leading-tight">

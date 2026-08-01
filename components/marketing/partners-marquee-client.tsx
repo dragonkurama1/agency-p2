@@ -90,6 +90,8 @@ function PartnerCard({ partner }: { partner: Partner }) {
             alt={partner.name}
             width={144}
             height={58}
+            sizes="144px"
+            quality={85}
             className="
               relative z-10
               w-auto max-w-[136px] h-[52px] object-contain

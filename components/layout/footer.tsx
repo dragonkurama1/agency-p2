@@ -125,7 +125,7 @@ export async function Footer() {
             <p className="text-sm font-medium text-[var(--foreground)]">Prêt à transformer votre présence digitale ?</p>
             <Link
               href="/devis"
-              className="mt-4 inline-block rounded-full bg-[var(--accent-gold)] px-6 py-3 text-sm font-medium text-[#0a0a0b] hover:bg-[var(--accent-gold-hover)]"
+              className="mt-4 inline-block rounded-full bg-[var(--accent-gold)] px-6 py-3 text-sm font-medium text-white hover:bg-[var(--accent-gold-hover)]"
             >
               Demander un devis
             </Link>

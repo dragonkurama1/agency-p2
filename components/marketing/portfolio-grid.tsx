@@ -98,7 +98,7 @@ export function PortfolioGrid({
 
             {/* Contenu */}
             <div className="p-6 flex flex-col flex-1">
-              <p className="text-xs font-semibold uppercase tracking-widest text-[var(--accent-gold)]">
+              <p className="text-xs font-semibold uppercase tracking-widest text-[var(--accent-gold-text)]">
                 {project.category}
               </p>
               <h3 className="mt-2 font-serif text-xl leading-snug group-hover:text-[var(--accent-gold)] transition-colors">
