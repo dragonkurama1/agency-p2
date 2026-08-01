@@ -18,6 +18,45 @@ const initialState: ContentState = { success: false, message: "" };
 /** Champs gérés automatiquement par la BDD — masqués dans le formulaire. */
 const AUTO_HIDDEN = new Set(["id", "created_at", "updated_at", "uploaded_at"]);
 
+// ── Resize image client-side (canvas) avant upload ─────────────────────────
+async function resizeImageFile(file: File, maxPx = 1920, quality = 0.85): Promise<File> {
+  return new Promise((resolve) => {
+    const img = new window.Image();
+    const objectUrl = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      let { width, height } = img;
+      if (width <= maxPx && height <= maxPx) {
+        // Pas besoin de redimensionner si déjà petit
+        resolve(file);
+        return;
+      }
+      const ratio = Math.min(maxPx / width, maxPx / height);
+      width = Math.round(width * ratio);
+      height = Math.round(height * ratio);
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d")!;
+      ctx.drawImage(img, 0, 0, width, height);
+      canvas.toBlob(
+        (blob) => {
+          const resized = new File(
+            [blob!],
+            file.name.replace(/\.\w+$/, ".jpg"),
+            { type: "image/jpeg" }
+          );
+          resolve(resized);
+        },
+        "image/jpeg",
+        quality
+      );
+    };
+    img.onerror = () => { URL.revokeObjectURL(objectUrl); resolve(file); };
+    img.src = objectUrl;
+  });
+}
+
 // ── Image upload ────────────────────────────────────────────────────────────
 function ImageUploadField({ fieldKey, defaultValue }: { fieldKey: string; defaultValue: string }) {
   const [url, setUrl] = useState(defaultValue ?? "");
@@ -29,14 +68,23 @@ function ImageUploadField({ fieldKey, defaultValue }: { fieldKey: string; defaul
     const file = e.target.files?.[0];
     if (!file) return;
     setUploadError("");
-    const fd = new FormData();
-    fd.append("file", file);
     startUpload(async () => {
-      const result = await uploadImageToSupabase(fd);
-      if (result.success && result.url) {
-        setUrl(result.url);
-      } else {
-        setUploadError(result.error ?? "Erreur lors de l'upload.");
+      try {
+        // Redimensionne côté client avant d'envoyer (évite le crash Vercel >4.5 Mo)
+        const toUpload = file.type.startsWith("image/")
+          ? await resizeImageFile(file)
+          : file;
+        const fd = new FormData();
+        fd.append("file", toUpload);
+        const result = await uploadImageToSupabase(fd);
+        if (result.success && result.url) {
+          setUrl(result.url);
+        } else {
+          setUploadError(result.error ?? "Erreur lors de l'upload.");
+        }
+      } catch (err) {
+        setUploadError("Erreur inattendue lors de l'upload. Réessayez.");
+        console.error(err);
       }
     });
   }

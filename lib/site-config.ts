@@ -21,9 +21,9 @@ export const siteConfig = {
     { days: "Dimanche", hours: "Fermé" },
   ],
   social: {
-    instagram: "https://instagram.com/prestigia_agency",
-    linkedin: "https://www.linkedin.com/company/prestigia-agency",
-    facebook: "https://facebook.com/prestigiaagency",
+    instagram: "https://www.instagram.com/prestigia__agency/",
+    linkedin: "https://www.linkedin.com/company/prestigiaagency/",
+    facebook: "https://www.facebook.com/people/Prestigia-agency/61584253697576/",
   },
   stats: [
     { label: "Projets réalisés", value: "150+" },
