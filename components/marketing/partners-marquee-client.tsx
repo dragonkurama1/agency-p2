@@ -58,7 +58,7 @@ export function PartnersMarqueeInner({
   duration: number;
 }) {
   const [paused, setPaused] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   function pause() {
     clearTimeout(timerRef.current);

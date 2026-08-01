@@ -46,7 +46,7 @@ function TestimonialCard({ t }: { t: Testimonial }) {
 
 export function Testimonials({ testimonials }: { testimonials: Testimonial[] }) {
   const [paused, setPaused] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   function pause() {
     clearTimeout(timerRef.current);
