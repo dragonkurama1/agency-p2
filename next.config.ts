@@ -14,10 +14,13 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "drive.google.com" },
       // Google CDN (lh3 — utilisé par Drive après redirection)
       { protocol: "https", hostname: "lh3.googleusercontent.com" },
-      // Supabase Storage (remplacer "votre-projet" par votre project ref)
-      // Format : https://<ref>.supabase.co/storage/v1/object/public/...
+      // Supabase Storage
       { protocol: "https", hostname: "*.supabase.co" },
       { protocol: "https", hostname: "*.supabase.in" },
+      // Unsplash (images de couverture blog)
+      { protocol: "https", hostname: "images.unsplash.com" },
+      // Pexels (images de couverture blog)
+      { protocol: "https", hostname: "images.pexels.com" },
     ],
     // Formats modernes prioritaires — réduit la taille de 30-50 %
     formats: ["image/avif", "image/webp"],
