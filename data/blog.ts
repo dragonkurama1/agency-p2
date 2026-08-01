@@ -16,6 +16,8 @@ export interface BlogPost {
   faq: { question: string; answer: string }[];
   status: string;
   published_at: string;
+  meta_title: string;
+  meta_description: string;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -33,6 +35,8 @@ function mapRow(row: Record<string, any>): BlogPost {
     faq: Array.isArray(row.faq_json) ? row.faq_json : parseJsonSafe(row.faq_json, []),
     status: row.status || "published",
     published_at: row.published_at || "",
+    meta_title: row.meta_title || "",
+    meta_description: row.meta_description || "",
   };
 }
 

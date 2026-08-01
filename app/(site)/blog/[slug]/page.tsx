@@ -21,13 +21,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = await getBlogPostBySlug(slug);
   if (!post) return {};
+  const metaTitle = post.meta_title || post.title;
+  const metaDesc = post.meta_description || post.excerpt;
   return {
-    title: post.title,
-    description: post.excerpt,
+    title: metaTitle,
+    description: metaDesc,
     alternates: { canonical: `/blog/${slug}` },
     openGraph: {
-      title: post.title,
-      description: post.excerpt,
+      title: metaTitle,
+      description: metaDesc,
       type: "article",
       publishedTime: post.published_at,
       authors: [post.author],
@@ -37,8 +39,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
     twitter: {
       card: "summary_large_image",
-      title: post.title,
-      description: post.excerpt,
+      title: metaTitle,
+      description: metaDesc,
       images: post.cover_image ? [normalizeImageUrl(post.cover_image)] : ["/og-image.png"],
     },
   };
