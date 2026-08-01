@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { SectionHeading } from "@/components/marketing/section-heading";
 import { PortfolioGrid } from "@/components/marketing/portfolio-grid";
 import { CtaBanner } from "@/components/marketing/cta-banner";
-import { getProjects, getProjectCategories } from "@/data/projects";
+import { getProjects, getProjectSectors } from "@/data/projects";
 import { getSectionByKey } from "@/data/sections";
 import { getPageMeta } from "@/data/pages";
 import { WebPageJsonLd } from "@/components/seo/json-ld";
@@ -17,7 +17,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function RealisationsPage() {
-  const [projects, categories, hero] = await Promise.all([getProjects(), getProjectCategories(), getSectionByKey("realisations", "hero")]);
+  const [projects, sectors, hero] = await Promise.all([
+    getProjects(),
+    getProjectSectors(),
+    getSectionByKey("realisations", "hero"),
+  ]);
+
   return (
     <>
       <WebPageJsonLd
@@ -26,16 +31,18 @@ export default async function RealisationsPage() {
         path="/realisations"
         breadcrumbs={[{ name: "Réalisations", href: "/realisations" }]}
       />
+
       <section className="container-px mx-auto max-w-7xl py-20" aria-label="Nos réalisations">
         <SectionHeading
-          eyebrow="Réalisations"
+          eyebrow="Nos réalisations"
           title={hero?.title || "Des résultats concrets, pour des clients réels"}
-          subtitle={hero?.subtitle || "Un aperçu de nos projets récents à Casablanca et au Maroc."}
+          subtitle={hero?.subtitle || "Découvrez comment nous accompagnons nos clients à travers des projets qui allient créativité, expertise et performance."}
         />
-        <div className="mt-12">
-          <PortfolioGrid projects={projects} categories={categories} />
+        <div className="mt-14">
+          <PortfolioGrid projects={projects} sectors={sectors} />
         </div>
       </section>
+
       <CtaBanner />
     </>
   );
