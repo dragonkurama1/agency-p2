@@ -118,13 +118,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${inter.variable} ${fraunces.variable} h-full antialiased`}
     >
       <head>
-        {/* Préconnexions critiques — réduit la latence DNS/TLS pour les ressources tierces */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://www.googletagmanager.com" />
-        <link rel="preconnect" href="https://www.google-analytics.com" />
-        {/* Supabase Storage CDN — à activer une fois NEXT_PUBLIC_SUPABASE_URL configuré */}
-        {/* <link rel="preconnect" href={process.env.NEXT_PUBLIC_SUPABASE_URL} /> */}
+        {/* next/font auto-héberge les polices — pas besoin de préconnexions Google Fonts */}
+        {/* DNS prefetch pour GA4 (chargé après hydratation) */}
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="https://www.google-analytics.com" />
       </head>
       <body className="min-h-full flex flex-col">
         {/* Données structurées globales : Organization + WebSite */}

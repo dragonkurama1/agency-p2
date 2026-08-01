@@ -35,14 +35,9 @@ export function Hero({ section }: { section?: SectionContent | null }) {
         >
           {DEFAULTS.eyebrow}
         </motion.p>
-        <motion.h1
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.05 }}
-          className="font-serif text-4xl sm:text-6xl leading-[1.05] max-w-3xl"
-        >
+        <h1 className="font-serif text-4xl sm:text-6xl leading-[1.05] max-w-3xl">
           {title}
-        </motion.h1>
+        </h1>
         <motion.p
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
