@@ -24,10 +24,10 @@ function PartnerLogo({ partner }: { partner: Partner }) {
       alt={partner.name}
       width={160}
       height={56}
-      className="h-12 w-auto max-w-[160px] object-contain grayscale opacity-50 transition-all duration-500 group-hover:grayscale-0 group-hover:opacity-100"
+      className="h-12 w-auto max-w-[160px] object-contain opacity-75 md:grayscale md:opacity-50 transition-all duration-500 md:group-hover:grayscale-0 md:group-hover:opacity-100"
     />
   ) : (
-    <span className="font-serif text-base tracking-widest uppercase text-[var(--muted-foreground)] opacity-50 transition-opacity duration-500 group-hover:opacity-100 group-hover:text-[var(--foreground)]">
+    <span className="font-serif text-base tracking-widest uppercase text-[var(--muted-foreground)] opacity-75 md:opacity-50 transition-opacity duration-500 md:group-hover:opacity-100 md:group-hover:text-[var(--foreground)]">
       {partner.name}
     </span>
   );
