@@ -136,7 +136,7 @@ export default async function ProjectDetailPage({ params }: Props) {
                     key={card.label}
                     className="rounded-2xl border border-[var(--border)] bg-[var(--muted)] p-6"
                   >
-                    <p className="text-xs font-semibold uppercase tracking-widest text-[var(--accent-gold)] mb-3">
+                    <p className="text-xs font-semibold uppercase tracking-widest text-[var(--accent-gold-text)] mb-3">
                       {card.label}
                     </p>
                     <p className="text-sm leading-relaxed">{card.content}</p>
@@ -226,7 +226,7 @@ export default async function ProjectDetailPage({ params }: Props) {
                   &ldquo;{project.testimonial_quote}&rdquo;
                 </blockquote>
                 {project.testimonial_author && (
-                  <p className="mt-5 text-sm font-medium text-[var(--accent-gold)]">
+                  <p className="mt-5 text-sm font-medium text-[var(--accent-gold-text)]">
                     — {project.testimonial_author}
                   </p>
                 )}
@@ -252,14 +252,14 @@ export default async function ProjectDetailPage({ params }: Props) {
             {/* Infos */}
             <div className="rounded-2xl border border-[var(--border)] bg-[var(--muted)] p-6 space-y-5">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-widest text-[var(--accent-gold)] mb-1">
+                <p className="text-xs font-semibold uppercase tracking-widest text-[var(--accent-gold-text)] mb-1">
                   Client
                 </p>
                 <p className="font-medium">{project.client_name}</p>
               </div>
               <div className="border-t border-[var(--border)]" />
               <div>
-                <p className="text-xs font-semibold uppercase tracking-widest text-[var(--accent-gold)] mb-1">
+                <p className="text-xs font-semibold uppercase tracking-widest text-[var(--accent-gold-text)] mb-1">
                   Secteur
                 </p>
                 <p className="font-medium">{project.sector}</p>
@@ -267,7 +267,7 @@ export default async function ProjectDetailPage({ params }: Props) {
               <div className="border-t border-[var(--border)]" />
               {project.services.length > 0 && (
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-widest text-[var(--accent-gold)] mb-3">
+                  <p className="text-xs font-semibold uppercase tracking-widest text-[var(--accent-gold-text)] mb-3">
                     Services
                   </p>
                   <ul className="space-y-2">
@@ -323,7 +323,7 @@ export default async function ProjectDetailPage({ params }: Props) {
                     )}
                   </div>
                   <div className="p-5">
-                    <p className="text-xs font-medium text-[var(--accent-gold)]">{p.sector}</p>
+                    <p className="text-xs font-medium text-[var(--accent-gold-text)]">{p.sector}</p>
                     <h3 className="mt-1 font-serif text-base leading-snug">{p.title}</h3>
                     <p className="mt-1 text-xs text-[var(--muted-foreground)]">{p.client_name}</p>
                     <span className="mt-3 inline-flex items-center gap-1 text-xs text-[var(--accent-gold)] opacity-0 group-hover:opacity-100 transition-opacity">

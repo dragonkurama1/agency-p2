@@ -72,7 +72,7 @@ export function BlogList({
               )}
 
               <div className="flex flex-col flex-1 p-6">
-                <p className="text-xs uppercase tracking-wide text-[var(--accent-gold)]">
+                <p className="text-xs uppercase tracking-wide text-[var(--accent-gold-text)]">
                   {post.category}
                 </p>
                 <h2 className="mt-2 font-serif text-xl leading-snug flex-1">

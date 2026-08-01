@@ -86,7 +86,7 @@ export default async function BlogPostPage({ params }: Props) {
             ← Tous les articles
           </Link>
         </nav>
-        <p className="mt-6 text-xs uppercase tracking-wide text-[var(--accent-gold)]">{post.category}</p>
+        <p className="mt-6 text-xs uppercase tracking-wide text-[var(--accent-gold-text)]">{post.category}</p>
         <h1 className="mt-3 font-serif text-4xl leading-tight">{post.title}</h1>
         <p className="mt-3 text-sm text-muted-foreground">
           <span>{post.author}</span>
@@ -116,7 +116,7 @@ export default async function BlogPostPage({ params }: Props) {
             className="mt-10 rounded-xl border border-[var(--border)] bg-[var(--muted)] p-5"
             aria-label="Sommaire de l'article"
           >
-            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--accent-gold)] mb-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--accent-gold-text)] mb-3">
               Sommaire
             </p>
             <ol className="space-y-1.5 text-sm">

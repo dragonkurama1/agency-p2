@@ -110,7 +110,7 @@ export default async function HomePage() {
                 />
               )}
               <div className="p-6">
-                <p className="text-xs uppercase tracking-wide text-[var(--accent-gold)]">{project.category}</p>
+                <p className="text-xs uppercase tracking-wide text-[var(--accent-gold-text)]">{project.category}</p>
                 <h3 className="mt-2 font-serif text-lg leading-snug">{project.title}</h3>
                 <p className="mt-1 text-sm text-muted-foreground">{project.results}</p>
               </div>
