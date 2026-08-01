@@ -13,6 +13,7 @@ function getOrderColumn(tab: string): string {
     media:         "uploaded_at",
     blog_posts:    "published_at",
     testimonials:  "created_at",
+    categories:    "order",
     leads_contact: "created_at",
     leads_devis:   "created_at",
     projects:      "created_at",

@@ -12,6 +12,9 @@ export interface EntityField {
   label: string;
   type: FieldType;
   options?: string[];
+  /** Si défini, les options sont chargées dynamiquement depuis la table `categories`
+   *  (entity = dynamicCategory) au lieu d'utiliser `options` statiques. */
+  dynamicCategory?: string;
   required?: boolean;
 }
 
@@ -96,7 +99,7 @@ export const entities: Record<string, EntityConfig> = {
       { key: "slug", label: "Slug", type: "text", required: true },
       { key: "title", label: "Titre", type: "text", required: true },
       { key: "client_name", label: "Client", type: "text" },
-      { key: "category", label: "Catégorie", type: "select", options: ["Branding", "Site Web", "Social Media", "Ads", "Vidéo", "SEO", "Immobilier", "Restauration", "Santé", "Sport"] },
+      { key: "category", label: "Catégorie", type: "select", dynamicCategory: "projects" },
       { key: "sector", label: "Secteur d'activité", type: "text" },
       { key: "featured", label: "Mise en avant (vedette)", type: "boolean" },
       { key: "description", label: "Description courte", type: "textarea" },
@@ -138,7 +141,7 @@ export const entities: Record<string, EntityConfig> = {
       { key: "excerpt", label: "Extrait", type: "textarea" },
       { key: "content", label: "Contenu", type: "richtext" },
       { key: "cover_image", label: "Image de couverture", type: "image" },
-      { key: "category", label: "Catégorie", type: "select", options: ["SEO", "Marketing Digital", "Branding", "Développement Web", "Réseaux Sociaux", "Publicité", "IA & Automatisation"] },
+      { key: "category", label: "Catégorie", type: "select", dynamicCategory: "blog_posts" },
       { key: "tags", label: "Tags", type: "text" },
       { key: "author", label: "Auteur", type: "text" },
       { key: "meta_title", label: "Meta title", type: "text" },
@@ -300,6 +303,27 @@ export const entities: Record<string, EntityConfig> = {
       { key: "updated_at", label: "Mis à jour", type: "date" },
     ],
     listColumns: ["key", "value", "updated_at"],
+  },
+  categories: {
+    tab: "categories",
+    label: "Catégories",
+    description: "Gérez les catégories pour les réalisations et les articles de blog",
+    fields: [
+      { key: "id", label: "ID", type: "text", required: true },
+      {
+        key: "entity",
+        label: "Appartient à",
+        type: "select",
+        options: ["projects", "blog_posts"],
+        required: true,
+      },
+      { key: "name", label: "Nom de la catégorie", type: "text", required: true },
+      { key: "order", label: "Ordre d'affichage", type: "number" },
+      { key: "active", label: "Active", type: "boolean" },
+      { key: "created_at", label: "Créé", type: "date" },
+      { key: "updated_at", label: "Mis à jour", type: "date" },
+    ],
+    listColumns: ["entity", "name", "order", "active"],
   },
   audit_log: {
     tab: "audit_log",

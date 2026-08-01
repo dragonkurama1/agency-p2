@@ -239,10 +239,13 @@ export function EntityForm({
   config,
   initialValues,
   action,
+  dynamicOptions = {},
 }: {
   config: EntityConfig;
   initialValues?: Record<string, string>;
   action: BoundAction;
+  /** Options chargées dynamiquement depuis Supabase (fieldKey → string[]) */
+  dynamicOptions?: Record<string, string[]>;
 }) {
   const [state, formAction, pending] = useActionState(action, initialState);
   const values = initialValues ?? {};
@@ -283,22 +286,30 @@ export function EntityForm({
               ) : field.type === "video" ? (
                 <VideoField fieldKey={field.key} defaultValue={values[field.key] ?? ""} />
               ) : field.type === "select" ? (
-                <Select
-                  id={field.key}
-                  name={field.key}
-                  defaultValue={values[field.key] ?? ""}
-                  required={field.required}
-                  disabled={readOnly}
-                >
-                  <option value="" disabled>
-                    Choisir...
-                  </option>
-                  {field.options?.map((opt) => (
-                    <option key={opt} value={opt}>
-                      {opt}
-                    </option>
-                  ))}
-                </Select>
+                (() => {
+                  // Préfère les options dynamiques (Supabase) aux statiques
+                  const opts = dynamicOptions[field.key]?.length
+                    ? dynamicOptions[field.key]
+                    : (field.options ?? []);
+                  return (
+                    <Select
+                      id={field.key}
+                      name={field.key}
+                      defaultValue={values[field.key] ?? ""}
+                      required={field.required}
+                      disabled={readOnly}
+                    >
+                      <option value="" disabled>
+                        Choisir...
+                      </option>
+                      {opts.map((opt) => (
+                        <option key={opt} value={opt}>
+                          {opt}
+                        </option>
+                      ))}
+                    </Select>
+                  );
+                })()
               ) : field.type === "textarea" || field.type === "richtext" || field.type === "json" ? (
                 <Textarea
                   id={field.key}
