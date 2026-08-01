@@ -13,7 +13,7 @@ export function Accordion({ items }: { items: { question: string; answer: string
             onClick={() => setOpen(open === i ? null : i)}
             className="flex w-full items-center justify-between text-left"
           >
-            <span className="font-serif text-lg text-[var(--foreground)]">{item.question}</span>
+            <span className="font-serif text-lg">{item.question}</span>
             <ChevronDown
               className={cn("h-5 w-5 shrink-0 text-[var(--accent-gold)] transition-transform", open === i && "rotate-180")}
             />

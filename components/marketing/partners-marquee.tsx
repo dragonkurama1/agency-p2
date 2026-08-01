@@ -66,7 +66,7 @@ export async function PartnersMarquee() {
   const half = Array.from({ length: totalCopies / 2 }, () => partners).flat();
   const track = [...half, ...half];
 
-  const duration = Math.max(25, partners.length * 8);
+  const duration = Math.max(80, partners.length * 20);
 
   return (
     <section
