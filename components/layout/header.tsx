@@ -34,9 +34,9 @@ export function Header() {
         </nav>
 
         <div className="hidden lg:block">
-          <Link href="/devis">
-            <Button size="sm">Demander un devis</Button>
-          </Link>
+          <Button asChild size="sm">
+            <Link href="/devis">Demander un devis</Link>
+          </Button>
         </div>
 
         <button aria-label="Menu" className="lg:hidden" onClick={() => setOpen(!open)}>
@@ -52,9 +52,9 @@ export function Header() {
                 {link.label}
               </Link>
             ))}
-            <Link href="/devis" onClick={() => setOpen(false)}>
-              <Button className="w-full">Demander un devis</Button>
-            </Link>
+            <Button asChild className="w-full">
+              <Link href="/devis" onClick={() => setOpen(false)}>Demander un devis</Link>
+            </Button>
           </nav>
         </div>
       )}

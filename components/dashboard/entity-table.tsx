@@ -28,12 +28,12 @@ export function EntityTable({ entityKey, config, rows }: { entityKey: string; co
         </div>
         <div className="flex items-center gap-3">
           <CsvExportButton rows={rows} columns={config.fields.map((f) => f.key)} filename={config.tab} />
-          <Link href={`/dashboard/${entityKey}/new`}>
-            <Button size="sm">
+          <Button asChild size="sm">
+            <Link href={`/dashboard/${entityKey}/new`}>
               <Plus className="size-4" />
               Nouveau
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
       </div>
 
