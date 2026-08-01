@@ -19,6 +19,7 @@ import { homeFaq } from "@/lib/seed-data";
 import { normalizeImageUrl } from "@/lib/parse";
 import { WebPageJsonLd, FaqJsonLd } from "@/components/seo/json-ld";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -92,13 +93,15 @@ export default async function HomePage() {
               className="group rounded-2xl border border-[var(--border)] bg-[var(--muted)] overflow-hidden"
             >
               {project.cover_image ? (
-                <img
-                  src={normalizeImageUrl(project.cover_image)}
-                  alt={project.title}
-                  className="aspect-[4/3] w-full object-cover"
-                  loading="lazy"
-                  decoding="async"
-                />
+                <div className="relative aspect-[4/3] w-full overflow-hidden">
+                  <Image
+                    src={normalizeImageUrl(project.cover_image)}
+                    alt={project.title}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                </div>
               ) : (
                 <div
                   className="aspect-[4/3] bg-[linear-gradient(135deg,var(--border),var(--muted))]"

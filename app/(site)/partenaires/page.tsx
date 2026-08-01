@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { getPageMeta } from "@/data/pages";
 import { SectionHeading } from "@/components/marketing/section-heading";
 import { CtaBanner } from "@/components/marketing/cta-banner";
@@ -33,12 +34,12 @@ export default async function PartenairesPage() {
           {partners.map((p) => (
             <article key={p.id} className="rounded-2xl border border-[var(--border)] bg-[var(--muted)] p-8">
               {p.logo_url && (
-                <img
+                <Image
                   src={normalizeImageUrl(p.logo_url)}
                   alt={`Logo ${p.name}`}
-                  className="mb-4 h-12 max-w-[160px] object-contain"
-                  loading="lazy"
-                  decoding="async"
+                  width={160}
+                  height={48}
+                  className="mb-4 h-12 w-auto max-w-[160px] object-contain"
                 />
               )}
               <h2 className="font-serif text-xl">{p.name}</h2>

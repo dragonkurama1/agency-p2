@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { SVGProps } from "react";
 import { getPageMeta } from "@/data/pages";
 import Link from "next/link";
+import Image from "next/image";
 import { SectionHeading } from "@/components/marketing/section-heading";
 import { CtaBanner } from "@/components/marketing/cta-banner";
 import { getTeam } from "@/data/team";
@@ -89,12 +90,12 @@ export default async function FondateursPage() {
           {team.map((member) => (
             <article key={member.id} className="rounded-2xl border border-[var(--border)] bg-[var(--muted)] p-8">
               {member.photo_url ? (
-                <img
+                <Image
                   src={normalizeImageUrl(member.photo_url)}
                   alt={`Photo de ${member.name}, ${member.role} chez Prestigia Agency`}
+                  width={96}
+                  height={96}
                   className="aspect-square w-24 rounded-full object-cover"
-                  loading="lazy"
-                  decoding="async"
                 />
               ) : (
                 <div

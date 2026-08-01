@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getProjects, getProjectBySlug } from "@/data/projects";
 import { CtaBanner } from "@/components/marketing/cta-banner";
@@ -71,13 +72,16 @@ export default async function ProjectDetailPage({ params }: Props) {
           isVideoUrl(project.cover_image) ? (
             <VideoPlayer src={normalizeImageUrl(project.cover_image)} className="mt-10 aspect-[16/9] w-full" />
           ) : (
-            <img
-              src={normalizeImageUrl(project.cover_image)}
-              alt={`Réalisation : ${project.title}`}
-              className="mt-10 aspect-[16/9] w-full rounded-2xl object-cover"
-              loading="lazy"
-              decoding="async"
-            />
+            <div className="mt-10 relative w-full aspect-[16/9] rounded-2xl overflow-hidden">
+              <Image
+                src={normalizeImageUrl(project.cover_image)}
+                alt={`Réalisation : ${project.title}`}
+                fill
+                sizes="(max-width: 768px) 100vw, 960px"
+                className="object-cover"
+                priority
+              />
+            </div>
           )
         ) : (
           <div

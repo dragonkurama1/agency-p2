@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { normalizeImageUrl } from "@/lib/parse";
@@ -37,11 +38,15 @@ export function PortfolioGrid({ projects, categories }: { projects: Project[]; c
             className="group rounded-2xl border border-[var(--border)] bg-[var(--muted)] overflow-hidden"
           >
             {project.cover_image ? (
-              <img
-                src={normalizeImageUrl(project.cover_image)}
-                alt={project.title}
-                className="aspect-[4/3] w-full object-cover"
-              />
+              <div className="relative aspect-[4/3] w-full overflow-hidden">
+                <Image
+                  src={normalizeImageUrl(project.cover_image)}
+                  alt={project.title}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+              </div>
             ) : (
               <div className="aspect-[4/3] bg-[linear-gradient(135deg,var(--border),var(--muted))]" />
             )}

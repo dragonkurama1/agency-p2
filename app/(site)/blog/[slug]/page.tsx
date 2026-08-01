@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getBlogPosts, getBlogPostBySlug } from "@/data/blog";
 import { formatDate, slugify } from "@/lib/utils";
@@ -95,13 +96,16 @@ export default async function BlogPostPage({ params }: Props) {
           isVideoUrl(post.cover_image) ? (
             <VideoPlayer src={normalizeImageUrl(post.cover_image)} className="mt-8 aspect-[16/9]" />
           ) : (
-            <img
-              src={normalizeImageUrl(post.cover_image)}
-              alt={post.title}
-              className="mt-8 w-full rounded-2xl object-cover aspect-[16/9]"
-              loading="lazy"
-              decoding="async"
-            />
+            <div className="mt-8 relative w-full aspect-[16/9] rounded-2xl overflow-hidden">
+              <Image
+                src={normalizeImageUrl(post.cover_image)}
+                alt={post.title}
+                fill
+                sizes="(max-width: 768px) 100vw, 960px"
+                className="object-cover"
+                priority
+              />
+            </div>
           )
         )}
 
