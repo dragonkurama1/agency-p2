@@ -5,19 +5,76 @@ export async function PartnersMarquee() {
   const partners = await getPartners();
   if (!partners.length) return null;
 
-  const duration = Math.max(80, partners.length * 20);
+  /* Vitesse : ~55px/s. Plus il y a de partenaires, plus la durée est longue */
+  const duration = Math.max(60, partners.length * 16);
 
   return (
     <section
-      className="relative border-b border-[var(--border)] bg-[var(--muted)] py-10 overflow-hidden"
+      className="relative overflow-hidden bg-[var(--muted)] py-14"
       aria-label="Nos clients et partenaires"
     >
-      {/* Titre discret */}
-      <p className="text-center text-[10px] font-semibold uppercase tracking-[0.3em] text-[var(--muted-foreground)] mb-8 opacity-50">
-        Ils nous font confiance
-      </p>
+      {/* ── Ligne d'accent dorée — haut ──────────────────────────── */}
+      <div
+        aria-hidden="true"
+        className="absolute top-0 inset-x-0 h-px"
+        style={{
+          background:
+            "linear-gradient(to right, transparent 0%, var(--accent-gold) 40%, var(--accent-gold) 60%, transparent 100%)",
+          opacity: 0.35,
+        }}
+      />
 
+      {/* ── Titre luxueux ─────────────────────────────────────────── */}
+      <div className="flex items-center justify-center gap-5 mb-12 px-6">
+        {/* Ligne gauche */}
+        <div
+          className="h-px flex-1 max-w-[100px]"
+          style={{
+            background:
+              "linear-gradient(to right, transparent, color-mix(in srgb, var(--accent-gold) 35%, transparent))",
+          }}
+        />
+
+        <div className="flex flex-col items-center gap-2">
+          {/* Ornement */}
+          <span
+            className="text-[var(--accent-gold)] leading-none select-none"
+            style={{ fontSize: "8px", letterSpacing: "0.4em" }}
+            aria-hidden="true"
+          >
+            ✦ ✦ ✦
+          </span>
+          <p
+            className="text-[10px] font-semibold uppercase tracking-[0.45em]
+                       text-[var(--muted-foreground)] whitespace-nowrap"
+          >
+            Ils nous font confiance
+          </p>
+        </div>
+
+        {/* Ligne droite */}
+        <div
+          className="h-px flex-1 max-w-[100px]"
+          style={{
+            background:
+              "linear-gradient(to left, transparent, color-mix(in srgb, var(--accent-gold) 35%, transparent))",
+          }}
+        />
+      </div>
+
+      {/* ── Ruban de logos ────────────────────────────────────────── */}
       <PartnersMarqueeInner partners={partners} duration={duration} />
+
+      {/* ── Ligne d'accent dorée — bas ───────────────────────────── */}
+      <div
+        aria-hidden="true"
+        className="absolute bottom-0 inset-x-0 h-px"
+        style={{
+          background:
+            "linear-gradient(to right, transparent 0%, var(--accent-gold) 40%, var(--accent-gold) 60%, transparent 100%)",
+          opacity: 0.35,
+        }}
+      />
     </section>
   );
 }
