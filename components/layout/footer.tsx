@@ -1,5 +1,6 @@
 import type { SVGProps } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { siteConfig, navLinks } from "@/lib/site-config";
 import { getSetting } from "@/data/settings";
 
@@ -48,9 +49,15 @@ export async function Footer() {
       <div className="container-px mx-auto max-w-7xl py-16">
         <div className="grid gap-12 md:grid-cols-4">
           <div>
-            <p className="font-serif text-lg text-[var(--foreground)]">
-              PRESTIGIA<span className="text-[var(--accent-gold)]">.</span>
-            </p>
+            <Link href="/" aria-label="Prestigia Agency — Accueil">
+              <Image
+                src="/logo-prestigia.png"
+                alt="Prestigia Agency"
+                width={125}
+                height={56}
+                className="h-8 w-auto"
+              />
+            </Link>
             <p className="mt-4 text-sm leading-relaxed text-[var(--muted-foreground)]">
               Transformez votre présence digitale avec notre expertise en marketing stratégique et développement web.
             </p>

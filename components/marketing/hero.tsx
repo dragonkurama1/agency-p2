@@ -25,7 +25,7 @@ export function Hero({ section }: { section?: SectionContent | null }) {
 
   return (
     <section className="relative overflow-hidden border-b border-[var(--border)]">
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_20%_20%,rgba(201,162,39,0.12),transparent_55%)]" />
+      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_20%_20%,rgba(124,58,237,0.14),transparent_55%)]" />
       <div className="container-px mx-auto max-w-7xl py-24 sm:py-32">
         <motion.p
           initial={{ opacity: 0, y: 8 }}

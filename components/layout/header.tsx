@@ -1,6 +1,7 @@
 "use client";
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { navLinks } from "@/lib/site-config";
@@ -14,8 +15,15 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--background)]/90 backdrop-blur">
       <div className="container-px mx-auto flex h-20 max-w-7xl items-center justify-between">
-        <Link href="/" className="font-serif text-xl tracking-wide text-[var(--foreground)]">
-          PRESTIGIA<span className="text-[var(--accent-gold)]">.</span>
+        <Link href="/" aria-label="Prestigia Agency — Accueil">
+          <Image
+            src="/logo-prestigia.png"
+            alt="Prestigia Agency — Agence Marketing Digital Casablanca"
+            width={125}
+            height={56}
+            priority
+            className="h-10 w-auto"
+          />
         </Link>
 
         <nav className="hidden items-center gap-8 lg:flex">
