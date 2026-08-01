@@ -120,7 +120,7 @@ function PartnerCard({ partner }: { partner: Partner }) {
       {card}
     </Link>
   ) : (
-    <div aria-label={partner.name}>{card}</div>
+    <div role="img" aria-label={partner.name}>{card}</div>
   );
 }
 

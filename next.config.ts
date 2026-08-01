@@ -24,6 +24,9 @@ const nextConfig: NextConfig = {
     ],
     // Formats modernes prioritaires — réduit la taille de 30-50 %
     formats: ["image/avif", "image/webp"],
+    // Autorise les SVG (logos partenaires) — sandboxé par la CSP ci-dessous
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     // Limites de taille adaptées au contenu de l'agence
     minimumCacheTTL: 86400, // 24h de cache CDN pour les images optimisées
   },
@@ -50,6 +53,11 @@ const nextConfig: NextConfig = {
           {
             key: "Strict-Transport-Security",
             value: "max-age=31536000; includeSubDomains",
+          },
+          // COOP : isole la fenêtre des cross-origin openeners (requis pour SharedArrayBuffer + Lighthouse BP)
+          {
+            key: "Cross-Origin-Opener-Policy",
+            value: "same-origin",
           },
         ],
       },
