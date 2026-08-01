@@ -5,8 +5,8 @@ export async function PartnersMarquee() {
   const partners = await getPartners();
   if (!partners.length) return null;
 
-  /* Vitesse : ~55px/s. Plus il y a de partenaires, plus la durée est longue */
-  const duration = Math.max(60, partners.length * 16);
+  /* Vitesse : ~55px/s. Chaque carte ≈ 200px, donc duration ≈ 200/55 ≈ 3.6s/carte */
+  const duration = Math.max(60, Math.round((partners.length * 200 * 4) / 55));
 
   return (
     <section

@@ -6,42 +6,38 @@ import { useRef, useState } from "react";
 import { normalizeImageUrl } from "@/lib/parse";
 import type { Partner } from "@/data/partners";
 
-function Separator() {
-  return (
-    <span
-      aria-hidden="true"
-      className="mx-6 flex-shrink-0 select-none text-[var(--accent-gold)]/25 text-xs"
+/** Carte logo — fond blanc, dimensions fixes, hover élégant */
+function PartnerCard({ partner }: { partner: Partner }) {
+  const card = (
+    <div
+      className="
+        relative flex items-center justify-center flex-shrink-0
+        w-[168px] h-[84px]
+        bg-white rounded-2xl px-5 py-3
+        shadow-[0_2px_12px_rgba(0,0,0,0.18)]
+        border border-white/20
+        transition-all duration-400 ease-out
+        hover:shadow-[0_6px_24px_rgba(0,0,0,0.28)]
+        hover:scale-105 hover:-translate-y-1
+        cursor-pointer
+      "
     >
-      ◆
-    </span>
+      {partner.logo_url ? (
+        <Image
+          src={normalizeImageUrl(partner.logo_url)}
+          alt={partner.name}
+          width={140}
+          height={56}
+          className="w-full h-full object-contain"
+          draggable={false}
+        />
+      ) : (
+        <span className="font-serif text-sm font-medium tracking-wide text-gray-800 text-center leading-tight">
+          {partner.name}
+        </span>
+      )}
+    </div>
   );
-}
-
-function PartnerLogo({ partner }: { partner: Partner }) {
-  const img = partner.logo_url ? (
-    <Image
-      src={normalizeImageUrl(partner.logo_url)}
-      alt={partner.name}
-      width={200}
-      height={72}
-      className="h-14 w-auto max-w-[200px] object-contain
-                 transition-all duration-500
-                 group-hover:scale-110 group-hover:brightness-110"
-      draggable={false}
-    />
-  ) : (
-    <span
-      className="font-serif text-sm tracking-widest uppercase
-                 text-[var(--muted-foreground)]
-                 transition-colors duration-300
-                 group-hover:text-[var(--foreground)]"
-    >
-      {partner.name}
-    </span>
-  );
-
-  const base =
-    "group flex items-center justify-center px-10 flex-shrink-0 py-2";
 
   return partner.website ? (
     <Link
@@ -49,12 +45,11 @@ function PartnerLogo({ partner }: { partner: Partner }) {
       target="_blank"
       rel="noopener noreferrer"
       aria-label={`Visiter le site de ${partner.name}`}
-      className={base + " cursor-pointer"}
     >
-      {img}
+      {card}
     </Link>
   ) : (
-    <div className={base + " cursor-default"}>{img}</div>
+    <div aria-label={partner.name}>{card}</div>
   );
 }
 
@@ -77,18 +72,16 @@ export function PartnersMarqueeInner({
     timerRef.current = setTimeout(() => setPaused(false), 500);
   }
 
-  /* ── Track seamless ─────────────────────────────────────────── */
-  const avgItemWidth = 240;
+  /* ── Track seamless (2x half) ────────────────────────────────── */
+  // Chaque carte ≈ 168px + 32px de marge = 200px
+  const cardWidth = 200;
   const targetWidth = 5000;
   const copiesNeeded = Math.max(
     4,
-    Math.ceil(targetWidth / (partners.length * avgItemWidth))
+    Math.ceil(targetWidth / (partners.length * cardWidth))
   );
   const totalCopies = copiesNeeded % 2 === 0 ? copiesNeeded : copiesNeeded + 1;
-  const half = Array.from(
-    { length: totalCopies / 2 },
-    () => partners
-  ).flat();
+  const half = Array.from({ length: totalCopies / 2 }, () => partners).flat();
   const track = [...half, ...half];
 
   return (
@@ -96,9 +89,9 @@ export function PartnersMarqueeInner({
       className="relative overflow-hidden"
       style={{
         maskImage:
-          "linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)",
+          "linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)",
         WebkitMaskImage:
-          "linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)",
+          "linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)",
       }}
       onMouseEnter={pause}
       onMouseLeave={resume}
@@ -106,7 +99,7 @@ export function PartnersMarqueeInner({
       onTouchEnd={resume}
     >
       <div
-        className="flex items-center w-max"
+        className="flex items-center gap-8 w-max px-4"
         style={{
           animation: `marquee ${duration}s linear infinite`,
           animationPlayState: paused ? "paused" : "running",
@@ -116,13 +109,7 @@ export function PartnersMarqueeInner({
         aria-hidden="true"
       >
         {track.map((partner, i) => (
-          <span
-            key={`${partner.id}-${i}`}
-            className="flex items-center flex-shrink-0"
-          >
-            <PartnerLogo partner={partner} />
-            <Separator />
-          </span>
+          <PartnerCard key={`${partner.id}-${i}`} partner={partner} />
         ))}
       </div>
     </div>
