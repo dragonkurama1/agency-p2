@@ -15,7 +15,7 @@ export default async function MediaPage() {
     <div>
       <h1 className="font-serif text-2xl">Médias</h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        Fichiers envoyés vers Google Drive. Copiez l&apos;URL pour l&apos;utiliser dans les champs &quot;image&quot; des autres contenus.
+        Fichiers uploadés vers Supabase Storage. L&apos;URL est automatiquement copiée dans les champs image.
       </p>
       <div className="mt-6">
         <MediaUploadForm />

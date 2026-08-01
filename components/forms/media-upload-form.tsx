@@ -27,6 +27,7 @@ export function MediaUploadForm() {
           name="file"
           type="file"
           required
+          accept="image/*,video/*,.mp4,.webm,.mov,.avi,.mkv,.m4v,.jpg,.jpeg,.png,.webp,.gif,.svg"
           className="w-full text-sm text-muted-foreground file:mr-4 file:rounded-full file:border-0 file:bg-[var(--accent-gold)] file:px-4 file:py-2 file:text-sm file:font-medium file:text-[#0a0a0b]"
         />
       </div>
@@ -38,9 +39,9 @@ export function MediaUploadForm() {
       </div>
       <div className="flex-1 min-w-[200px]">
         <label htmlFor="alt_text" className="mb-1.5 block text-sm font-medium">
-          Texte alternatif
+          Texte alternatif / Titre
         </label>
-        <Input id="alt_text" name="alt_text" placeholder="Description de l'image (SEO)" />
+        <Input id="alt_text" name="alt_text" placeholder="Description de l'image ou titre de la vidéo" />
       </div>
       <Button type="submit" disabled={pending}>
         <UploadCloud className="size-4" />

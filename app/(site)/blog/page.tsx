@@ -3,35 +3,54 @@ import Link from "next/link";
 import { SectionHeading } from "@/components/marketing/section-heading";
 import { formatDate } from "@/lib/utils";
 import { getBlogPosts } from "@/data/blog";
+import { getSectionByKey } from "@/data/sections";
+import { getPageMeta } from "@/data/pages";
+import { WebPageJsonLd } from "@/components/seo/json-ld";
 
-export const metadata: Metadata = {
-  title: "Blog",
-  description: "Conseils, guides et actualités marketing digital, SEO et branding par Prestigia Agency.",
-  alternates: { canonical: "/blog" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return getPageMeta("blog", {
+    title: "Blog",
+    description:
+      "Conseils, guides et actualités marketing digital, SEO, GEO et branding par Prestigia Agency à Casablanca.",
+    ogTitle: "Blog Marketing Digital — Prestigia Agency",
+  });
+}
 
 export default async function BlogPage() {
-  const posts = await getBlogPosts();
+  const [posts, hero] = await Promise.all([getBlogPosts(), getSectionByKey("blog", "hero")]);
   return (
-    <section className="container-px mx-auto max-w-5xl py-20">
-      <SectionHeading eyebrow="Blog" title="Conseils & guides marketing digital" />
-      <div className="mt-12 grid gap-8">
-        {posts.map((post) => (
-          <Link
-            key={post.slug}
-            href={`/blog/${post.slug}`}
-            className="group rounded-2xl border border-[var(--border)] bg-[var(--muted)] p-6 sm:p-8 hover:border-[var(--accent-gold)]"
-          >
-            <p className="text-xs uppercase tracking-wide text-[var(--accent-gold)]">{post.category}</p>
-            <h2 className="mt-3 font-serif text-2xl leading-snug">{post.title}</h2>
-            <p className="mt-2 text-sm text-muted-foreground">{post.excerpt}</p>
-            <p className="mt-4 text-xs text-muted-foreground">
-              {post.author} · {formatDate(post.published_at)}
-            </p>
-          </Link>
-        ))}
-        {posts.length === 0 && <p className="text-muted-foreground">Aucun article publié pour le moment.</p>}
-      </div>
-    </section>
+    <>
+      <WebPageJsonLd
+        title="Blog — Prestigia Agency"
+        description="Articles sur le marketing digital, SEO, GEO et branding par Prestigia Agency à Casablanca."
+        path="/blog"
+        breadcrumbs={[{ name: "Blog", href: "/blog" }]}
+      />
+      <section className="container-px mx-auto max-w-5xl py-20" aria-label="Articles du blog">
+        <SectionHeading eyebrow="Blog" title={hero?.title || "Conseils & guides marketing digital"} subtitle={hero?.subtitle || undefined} />
+        <div className="mt-12 grid gap-8" role="list" aria-label="Liste des articles">
+          {posts.map((post) => (
+            <Link
+              key={post.slug}
+              href={`/blog/${post.slug}`}
+              role="listitem"
+              className="group rounded-2xl border border-[var(--border)] bg-[var(--muted)] p-6 sm:p-8 hover:border-[var(--accent-gold)]"
+            >
+              <p className="text-xs uppercase tracking-wide text-[var(--accent-gold)]">{post.category}</p>
+              <h2 className="mt-3 font-serif text-2xl leading-snug">{post.title}</h2>
+              <p className="mt-2 text-sm text-muted-foreground">{post.excerpt}</p>
+              <p className="mt-4 text-xs text-muted-foreground">
+                <span>{post.author}</span>
+                <span aria-hidden="true"> · </span>
+                <time dateTime={post.published_at}>{formatDate(post.published_at)}</time>
+              </p>
+            </Link>
+          ))}
+          {posts.length === 0 && (
+            <p className="text-muted-foreground">Aucun article publié pour le moment.</p>
+          )}
+        </div>
+      </section>
+    </>
   );
 }

@@ -7,7 +7,7 @@ import { getIcon } from "@/lib/icons";
 import { Button } from "@/components/ui/button";
 import { FaqSection } from "@/components/marketing/faq-section";
 import { CtaBanner } from "@/components/marketing/cta-banner";
-import { ServiceJsonLd, FaqJsonLd } from "@/components/seo/json-ld";
+import { ServiceJsonLd, FaqJsonLd, WebPageJsonLd } from "@/components/seo/json-ld";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -21,9 +21,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const service = await getServiceBySlug(slug);
   if (!service) return {};
   return {
-    title: service.meta_title,
-    description: service.meta_description,
+    title: service.meta_title || service.title,
+    description: service.meta_description || service.short_description,
     alternates: { canonical: `/services/${slug}` },
+    openGraph: {
+      title: service.meta_title || service.title,
+      description: service.meta_description || service.short_description,
+      images: [{ url: "/og-image.png", width: 1200, height: 630 }],
+    },
   };
 }
 
@@ -37,32 +42,47 @@ export default async function ServiceDetailPage({ params }: Props) {
 
   return (
     <>
-      <ServiceJsonLd name={service.title} description={service.meta_description} slug={service.slug} />
+      <WebPageJsonLd
+        title={service.meta_title || service.title}
+        description={service.meta_description || service.short_description}
+        path={`/services/${slug}`}
+        breadcrumbs={[
+          { name: "Services", href: "/services" },
+          { name: service.title, href: `/services/${slug}` },
+        ]}
+      />
+      <ServiceJsonLd
+        name={service.title}
+        description={service.meta_description || service.short_description}
+        slug={service.slug}
+      />
       {service.faq.length > 0 && <FaqJsonLd items={service.faq} />}
 
       <section className="container-px mx-auto max-w-4xl py-20">
-        <Link href="/services" className="text-sm text-muted-foreground hover:text-[var(--accent-gold)]">
-          ← Tous les services
-        </Link>
-        {/* eslint-disable-next-line react-hooks/static-components -- icône résolue dynamiquement par slug, composant serveur sans état à préserver */}
-        <Icon className="mt-6 size-10 text-[var(--accent-gold)]" />
+        <nav aria-label="Fil d'Ariane">
+          <Link href="/services" className="text-sm text-muted-foreground hover:text-[var(--accent-gold)]">
+            ← Tous les services
+          </Link>
+        </nav>
+        {/* eslint-disable-next-line react-hooks/static-components */}
+        <Icon className="mt-6 size-10 text-[var(--accent-gold)]" aria-hidden="true" />
         <h1 className="mt-4 font-serif text-4xl sm:text-5xl leading-tight">{service.title}</h1>
         <p className="mt-5 text-lg text-muted-foreground">{service.full_description}</p>
         <Button asChild size="lg" className="mt-8">
           <Link href="/devis">
-            Demander un devis <ArrowRight className="size-4" />
+            Demander un devis <ArrowRight className="size-4" aria-hidden="true" />
           </Link>
         </Button>
       </section>
 
       {service.advantages.length > 0 && (
-        <section className="section-light py-16">
+        <section className="section-light py-16" aria-label="Avantages">
           <div className="container-px mx-auto max-w-4xl">
             <h2 className="font-serif text-2xl mb-8">Les avantages</h2>
             <ul className="grid sm:grid-cols-2 gap-4">
               {service.advantages.map((a) => (
                 <li key={a} className="flex items-start gap-3 text-sm">
-                  <Check className="mt-0.5 size-4 shrink-0 text-[var(--accent-gold)]" />
+                  <Check className="mt-0.5 size-4 shrink-0 text-[var(--accent-gold)]" aria-hidden="true" />
                   {a}
                 </li>
               ))}
@@ -72,12 +92,14 @@ export default async function ServiceDetailPage({ params }: Props) {
       )}
 
       {service.process.length > 0 && (
-        <section className="container-px mx-auto max-w-4xl py-16">
+        <section className="container-px mx-auto max-w-4xl py-16" aria-label="Notre processus">
           <h2 className="font-serif text-2xl mb-8">Notre processus</h2>
           <ol className="grid sm:grid-cols-2 gap-6">
             {service.process.map((step, i) => (
               <li key={step} className="rounded-xl border border-[var(--border)] bg-[var(--muted)] p-5">
-                <span className="font-serif text-2xl text-[var(--accent-gold)]">{String(i + 1).padStart(2, "0")}</span>
+                <span className="font-serif text-2xl text-[var(--accent-gold)]" aria-hidden="true">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
                 <p className="mt-2 text-sm">{step}</p>
               </li>
             ))}
@@ -86,7 +108,7 @@ export default async function ServiceDetailPage({ params }: Props) {
       )}
 
       {service.faq.length > 0 && (
-        <section className="section-light py-16">
+        <section className="section-light py-16" aria-label="Questions fréquentes">
           <div className="container-px mx-auto max-w-3xl">
             <h2 className="font-serif text-2xl mb-8">Questions fréquentes</h2>
             <FaqSection items={service.faq} />
@@ -95,7 +117,7 @@ export default async function ServiceDetailPage({ params }: Props) {
       )}
 
       {related.length > 0 && (
-        <section className="container-px mx-auto max-w-4xl py-16">
+        <section className="container-px mx-auto max-w-4xl py-16" aria-label="Services complémentaires">
           <h2 className="font-serif text-2xl mb-8">Services complémentaires</h2>
           <div className="grid sm:grid-cols-2 gap-4">
             {related.map((r) => (

@@ -1,6 +1,6 @@
 import { unstable_cache } from "next/cache";
-import { isGoogleSheetsConfigured, getSheetRows } from "@/lib/google/sheets";
-import { parseBool, parseNumber } from "@/lib/parse";
+import { getSupabaseClient } from "@/lib/supabase";
+import { parseNumber } from "@/lib/parse";
 import { testimonials as seedTestimonials } from "@/lib/seed-data";
 
 export interface Testimonial {
@@ -13,23 +13,29 @@ export interface Testimonial {
   active: boolean;
 }
 
-function mapRow(row: Record<string, string>): Testimonial {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapRow(row: Record<string, any>): Testimonial {
   return {
     id: row.id,
     client_name: row.client_name,
     company: row.company || "",
-    message: row.message,
+    message: row.message || "",
     rating: parseNumber(row.rating, 5),
     service: row.service || "",
-    active: parseBool(row.active, true),
+    active: row.active ?? true,
   };
 }
 
 async function fetchTestimonials(): Promise<Testimonial[]> {
-  if (!isGoogleSheetsConfigured()) return seedTestimonials;
   try {
-    const rows = await getSheetRows<Record<string, string>>("testimonials");
-    const mapped = rows.map(mapRow).filter((t) => t.active);
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase
+      .from("testimonials")
+      .select("*")
+      .eq("active", true)
+      .order("created_at", { ascending: false });
+    if (error) throw error;
+    const mapped = (data ?? []).map(mapRow);
     return mapped.length ? mapped : seedTestimonials;
   } catch {
     return seedTestimonials;

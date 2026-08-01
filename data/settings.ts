@@ -1,17 +1,18 @@
 import { unstable_cache } from "next/cache";
-import { isGoogleSheetsConfigured, getSheetRows } from "@/lib/google/sheets";
+import { getSupabaseClient } from "@/lib/supabase";
 
 /**
- * Onglet `settings` : paires clé/valeur (téléphone, email, adresse, réseaux...).
- * Permet au dashboard de modifier les coordonnées de l'agence sans toucher au code.
- * En l'absence de Google Sheets, lib/site-config.ts (valeurs codées) fait foi.
+ * Table `settings` : paires clé/valeur (téléphone, email, adresse, réseaux...).
+ * Permet de modifier les coordonnées de l'agence depuis le dashboard admin.
+ * En l'absence de données, lib/site-config.ts (valeurs codées) fait foi.
  */
 async function fetchSettings(): Promise<Record<string, string>> {
-  if (!isGoogleSheetsConfigured()) return {};
   try {
-    const rows = await getSheetRows<{ key: string; value: string }>("settings");
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase.from("settings").select("key, value");
+    if (error) throw error;
     const map: Record<string, string> = {};
-    rows.forEach((r) => {
+    (data ?? []).forEach((r) => {
       if (r.key) map[r.key] = r.value ?? "";
     });
     return map;

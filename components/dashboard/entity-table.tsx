@@ -12,6 +12,12 @@ function truncate(value: string, max = 60) {
   return value.length > max ? `${value.slice(0, max)}…` : value;
 }
 
+/** Retourne la valeur de la clé primaire pour une ligne donnée. */
+function getPkValue(config: EntityConfig, row: Record<string, string>): string {
+  if (config.tab === "settings") return row.key ?? "";
+  return row.id ?? "";
+}
+
 export function EntityTable({ entityKey, config, rows }: { entityKey: string; config: EntityConfig; rows: Record<string, string>[] }) {
   return (
     <div>
@@ -47,41 +53,44 @@ export function EntityTable({ entityKey, config, rows }: { entityKey: string; co
             {rows.length === 0 && (
               <tr>
                 <td colSpan={config.listColumns.length + 1} className="px-4 py-10 text-center text-muted-foreground">
-                  Aucune donnée. Connectez Google Sheets ou ajoutez une ligne.
+                  Aucune donnée. Cliquez sur &ldquo;Nouveau&rdquo; pour ajouter une ligne.
                 </td>
               </tr>
             )}
-            {rows.map((row) => (
-              <tr key={row.id} className="border-t border-[var(--border)]">
-                {config.listColumns.map((col) => {
-                  const field = config.fields.find((f) => f.key === col);
-                  const value = row[col] ?? "";
-                  return (
-                    <td key={col} className="px-4 py-3">
-                      {field?.type === "boolean" ? (
-                        <Badge className={parseBool(value, false) ? "" : "border-[var(--border)] bg-transparent text-muted-foreground"}>
-                          {parseBool(value, false) ? "Actif" : "Inactif"}
-                        </Badge>
-                      ) : (
-                        truncate(value)
-                      )}
-                    </td>
-                  );
-                })}
-                <td className="px-4 py-3 text-right">
-                  <div className="flex items-center justify-end gap-1">
-                    <Link
-                      href={`/dashboard/${entityKey}/${row.id}`}
-                      className="rounded-lg p-2 text-muted-foreground transition-colors hover:text-[var(--accent-gold)]"
-                      title="Modifier"
-                    >
-                      <Pencil className="size-4" />
-                    </Link>
-                    <DeleteButton entityKey={entityKey} id={row.id} />
-                  </div>
-                </td>
-              </tr>
-            ))}
+            {rows.map((row) => {
+              const pk = getPkValue(config, row);
+              return (
+                <tr key={pk} className="border-t border-[var(--border)]">
+                  {config.listColumns.map((col) => {
+                    const field = config.fields.find((f) => f.key === col);
+                    const value = row[col] ?? "";
+                    return (
+                      <td key={col} className="px-4 py-3">
+                        {field?.type === "boolean" ? (
+                          <Badge className={parseBool(value, false) ? "" : "border-[var(--border)] bg-transparent text-muted-foreground"}>
+                            {parseBool(value, false) ? "Actif" : "Inactif"}
+                          </Badge>
+                        ) : (
+                          truncate(value)
+                        )}
+                      </td>
+                    );
+                  })}
+                  <td className="px-4 py-3 text-right">
+                    <div className="flex items-center justify-end gap-1">
+                      <Link
+                        href={`/dashboard/${entityKey}/${pk}`}
+                        className="rounded-lg p-2 text-muted-foreground transition-colors hover:text-[var(--accent-gold)]"
+                        title="Modifier"
+                      >
+                        <Pencil className="size-4" />
+                      </Link>
+                      <DeleteButton entityKey={entityKey} id={pk} />
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

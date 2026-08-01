@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { normalizeImageUrl } from "@/lib/parse";
 import type { Project } from "@/data/projects";
 
 export function PortfolioGrid({ projects, categories }: { projects: Project[]; categories: string[] }) {
@@ -35,7 +36,15 @@ export function PortfolioGrid({ projects, categories }: { projects: Project[]; c
             href={`/realisations/${project.slug}`}
             className="group rounded-2xl border border-[var(--border)] bg-[var(--muted)] overflow-hidden"
           >
-            <div className="aspect-[4/3] bg-[linear-gradient(135deg,var(--border),var(--muted))]" />
+            {project.cover_image ? (
+              <img
+                src={normalizeImageUrl(project.cover_image)}
+                alt={project.title}
+                className="aspect-[4/3] w-full object-cover"
+              />
+            ) : (
+              <div className="aspect-[4/3] bg-[linear-gradient(135deg,var(--border),var(--muted))]" />
+            )}
             <div className="p-6">
               <p className="text-xs uppercase tracking-wide text-[var(--accent-gold)]">{project.category}</p>
               <h3 className="mt-2 font-serif text-lg leading-snug">{project.title}</h3>

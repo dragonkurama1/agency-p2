@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import { SectionHeading } from "@/components/marketing/section-heading";
 import { DevisForm } from "@/components/forms/devis-form";
 import { getServices } from "@/data/services";
+import { getPageMeta } from "@/data/pages";
 
-export const metadata: Metadata = {
-  title: "Demander un devis",
-  description: "Demandez un devis gratuit à Prestigia Agency pour votre projet de marketing digital, site web, SEO ou publicité à Casablanca.",
-  alternates: { canonical: "/devis" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return getPageMeta("devis", {
+    title: "Demander un devis",
+    description: "Demandez un devis gratuit à Prestigia Agency pour votre projet de marketing digital, site web, SEO ou publicité à Casablanca.",
+  });
+}
 
 export default async function DevisPage() {
   const services = await getServices();

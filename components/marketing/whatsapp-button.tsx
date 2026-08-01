@@ -1,11 +1,14 @@
 import Link from "next/link";
 import { MessageCircle } from "lucide-react";
 import { siteConfig } from "@/lib/site-config";
+import { getSetting } from "@/data/settings";
 
-export function WhatsappButton() {
+export async function WhatsappButton() {
+  const whatsapp = await getSetting("whatsapp_url", siteConfig.whatsapp);
+  if (!whatsapp) return null;
   return (
     <Link
-      href={siteConfig.whatsapp}
+      href={whatsapp}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Contacter Prestigia Agency sur WhatsApp"

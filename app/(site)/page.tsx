@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getPageMeta } from "@/data/pages";
 import { Hero } from "@/components/marketing/hero";
 import { StatsBar } from "@/components/marketing/stats-bar";
 import { SectionHeading } from "@/components/marketing/section-heading";
@@ -13,31 +14,48 @@ import { getServices } from "@/data/services";
 import { getTestimonials } from "@/data/testimonials";
 import { getProjects } from "@/data/projects";
 import { getFaqByPage } from "@/data/faq";
+import { getSectionByKey } from "@/data/sections";
 import { homeFaq } from "@/lib/seed-data";
+import { normalizeImageUrl } from "@/lib/parse";
+import { WebPageJsonLd, FaqJsonLd } from "@/components/seo/json-ld";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "Agence Marketing Digital à Casablanca",
-  description:
-    "Prestigia Agency est une agence marketing digital à Casablanca : stratégie, SEO, publicité, branding, création de contenu et développement web orientés résultats.",
-  alternates: { canonical: "/" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return getPageMeta("home", {
+    title: "Agence Marketing Digital à Casablanca",
+    description:
+      "Prestigia Agency est une agence marketing digital à Casablanca : stratégie, SEO, publicité, branding, création de contenu et développement web orientés résultats.",
+    ogTitle: "Prestigia Agency — Agence Marketing Digital Casablanca",
+    canonical: "/",
+  });
+}
 
 export default async function HomePage() {
-  const [services, testimonials, projects, faq] = await Promise.all([
+  const [services, testimonials, projects, faq, heroSection, ctaSection] = await Promise.all([
     getServices(),
     getTestimonials(),
     getProjects(),
     getFaqByPage("accueil"),
+    getSectionByKey("home", "hero"),
+    getSectionByKey("home", "cta"),
   ]);
+
+  const faqItems = faq.length ? faq : homeFaq;
 
   return (
     <>
-      <Hero />
+      <WebPageJsonLd
+        title="Prestigia Agency — Agence Marketing Digital Casablanca"
+        description="Stratégie, SEO, GEO, publicité Google & Meta, branding et développement web à Casablanca."
+        path="/"
+      />
+      {faqItems.length > 0 && <FaqJsonLd items={faqItems} />}
+
+      <Hero section={heroSection} />
       <StatsBar />
 
-      <section className="container-px mx-auto max-w-7xl py-20">
+      <section className="container-px mx-auto max-w-7xl py-20" aria-label="Nos services">
         <SectionHeading
           eyebrow="Nos services"
           title="Une agence digitale à Casablanca pensée pour les marques qui veulent grandir"
@@ -48,12 +66,14 @@ export default async function HomePage() {
         </div>
         <div className="mt-10">
           <Button asChild variant="outline">
-            <Link href="/services">Voir tous nos services <ArrowUpRight className="size-4" /></Link>
+            <Link href="/services">
+              Voir tous nos services <ArrowUpRight className="size-4" aria-hidden="true" />
+            </Link>
           </Button>
         </div>
       </section>
 
-      <section className="section-light py-20">
+      <section className="section-light py-20" aria-label="Pourquoi choisir Prestigia Agency">
         <div className="container-px mx-auto max-w-7xl">
           <SectionHeading eyebrow="Pourquoi Prestigia" title="Une équipe, tous les leviers de croissance" />
           <div className="mt-12">
@@ -62,7 +82,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="container-px mx-auto max-w-7xl py-20">
+      <section className="container-px mx-auto max-w-7xl py-20" aria-label="Nos réalisations">
         <SectionHeading eyebrow="Nos réalisations" title="Des résultats concrets pour nos clients" align="center" />
         <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.slice(0, 3).map((project) => (
@@ -71,7 +91,20 @@ export default async function HomePage() {
               href={`/realisations/${project.slug}`}
               className="group rounded-2xl border border-[var(--border)] bg-[var(--muted)] overflow-hidden"
             >
-              <div className="aspect-[4/3] bg-[linear-gradient(135deg,var(--border),var(--muted))]" />
+              {project.cover_image ? (
+                <img
+                  src={normalizeImageUrl(project.cover_image)}
+                  alt={project.title}
+                  className="aspect-[4/3] w-full object-cover"
+                  loading="lazy"
+                  decoding="async"
+                />
+              ) : (
+                <div
+                  className="aspect-[4/3] bg-[linear-gradient(135deg,var(--border),var(--muted))]"
+                  aria-hidden="true"
+                />
+              )}
               <div className="p-6">
                 <p className="text-xs uppercase tracking-wide text-[var(--accent-gold)]">{project.category}</p>
                 <h3 className="mt-2 font-serif text-lg leading-snug">{project.title}</h3>
@@ -82,12 +115,14 @@ export default async function HomePage() {
         </div>
         <div className="mt-10 text-center">
           <Button asChild variant="outline">
-            <Link href="/realisations">Voir toutes nos réalisations <ArrowUpRight className="size-4" /></Link>
+            <Link href="/realisations">
+              Voir toutes nos réalisations <ArrowUpRight className="size-4" aria-hidden="true" />
+            </Link>
           </Button>
         </div>
       </section>
 
-      <section className="section-light py-20">
+      <section className="section-light py-20" aria-label="Notre méthode de travail">
         <div className="container-px mx-auto max-w-7xl">
           <SectionHeading eyebrow="Notre méthode" title="Un processus clair, en 4 étapes" align="center" />
           <div className="mt-12">
@@ -96,23 +131,28 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="container-px mx-auto max-w-7xl py-20">
+      <section className="container-px mx-auto max-w-7xl py-20" aria-label="Témoignages clients">
         <SectionHeading eyebrow="Témoignages" title="Ce que nos clients disent de nous" align="center" />
         <div className="mt-12">
           <Testimonials testimonials={testimonials} />
         </div>
       </section>
 
-      <section className="section-light py-20">
+      <section className="section-light py-20" aria-label="Questions fréquentes">
         <div className="container-px mx-auto max-w-3xl">
           <SectionHeading eyebrow="FAQ" title="Questions fréquentes" align="center" />
           <div className="mt-10">
-            <FaqSection items={faq.length ? faq : homeFaq} />
+            <FaqSection items={faqItems} />
           </div>
         </div>
       </section>
 
-      <CtaBanner />
+      <CtaBanner
+        title={ctaSection?.title || undefined}
+        subtitle={ctaSection?.subtitle || undefined}
+        cta={ctaSection?.button_text || undefined}
+        href={ctaSection?.button_link || undefined}
+      />
     </>
   );
 }

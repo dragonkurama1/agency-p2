@@ -5,7 +5,7 @@
  * pour les colonnes, évite de dupliquer la définition à 15 endroits.
  */
 
-export type FieldType = "text" | "textarea" | "richtext" | "number" | "boolean" | "select" | "json" | "date" | "image";
+export type FieldType = "text" | "textarea" | "richtext" | "number" | "boolean" | "select" | "json" | "date" | "image" | "video" | "media";
 
 export interface EntityField {
   key: string;
@@ -103,7 +103,7 @@ export const entities: Record<string, EntityConfig> = {
       { key: "results", label: "Résultats", type: "richtext" },
       { key: "cover_image", label: "Image de couverture", type: "image" },
       { key: "gallery_json", label: "Galerie (JSON)", type: "json" },
-      { key: "video_url", label: "Vidéo", type: "text" },
+      { key: "video_url", label: "Vidéo (URL YouTube/Vimeo)", type: "video" },
       { key: "meta_title", label: "Meta title", type: "text" },
       { key: "meta_description", label: "Meta description", type: "textarea" },
       { key: "active", label: "Actif", type: "boolean" },
@@ -189,18 +189,16 @@ export const entities: Record<string, EntityConfig> = {
   media: {
     tab: "media",
     label: "Médias",
-    description: "Fichiers uploadés vers Google Drive",
+    description: "Fichiers uploadés vers Supabase Storage",
     fields: [
       { key: "id", label: "ID", type: "text", required: true },
       { key: "file_name", label: "Nom du fichier", type: "text" },
-      { key: "file_type", label: "Type", type: "text" },
-      { key: "drive_file_id", label: "Drive file ID", type: "text" },
-      { key: "drive_url", label: "URL", type: "text" },
-      { key: "folder", label: "Dossier", type: "text" },
+      { key: "file_type", label: "Type MIME", type: "text" },
+      { key: "file_url", label: "Fichier (image ou vidéo)", type: "media" },
       { key: "alt_text", label: "Texte alternatif", type: "text" },
       { key: "uploaded_at", label: "Uploadé le", type: "date" },
     ],
-    listColumns: ["file_name", "folder", "uploaded_at"],
+    listColumns: ["file_name", "file_type", "uploaded_at"],
   },
   leads_contact: {
     tab: "leads_contact",

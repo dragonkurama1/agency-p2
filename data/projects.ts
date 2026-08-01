@@ -1,6 +1,5 @@
 import { unstable_cache } from "next/cache";
-import { isGoogleSheetsConfigured, getSheetRows } from "@/lib/google/sheets";
-import { parseBool } from "@/lib/parse";
+import { getSupabaseClient } from "@/lib/supabase";
 import { projects as seedProjects } from "@/lib/seed-data";
 
 export interface Project {
@@ -17,27 +16,33 @@ export interface Project {
   active: boolean;
 }
 
-function mapRow(row: Record<string, string>): Project {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapRow(row: Record<string, any>): Project {
   return {
     id: row.id,
     slug: row.slug,
     title: row.title,
-    client_name: row.client_name,
-    category: row.category,
-    sector: row.sector,
-    objective: row.objective,
-    solution: row.solution,
-    results: row.results,
+    client_name: row.client_name || "",
+    category: row.category || "",
+    sector: row.sector || "",
+    objective: row.objective || "",
+    solution: row.solution || "",
+    results: row.results || "",
     cover_image: row.cover_image || "",
-    active: parseBool(row.active, true),
+    active: row.active ?? true,
   };
 }
 
 async function fetchProjects(): Promise<Project[]> {
-  if (!isGoogleSheetsConfigured()) return seedProjects;
   try {
-    const rows = await getSheetRows<Record<string, string>>("projects");
-    const mapped = rows.map(mapRow).filter((p) => p.active);
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase
+      .from("projects")
+      .select("*")
+      .eq("active", true)
+      .order("created_at", { ascending: false });
+    if (error) throw error;
+    const mapped = (data ?? []).map(mapRow);
     return mapped.length ? mapped : seedProjects;
   } catch {
     return seedProjects;

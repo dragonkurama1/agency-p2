@@ -1,6 +1,6 @@
 import { unstable_cache } from "next/cache";
-import { isGoogleSheetsConfigured, getSheetRows } from "@/lib/google/sheets";
-import { parseBool, parseNumber, sortByOrder } from "@/lib/parse";
+import { getSupabaseClient } from "@/lib/supabase";
+import { parseNumber, sortByOrder } from "@/lib/parse";
 import { partners as seedPartners } from "@/lib/seed-data";
 
 export interface Partner {
@@ -13,7 +13,8 @@ export interface Partner {
   active: boolean;
 }
 
-function mapRow(row: Record<string, string>): Partner {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapRow(row: Record<string, any>): Partner {
   return {
     id: row.id,
     name: row.name,
@@ -21,15 +22,20 @@ function mapRow(row: Record<string, string>): Partner {
     website: row.website || "",
     description: row.description || "",
     order: parseNumber(row.order, 99),
-    active: parseBool(row.active, true),
+    active: row.active ?? true,
   };
 }
 
 async function fetchPartners(): Promise<Partner[]> {
-  if (!isGoogleSheetsConfigured()) return sortByOrder(seedPartners);
   try {
-    const rows = await getSheetRows<Record<string, string>>("partners");
-    const mapped = rows.map(mapRow).filter((p) => p.active);
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase
+      .from("partners")
+      .select("*")
+      .eq("active", true)
+      .order("order", { ascending: true });
+    if (error) throw error;
+    const mapped = (data ?? []).map(mapRow);
     return sortByOrder(mapped.length ? mapped : seedPartners);
   } catch {
     return sortByOrder(seedPartners);

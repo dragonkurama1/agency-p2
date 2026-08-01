@@ -1,5 +1,5 @@
 import { unstable_cache } from "next/cache";
-import { isGoogleSheetsConfigured, getSheetRows } from "@/lib/google/sheets";
+import { getSupabaseClient } from "@/lib/supabase";
 import { parseJsonSafe } from "@/lib/parse";
 import { blogPosts as seedPosts } from "@/lib/seed-data";
 
@@ -8,6 +8,7 @@ export interface BlogPost {
   slug: string;
   title: string;
   excerpt: string;
+  cover_image: string;
   category: string;
   tags: string;
   author: string;
@@ -17,27 +18,34 @@ export interface BlogPost {
   published_at: string;
 }
 
-function mapRow(row: Record<string, string>): BlogPost {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapRow(row: Record<string, any>): BlogPost {
   return {
     id: row.id,
     slug: row.slug,
     title: row.title,
-    excerpt: row.excerpt,
-    category: row.category,
+    excerpt: row.excerpt || "",
+    cover_image: row.cover_image || "",
+    category: row.category || "",
     tags: row.tags || "",
     author: row.author || "Prestigia Agency",
-    content: row.content,
-    faq: parseJsonSafe(row.faq_json, []),
+    content: row.content || "",
+    faq: Array.isArray(row.faq_json) ? row.faq_json : parseJsonSafe(row.faq_json, []),
     status: row.status || "published",
-    published_at: row.published_at,
+    published_at: row.published_at || "",
   };
 }
 
 async function fetchPosts(): Promise<BlogPost[]> {
-  if (!isGoogleSheetsConfigured()) return seedPosts as BlogPost[];
   try {
-    const rows = await getSheetRows<Record<string, string>>("blog_posts");
-    const mapped = rows.map(mapRow).filter((p) => p.status === "published");
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase
+      .from("blog_posts")
+      .select("*")
+      .eq("status", "published")
+      .order("published_at", { ascending: false });
+    if (error) throw error;
+    const mapped = (data ?? []).map(mapRow);
     return mapped.length ? mapped : (seedPosts as BlogPost[]);
   } catch {
     return seedPosts as BlogPost[];
@@ -46,7 +54,7 @@ async function fetchPosts(): Promise<BlogPost[]> {
 
 export const getBlogPosts = unstable_cache(fetchPosts, ["blog_posts"], {
   tags: ["blog_posts"],
-  revalidate: 3600,
+  revalidate: 60,
 });
 
 export async function getBlogPostBySlug(slug: string) {

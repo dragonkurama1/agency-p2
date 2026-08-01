@@ -1,35 +1,41 @@
 import { unstable_cache } from "next/cache";
-import { isGoogleSheetsConfigured, getSheetRows } from "@/lib/google/sheets";
-import { parseBool, parseJsonSafe, parseNumber, sortByOrder } from "@/lib/parse";
+import { getSupabaseClient } from "@/lib/supabase";
+import { parseJsonSafe, parseNumber, sortByOrder } from "@/lib/parse";
 import { services as seedServices, type Service } from "@/lib/seed-data";
 
 type FaqItem = { question: string; answer: string };
 
-function mapRow(row: Record<string, string>): Service {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapRow(row: Record<string, any>): Service {
   return {
     id: row.id,
     slug: row.slug,
     title: row.title,
-    short_description: row.short_description,
-    full_description: row.full_description,
+    short_description: row.short_description || "",
+    full_description: row.full_description || "",
     icon: row.icon || "Sparkles",
     meta_title: row.meta_title || row.title,
-    meta_description: row.meta_description || row.short_description,
+    meta_description: row.meta_description || row.short_description || "",
     keywords: row.keywords || "",
-    advantages: parseJsonSafe<string[]>(row.advantages_json, []),
-    process: parseJsonSafe<string[]>(row.process_json, []),
-    faq: parseJsonSafe<FaqItem[]>(row.faq_json, []),
-    related: parseJsonSafe<string[]>(row.related_json, []),
+    advantages: Array.isArray(row.advantages_json) ? row.advantages_json : parseJsonSafe<string[]>(row.advantages_json, []),
+    process: Array.isArray(row.process_json) ? row.process_json : parseJsonSafe<string[]>(row.process_json, []),
+    faq: Array.isArray(row.faq_json) ? row.faq_json : parseJsonSafe<FaqItem[]>(row.faq_json, []),
+    related: Array.isArray(row.related_json) ? row.related_json : parseJsonSafe<string[]>(row.related_json, []),
     order: parseNumber(row.order, 99),
-    active: parseBool(row.active, true),
+    active: row.active ?? true,
   };
 }
 
 async function fetchServices(): Promise<Service[]> {
-  if (!isGoogleSheetsConfigured()) return sortByOrder(seedServices);
   try {
-    const rows = await getSheetRows<Record<string, string>>("services");
-    const mapped = rows.map(mapRow).filter((s) => s.active);
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase
+      .from("services")
+      .select("*")
+      .eq("active", true)
+      .order("order", { ascending: true });
+    if (error) throw error;
+    const mapped = (data ?? []).map(mapRow);
     return sortByOrder(mapped.length ? mapped : seedServices);
   } catch {
     return sortByOrder(seedServices);
