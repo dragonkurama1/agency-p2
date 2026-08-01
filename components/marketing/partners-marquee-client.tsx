@@ -7,68 +7,104 @@ import { normalizeImageUrl } from "@/lib/parse";
 import type { Partner } from "@/data/partners";
 
 /**
- * Carte logo universelle — fonctionne avec TOUT type de logo :
- *   • Logo transparent     → rendu parfait
- *   • Logo fond blanc      → fond blanc visible sur carte sombre (look "étiquette" premium)
- *   • Logo fond NOIR/SOMBRE → mix-blend-mode: screen fait disparaître le fond noir
- *                             contre la carte sombre → seul le logotype reste visible
+ * Technique bordure lumineuse animée :
+ * 1. Div externe  → overflow:hidden + border-radius  (clippe tout)
+ * 2. Div rotative → conic-gradient en dégradé violet, tourne en continu
+ *    → seul le bord (1.5 px) est visible grâce à la div interne
+ * 3. Div interne  → fond sombre, inset: 1.5px → crée l'illusion d'une bordure
+ * 4. Image        → mix-blend-mode:screen pour neutraliser les fonds noirs
  */
 function PartnerCard({ partner }: { partner: Partner }) {
   const card = (
+    /* ── Conteneur externe : clippe + hover ─────────────────────── */
     <div
       className="
-        relative flex items-center justify-center flex-shrink-0
-        w-[172px] h-[88px]
-        rounded-2xl overflow-hidden
-        border border-white/[0.08]
+        relative flex-shrink-0 rounded-2xl overflow-hidden
         transition-all duration-400 ease-out
-        hover:border-white/20
-        hover:scale-[1.06] hover:-translate-y-1
-        cursor-pointer
-        group
+        hover:scale-[1.07] hover:-translate-y-[3px]
+        cursor-pointer group
       "
-      style={{
-        background: "linear-gradient(145deg, #242428 0%, #1a1a1d 100%)",
-        boxShadow: "0 2px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04)",
-      }}
+      style={{ width: 172, height: 88 }}
     >
-      {/* Reflet subtil en haut */}
+      {/* ── Arc lumineux tournant ─────────────────────────────────── */}
       <div
         aria-hidden="true"
-        className="absolute inset-x-0 top-0 h-px pointer-events-none"
         style={{
-          background:
-            "linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent)",
+          position: "absolute",
+          /* 250% × 250% centré → couvre tous les angles en rotation */
+          width: "250%",
+          height: "250%",
+          top: "-75%",
+          left: "-75%",
+          /* Arc violet étroit (~100°) sur fond transparent */
+          background: `conic-gradient(
+            from 0deg,
+            transparent       0deg,
+            transparent       55deg,
+            #4c1d95           75deg,
+            #6d28d9           90deg,
+            #7c3aed          100deg,
+            #8b5cf6          108deg,
+            #c4b5fd          115deg,
+            #8b5cf6          122deg,
+            #7c3aed          130deg,
+            #6d28d9          145deg,
+            #4c1d95          160deg,
+            transparent      175deg,
+            transparent      360deg
+          )`,
+          animation: "border-spin 4s linear infinite",
         }}
       />
 
-      {partner.logo_url ? (
-        <Image
-          src={normalizeImageUrl(partner.logo_url)}
-          alt={partner.name}
-          width={144}
-          height={60}
-          className="
-            w-auto max-w-[140px] h-[60px] object-contain
-            transition-all duration-400
-            group-hover:scale-110
-          "
+      {/* ── Fond sombre intérieur : laisse 1.5 px de bordure visible ─ */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 1.5,
+          borderRadius: 14, /* légèrement moins que rounded-2xl (16px) */
+          background: "linear-gradient(145deg, #252529 0%, #1b1b1e 100%)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          overflow: "hidden",
+        }}
+      >
+        {/* Reflet haut */}
+        <div
+          aria-hidden="true"
           style={{
-            /*
-             * mix-blend-mode: screen sur fond sombre :
-             * → pixel noir (0,0,0) screen avec fond → fond s'affiche (invisible) ✓
-             * → pixel coloré → légèrement illuminé, couleurs bien lisibles ✓
-             * → fond transparent → rendu normal ✓
-             */
-            mixBlendMode: "screen",
+            position: "absolute",
+            inset: 0,
+            top: 0,
+            height: "40%",
+            background:
+              "linear-gradient(to bottom, rgba(255,255,255,0.04), transparent)",
+            pointerEvents: "none",
           }}
-          draggable={false}
         />
-      ) : (
-        <span className="font-serif text-sm font-medium tracking-wider text-white/80 text-center leading-tight px-4 group-hover:text-white transition-colors">
-          {partner.name}
-        </span>
-      )}
+
+        {partner.logo_url ? (
+          <Image
+            src={normalizeImageUrl(partner.logo_url)}
+            alt={partner.name}
+            width={144}
+            height={58}
+            className="
+              relative z-10
+              w-auto max-w-[136px] h-[52px] object-contain
+              transition-all duration-400
+              group-hover:scale-110
+            "
+            style={{ mixBlendMode: "screen" }}
+            draggable={false}
+          />
+        ) : (
+          <span className="relative z-10 font-serif text-sm font-medium tracking-wider text-white/75 text-center leading-tight px-4 transition-colors duration-300 group-hover:text-white">
+            {partner.name}
+          </span>
+        )}
+      </div>
     </div>
   );
 
@@ -105,8 +141,8 @@ export function PartnersMarqueeInner({
     timerRef.current = setTimeout(() => setPaused(false), 500);
   }
 
-  /* ── Track seamless : cartes 172px + gap 32px = ~204px ─────── */
-  const cardWidth = 204;
+  /* ── Track seamless ─────────────────────────────────────────── */
+  const cardWidth = 204; // 172px carte + 32px gap
   const targetWidth = 5000;
   const copiesNeeded = Math.max(
     4,
