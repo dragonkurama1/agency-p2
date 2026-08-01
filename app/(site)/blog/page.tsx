@@ -28,13 +28,12 @@ export default async function BlogPage() {
       />
       <section className="container-px mx-auto max-w-5xl py-20" aria-label="Articles du blog">
         <SectionHeading eyebrow="Blog" title={hero?.title || "Conseils & guides marketing digital"} subtitle={hero?.subtitle || undefined} />
-        <div className="mt-12 grid gap-8" role="list" aria-label="Liste des articles">
+        <ul className="mt-12 grid gap-8 list-none p-0" aria-label="Liste des articles">
           {posts.map((post) => (
+            <li key={post.slug}>
             <Link
-              key={post.slug}
               href={`/blog/${post.slug}`}
-              role="listitem"
-              className="group rounded-2xl border border-[var(--border)] bg-[var(--muted)] p-6 sm:p-8 hover:border-[var(--accent-gold)]"
+              className="group block rounded-2xl border border-[var(--border)] bg-[var(--muted)] p-6 sm:p-8 hover:border-[var(--accent-gold)]"
             >
               <p className="text-xs uppercase tracking-wide text-[var(--accent-gold)]">{post.category}</p>
               <h2 className="mt-3 font-serif text-2xl leading-snug">{post.title}</h2>
@@ -45,11 +44,12 @@ export default async function BlogPage() {
                 <time dateTime={post.published_at}>{formatDate(post.published_at)}</time>
               </p>
             </Link>
+            </li>
           ))}
           {posts.length === 0 && (
-            <p className="text-muted-foreground">Aucun article publié pour le moment.</p>
+            <li><p className="text-muted-foreground">Aucun article publié pour le moment.</p></li>
           )}
-        </div>
+        </ul>
       </section>
     </>
   );

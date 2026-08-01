@@ -55,23 +55,29 @@ export async function Footer() {
               Transformez votre présence digitale avec notre expertise en marketing stratégique et développement web.
             </p>
             {/* Réseaux sociaux */}
-            <div className="mt-6 flex gap-4" role="list" aria-label="Nos réseaux sociaux">
+            <ul className="mt-6 flex gap-4 list-none p-0" aria-label="Nos réseaux sociaux">
               {instagram && (
-                <Link href={instagram} target="_blank" rel="noopener noreferrer" role="listitem" aria-label="Prestigia Agency sur Instagram" className="text-[var(--muted-foreground)] hover:text-[var(--accent-gold)] transition-colors">
-                  <InstagramIcon className="size-5" />
-                </Link>
+                <li>
+                  <Link href={instagram} target="_blank" rel="noopener noreferrer" aria-label="Prestigia Agency sur Instagram" className="text-[var(--muted-foreground)] hover:text-[var(--accent-gold)] transition-colors">
+                    <InstagramIcon className="size-5" />
+                  </Link>
+                </li>
               )}
               {linkedin && (
-                <Link href={linkedin} target="_blank" rel="noopener noreferrer" role="listitem" aria-label="Prestigia Agency sur LinkedIn" className="text-[var(--muted-foreground)] hover:text-[var(--accent-gold)] transition-colors">
-                  <LinkedinIcon className="size-5" />
-                </Link>
+                <li>
+                  <Link href={linkedin} target="_blank" rel="noopener noreferrer" aria-label="Prestigia Agency sur LinkedIn" className="text-[var(--muted-foreground)] hover:text-[var(--accent-gold)] transition-colors">
+                    <LinkedinIcon className="size-5" />
+                  </Link>
+                </li>
               )}
               {facebook && (
-                <Link href={facebook} target="_blank" rel="noopener noreferrer" role="listitem" aria-label="Prestigia Agency sur Facebook" className="text-[var(--muted-foreground)] hover:text-[var(--accent-gold)] transition-colors">
-                  <FacebookIcon className="size-5" />
-                </Link>
+                <li>
+                  <Link href={facebook} target="_blank" rel="noopener noreferrer" aria-label="Prestigia Agency sur Facebook" className="text-[var(--muted-foreground)] hover:text-[var(--accent-gold)] transition-colors">
+                    <FacebookIcon className="size-5" />
+                  </Link>
+                </li>
               )}
-            </div>
+            </ul>
           </div>
 
           <nav aria-label="Navigation principale">
