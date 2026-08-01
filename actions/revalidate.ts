@@ -21,7 +21,7 @@ const ALL_TAGS = [
 
 export async function revalidateAllCache(): Promise<{ ok: boolean }> {
   for (const tag of ALL_TAGS) {
-    revalidateTag(tag);
+    revalidateTag(tag, "max");
   }
   return { ok: true };
 }

@@ -143,7 +143,7 @@ export async function createEntityRow(
     const { data, error } = await supabase.from(config.tab).insert(row).select(pkField).single();
     if (error) throw error;
     insertedId = (data as Record<string, string>)?.[pkField] ?? "";
-    revalidateTag(config.tab);
+    revalidateTag(config.tab, "max");
   } catch (error) {
     console.error("createEntityRow", error);
     const msg = error instanceof Error ? error.message : "Erreur lors de l'enregistrement.";
@@ -176,7 +176,7 @@ export async function updateEntityRow(
     const supabase = getSupabaseAdmin();
     const { error } = await supabase.from(config.tab).update(row).eq(pkField, id);
     if (error) throw error;
-    revalidateTag(config.tab);
+    revalidateTag(config.tab, "max");
   } catch (error) {
     console.error("updateEntityRow", error);
     const msg = error instanceof Error ? error.message : "Erreur lors de la mise à jour.";
@@ -199,7 +199,7 @@ export async function deleteEntityRow(entityKey: string, id: string) {
     const supabase = getSupabaseAdmin();
     const { error } = await supabase.from(config.tab).delete().eq(pkField, id);
     if (error) throw error;
-    revalidateTag(config.tab);
+    revalidateTag(config.tab, "max");
   } catch (error) {
     console.error("deleteEntityRow", error);
   }
