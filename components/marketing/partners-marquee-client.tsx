@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { normalizeImageUrl } from "@/lib/parse";
 import type { Partner } from "@/data/partners";
 
@@ -24,7 +24,7 @@ function PartnerLogo({ partner }: { partner: Partner }) {
       alt={partner.name}
       width={160}
       height={56}
-      className="h-12 w-auto max-w-[160px] object-contain transition-transform duration-300 hover:scale-105"
+      className="h-12 w-auto max-w-[160px] object-contain"
     />
   ) : (
     <span className="font-serif text-base tracking-widest uppercase text-[var(--muted-foreground)]">
@@ -32,8 +32,7 @@ function PartnerLogo({ partner }: { partner: Partner }) {
     </span>
   );
 
-  const cls =
-    "flex items-center justify-center px-10 flex-shrink-0";
+  const cls = "flex items-center justify-center px-10 flex-shrink-0";
 
   return partner.website ? (
     <Link
@@ -58,18 +57,8 @@ export function PartnersMarqueeInner({
   duration: number;
 }) {
   const [paused, setPaused] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
-  function pause() {
-    clearTimeout(timerRef.current);
-    setPaused(true);
-  }
-  function resume() {
-    clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => setPaused(false), 600);
-  }
-
-  /* ── Calcul du track (seamless loop) ─────────────────────────── */
+  /* ── Track seamless ────────────────────────────────────────── */
   const avgItemWidth = 200;
   const targetWidth = 5000;
   const copiesNeeded = Math.max(4, Math.ceil(targetWidth / (partners.length * avgItemWidth)));
@@ -77,59 +66,69 @@ export function PartnersMarqueeInner({
   const half = Array.from({ length: totalCopies / 2 }, () => partners).flat();
   const track = [...half, ...half];
 
+  const trackStyle = {
+    animation: `marquee ${duration}s linear infinite`,
+    animationPlayState: paused ? "paused" : "running",
+    willChange: "transform",
+    WebkitBackfaceVisibility: "hidden",
+  } as React.CSSProperties;
+
+  const items = track.map((partner, i) => (
+    <span key={`${partner.id}-${i}`} className="flex items-center flex-shrink-0">
+      <PartnerLogo partner={partner} />
+      <Separator />
+    </span>
+  ));
+
+  /* ── Couleur spotlight : double-track
+       - Track du bas : grayscale (toujours visible)
+       - Track du haut : couleur, masqué pour ne montrer que le centre
+  ─────────────────────────────────────────────────────────── */
   return (
     <div
-      /* isolation: isolate isole le blend-mode de l'overlay */
       className="relative"
       style={{
-        isolation: "isolate",
+        /* Fade bords */
         maskImage:
-          "linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)",
+          "linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)",
         WebkitMaskImage:
-          "linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)",
+          "linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)",
       }}
-      onMouseEnter={pause}
-      onMouseLeave={resume}
-      onTouchStart={pause}
-      onTouchEnd={resume}
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onTouchStart={() => setPaused(true)}
+      onTouchEnd={() => setTimeout(() => setPaused(false), 600)}
     >
-      {/* ── Track animé ──────────────────────────────────────────── */}
+      {/* Track grayscale — base, toujours visible */}
       <div
         className="flex items-center w-max"
-        style={{
-          animation: `marquee ${duration}s linear infinite`,
-          animationPlayState: paused ? "paused" : "running",
-          willChange: "transform",
-          WebkitBackfaceVisibility: "hidden",
-        } as React.CSSProperties}
+        style={{ ...trackStyle, filter: "grayscale(1) opacity(0.35)" }}
         aria-hidden="true"
       >
+        {items}
+      </div>
+
+      {/* Track couleur — superposé, visible uniquement au centre */}
+      <div
+        className="absolute inset-0 flex items-center w-max"
+        style={{
+          ...trackStyle,
+          /* Révèle les couleurs uniquement au centre (28%-72%) */
+          maskImage:
+            "linear-gradient(to right, transparent 0%, black 28%, black 72%, transparent 100%)",
+          WebkitMaskImage:
+            "linear-gradient(to right, transparent 0%, black 28%, black 72%, transparent 100%)",
+        }}
+        aria-hidden="true"
+      >
+        {/* Re-créer les items pour éviter les conflits de clés React */}
         {track.map((partner, i) => (
-          <span key={`${partner.id}-${i}`} className="flex items-center flex-shrink-0">
+          <span key={`color-${partner.id}-${i}`} className="flex items-center flex-shrink-0">
             <PartnerLogo partner={partner} />
             <Separator />
           </span>
         ))}
       </div>
-
-      {/* ── Spotlight overlay ─────────────────────────────────────
-          mix-blend-mode: saturation applique la saturation de l'overlay
-          (gris = 0%) sur les logos en dessous → les logos sous la zone
-          grise deviennent désaturés. Là où l'overlay est transparent,
-          les logos gardent leurs vraies couleurs.
-      ─────────────────────────────────────────────────────────── */}
-      <div
-        aria-hidden="true"
-        style={{
-          position: "absolute",
-          inset: 0,
-          pointerEvents: "none",
-          /* gris aux bords → désaturé ; transparent au centre → couleur */
-          background:
-            "linear-gradient(to right, hsl(0,0%,50%) 0%, transparent 32%, transparent 68%, hsl(0,0%,50%) 100%)",
-          mixBlendMode: "saturation",
-        }}
-      />
     </div>
   );
 }
