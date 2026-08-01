@@ -36,6 +36,10 @@ body {
   from { transform: translateX(0); }
   to   { transform: translateX(-50%); }
 }
+@-webkit-keyframes marquee {
+  from { -webkit-transform: translateX(0); }
+  to   { -webkit-transform: translateX(-50%); }
+}
 
 .section-light {
   background: var(--background-alt);

@@ -90,7 +90,11 @@ export async function PartnersMarquee() {
       >
         <div
           className="flex items-center w-max"
-          style={{ animation: `marquee ${duration}s linear infinite` }}
+          style={{
+            animation: `marquee ${duration}s linear infinite`,
+            willChange: "transform",
+            WebkitBackfaceVisibility: "hidden",
+          } as React.CSSProperties}
           aria-hidden="true"
         >
           {track.map((partner, i) => (
