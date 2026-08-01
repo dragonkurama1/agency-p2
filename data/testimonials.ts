@@ -9,6 +9,7 @@ export interface Testimonial {
   company: string;
   message: string;
   rating: number;
+  photo_url: string;
   service: string;
   active: boolean;
 }
@@ -21,6 +22,7 @@ function mapRow(row: Record<string, any>): Testimonial {
     company: row.company || "",
     message: row.message || "",
     rating: parseNumber(row.rating, 5),
+    photo_url: row.photo_url || "",
     service: row.service || "",
     active: row.active ?? true,
   };
