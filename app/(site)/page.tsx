@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getPageMeta } from "@/data/pages";
 import { Hero } from "@/components/marketing/hero";
-import { StatsBar } from "@/components/marketing/stats-bar";
+import { PartnersMarquee } from "@/components/marketing/partners-marquee";
 import { SectionHeading } from "@/components/marketing/section-heading";
 import { ServicesGrid } from "@/components/marketing/services-grid";
 import { WhyUs } from "@/components/marketing/why-us";
@@ -41,6 +41,7 @@ export default async function HomePage() {
     getSectionByKey("home", "hero"),
     getSectionByKey("home", "cta"),
   ]);
+  // PartnersMarquee fetches partners autonomously (server component)
 
   const faqItems = faq.length ? faq : homeFaq;
 
@@ -54,7 +55,7 @@ export default async function HomePage() {
       {faqItems.length > 0 && <FaqJsonLd items={faqItems} />}
 
       <Hero section={heroSection} />
-      <StatsBar />
+      <PartnersMarquee />
 
       <section className="container-px mx-auto max-w-7xl py-20" aria-label="Nos services">
         <SectionHeading

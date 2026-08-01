@@ -31,6 +31,12 @@ body {
   font-family: var(--font-sans), Arial, sans-serif;
 }
 
+/* ── Marquee partners ─────────────────────────────────────────────────────── */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
 .section-light {
   background: var(--background-alt);
   color: var(--foreground-on-light);
