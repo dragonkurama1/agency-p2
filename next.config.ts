@@ -81,8 +81,12 @@ const nextConfig: NextConfig = {
   // ── Redirections ───────────────────────────────────────────────────────────
   async redirects() {
     return [
-      // Exemples : décommenter si nécessaire
-      // { source: "/services-old", destination: "/services", permanent: true },
+      // Ancien slug service → nouveau slug
+      {
+        source: "/services/agence-marketing-digital-casablanca",
+        destination: "/services/gestion-campagne-publicitaire",
+        permanent: true,
+      },
     ];
   },
 
