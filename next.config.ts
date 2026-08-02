@@ -96,8 +96,6 @@ const nextConfig: NextConfig = {
     serverActions: {
       bodySizeLimit: "6mb",
     },
-    // Lit le browserslist de package.json pour SWC → élimine les polyfills inutiles
-    browsersListForSwc: true,
   },
 
   // ── Compression ────────────────────────────────────────────────────────────
