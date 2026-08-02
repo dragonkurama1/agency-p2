@@ -98,6 +98,9 @@ const nextConfig: NextConfig = {
     },
   },
 
+  // ── Sécurité — masque la techno serveur ───────────────────────────────────
+  poweredByHeader: false,
+
   // ── Compression ────────────────────────────────────────────────────────────
   compress: true,
 

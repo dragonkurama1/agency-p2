@@ -61,7 +61,7 @@ export default async function HomePage() {
         <SectionHeading
           eyebrow="Nos services"
           title="Une agence digitale à Casablanca pensée pour les marques qui veulent grandir"
-          subtitle="Stratégie, contenu, publicité, web et data réunis dans une approche orientée résultats."
+          subtitle="Du SEO à la publicité, du branding au développement web — chaque service est conçu pour attirer vos prospects, engager votre audience et convertir vos visiteurs en clients."
         />
         <div className="mt-12">
           <ServicesGrid services={services} compact />
