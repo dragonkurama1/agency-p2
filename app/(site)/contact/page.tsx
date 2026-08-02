@@ -84,7 +84,7 @@ export default async function ContactPage() {
             <div className="overflow-hidden rounded-2xl border border-[var(--border)]" style={{ height: 320 }}>
               <iframe
                 title="Localisation Prestigia Agency — Casablanca"
-                src="https://maps.google.com/maps?q=33.5341135,-7.6125366&z=17&output=embed"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3323.5533808955406!2d-7.6125366!3d33.5341135!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xda62da17f9025e1%3A0xec275c050b84f450!2sPrestigia%20Agency!5e0!3m2!1sfr!2sma!4v1690000000000!5m2!1sfr!2sma"
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
