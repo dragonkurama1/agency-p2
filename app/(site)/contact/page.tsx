@@ -27,7 +27,6 @@ export default async function ContactPage() {
     getSetting("site_address", `${siteConfig.address.street}, ${siteConfig.address.district}`),
     getSetting("site_city", siteConfig.address.city),
   ]);
-  const mapQuery = encodeURIComponent(`${address}, ${city}`);
 
   return (
     <>
@@ -81,14 +80,28 @@ export default async function ContactPage() {
               </dl>
             </div>
 
-            <div className="aspect-[4/3] overflow-hidden rounded-2xl border border-[var(--border)]">
+            {/* Map — coordonnées exactes de la fiche Google Maps */}
+            <div className="overflow-hidden rounded-2xl border border-[var(--border)]" style={{ height: 320 }}>
               <iframe
                 title="Localisation Prestigia Agency — Casablanca"
-                src={`https://www.google.com/maps?q=${mapQuery}&output=embed`}
-                className="h-full w-full"
+                src="https://maps.google.com/maps?q=33.5341135,-7.6125366&z=17&output=embed"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
                 loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
               />
             </div>
+            <a
+              href="https://www.google.com/maps/place/Prestigia+Agency/@33.5341135,-7.6125366,17z"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-xs text-[var(--accent-gold)] hover:underline"
+            >
+              <MapPin className="size-3.5" aria-hidden="true" />
+              Voir sur Google Maps
+            </a>
           </address>
 
           <div className="rounded-2xl border border-[var(--border)] bg-[var(--muted)] p-6 sm:p-8">
