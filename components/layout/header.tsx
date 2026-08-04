@@ -5,35 +5,56 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { navLinks } from "@/lib/site-config";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export function Header() {
   const pathname = usePathname();
   const [open, setOpen] = React.useState(false);
+  const [scrolled, setScrolled] = React.useState(false);
+
+  React.useEffect(() => {
+    const handler = () => setScrolled(window.scrollY > 48);
+    handler();
+    window.addEventListener("scroll", handler, { passive: true });
+    return () => window.removeEventListener("scroll", handler);
+  }, []);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--background)]/90 backdrop-blur">
+    <header
+      className={cn(
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
+        scrolled
+          ? "bg-black/75 backdrop-blur-xl border-b border-[rgba(124,58,237,0.2)] shadow-[0_4px_40px_rgba(0,0,0,0.5)]"
+          : "bg-transparent border-b border-transparent"
+      )}
+    >
       <div className="container-px mx-auto flex h-20 max-w-7xl items-center justify-between">
-        <Link href="/" aria-label="Prestigia Agency — Accueil">
+
+        {/* Logo */}
+        <Link href="/" aria-label="Prestigia Agency — Accueil" className="flex-shrink-0">
           <Image
             src="/logo-prestigia.png"
-            alt="Prestigia Agency — Agence Marketing Digital Casablanca"
+            alt="Prestigia Agency"
             width={125}
             height={56}
             priority
-            className="h-12 w-auto"
+            className="h-11 w-auto"
           />
         </Link>
 
-        <nav className="hidden items-center gap-8 lg:flex">
+        {/* Nav desktop */}
+        <nav className="hidden items-center gap-8 lg:flex" aria-label="Navigation principale">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               className={cn(
-                "text-sm tracking-wide text-[var(--muted-foreground)] transition-colors hover:text-[var(--accent-gold)]",
-                pathname === link.href && "text-[var(--accent-gold)]"
+                "relative text-sm tracking-wide transition-colors duration-200",
+                "after:absolute after:-bottom-0.5 after:left-0 after:h-px",
+                "after:bg-[#7C3AED] after:transition-all after:duration-300",
+                pathname === link.href
+                  ? "text-[#7C3AED] after:w-full"
+                  : "text-white/65 hover:text-white after:w-0 hover:after:w-full"
               )}
             >
               {link.label}
@@ -41,28 +62,53 @@ export function Header() {
           ))}
         </nav>
 
+        {/* CTA desktop */}
         <div className="hidden lg:block">
-          <Button asChild size="sm">
-            <Link href="/devis">Demander un devis</Link>
-          </Button>
+          <Link
+            href="/devis"
+            className="inline-flex items-center rounded-full bg-[#7C3AED] px-6 py-2.5 text-sm font-semibold text-white tracking-wide transition-all duration-300 hover:bg-[#8b5cf6] hover:shadow-[0_0_30px_rgba(124,58,237,0.5)] hover:-translate-y-0.5 active:translate-y-0"
+          >
+            Demander un devis
+          </Link>
         </div>
 
-        <button aria-label="Menu" className="lg:hidden" onClick={() => setOpen(!open)}>
+        {/* Burger mobile */}
+        <button
+          aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
+          aria-expanded={open}
+          className="lg:hidden p-1 text-white/80 hover:text-white transition-colors"
+          onClick={() => setOpen(!open)}
+        >
           {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
       </div>
 
+      {/* Menu mobile */}
       {open && (
-        <div className="border-t border-[var(--border)] px-6 py-6 lg:hidden">
-          <nav className="flex flex-col gap-4">
+        <div className="border-t border-[rgba(124,58,237,0.2)] bg-black/90 backdrop-blur-xl px-6 py-6 lg:hidden">
+          <nav className="flex flex-col gap-4" aria-label="Navigation mobile">
             {navLinks.map((link) => (
-              <Link key={link.href} href={link.href} onClick={() => setOpen(false)} className="text-base text-[var(--foreground)]">
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setOpen(false)}
+                className={cn(
+                  "text-base tracking-wide transition-colors py-1",
+                  pathname === link.href
+                    ? "text-[#7C3AED] font-semibold"
+                    : "text-white/70 hover:text-white"
+                )}
+              >
                 {link.label}
               </Link>
             ))}
-            <Button asChild className="w-full">
-              <Link href="/devis" onClick={() => setOpen(false)}>Demander un devis</Link>
-            </Button>
+            <Link
+              href="/devis"
+              onClick={() => setOpen(false)}
+              className="mt-2 inline-flex items-center justify-center rounded-full bg-[#7C3AED] px-6 py-3 text-sm font-semibold text-white tracking-wide"
+            >
+              Demander un devis
+            </Link>
           </nav>
         </div>
       )}

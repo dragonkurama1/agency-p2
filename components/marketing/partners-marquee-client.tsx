@@ -2,128 +2,121 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { ExternalLink } from "lucide-react";
 import { normalizeImageUrl } from "@/lib/parse";
 import type { Partner } from "@/data/partners";
 
-/**
- * Technique bordure lumineuse animée :
- * 1. Div externe  → overflow:hidden + border-radius  (clippe tout)
- * 2. Div rotative → conic-gradient en dégradé violet, tourne en continu
- *    → seul le bord (1.5 px) est visible grâce à la div interne
- * 3. Div interne  → fond sombre, inset: 1.5px → crée l'illusion d'une bordure
- * 4. Image        → mix-blend-mode:screen pour neutraliser les fonds noirs
- */
 function PartnerCard({ partner }: { partner: Partner }) {
+  const hasLink = Boolean(partner.website);
+
   const card = (
-    /* ── Conteneur externe : clippe + hover ─────────────────────── */
     <div
-      className="
-        relative flex-shrink-0 rounded-2xl overflow-hidden
-        transition-all duration-400 ease-out
-        hover:scale-[1.07] hover:-translate-y-[3px]
-        cursor-pointer group
-      "
-      style={{ width: 172, height: 88 }}
+      className="group relative h-44 rounded-2xl overflow-hidden cursor-default transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_8px_48px_rgba(124,58,237,0.22)]"
+      style={{
+        background: "#200E3B",
+        border: "1px solid rgba(124,58,237,0.18)",
+      }}
     >
-      {/* ── Arc lumineux tournant ─────────────────────────────────── */}
-      <div
-        aria-hidden="true"
-        style={{
-          position: "absolute",
-          /* 250% × 250% centré → couvre tous les angles en rotation */
-          width: "250%",
-          height: "250%",
-          top: "-75%",
-          left: "-75%",
-          /* Arc violet étroit (~100°) sur fond transparent */
-          background: `conic-gradient(
-            from 0deg,
-            transparent       0deg,
-            transparent       55deg,
-            #4c1d95           75deg,
-            #6d28d9           90deg,
-            #7c3aed          100deg,
-            #8b5cf6          108deg,
-            #c4b5fd          115deg,
-            #8b5cf6          122deg,
-            #7c3aed          130deg,
-            #6d28d9          145deg,
-            #4c1d95          160deg,
-            transparent      175deg,
-            transparent      360deg
-          )`,
-          animation: "border-spin 4s linear infinite",
-        }}
-      />
-
-      {/* ── Fond sombre intérieur : laisse 1.5 px de bordure visible ─ */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 1.5,
-          borderRadius: 14, /* légèrement moins que rounded-2xl (16px) */
-          background: "linear-gradient(145deg, #252529 0%, #1b1b1e 100%)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          overflow: "hidden",
-        }}
-      >
-        {/* Reflet haut */}
-        <div
-          aria-hidden="true"
-          style={{
-            position: "absolute",
-            inset: 0,
-            top: 0,
-            height: "40%",
-            background:
-              "linear-gradient(to bottom, rgba(255,255,255,0.04), transparent)",
-            pointerEvents: "none",
-          }}
-        />
-
+      {/* ── État par défaut : logo centré ───────────────────────────── */}
+      <div className="absolute inset-0 flex items-center justify-center transition-all duration-500 group-hover:opacity-0 group-hover:scale-90">
         {partner.logo_url ? (
           <Image
             src={normalizeImageUrl(partner.logo_url)}
-            alt={partner.name}
-            width={144}
-            height={58}
-            sizes="144px"
-            quality={85}
-            className="
-              relative z-10
-              w-auto max-w-[136px] h-[52px] object-contain
-              transition-all duration-400
-              group-hover:scale-110
-            "
+            alt={`Logo ${partner.name}`}
+            width={160}
+            height={64}
+            sizes="160px"
+            quality={90}
+            className="max-w-[70%] max-h-16 w-auto object-contain"
             style={{ mixBlendMode: "screen" }}
-            draggable={false}
           />
         ) : (
-          <span className="relative z-10 font-serif text-sm font-medium tracking-wider text-white/75 text-center leading-tight px-4 transition-colors duration-300 group-hover:text-white">
+          <span className="font-serif text-xl uppercase text-white/50 text-center px-4">
             {partner.name}
           </span>
         )}
       </div>
+
+      {/* ── État hover : panneau d'info ─────────────────────────────── */}
+      <div
+        className="absolute inset-0 flex flex-col justify-between p-5 opacity-0 translate-y-3 transition-all duration-400 ease-out group-hover:opacity-100 group-hover:translate-y-0"
+        style={{
+          background: "linear-gradient(145deg, #160830 0%, #200E3B 100%)",
+        }}
+      >
+        {/* Logo petit en haut */}
+        {partner.logo_url && (
+          <div className="flex items-start">
+            <Image
+              src={normalizeImageUrl(partner.logo_url)}
+              alt={`Logo ${partner.name}`}
+              width={80}
+              height={28}
+              sizes="80px"
+              quality={90}
+              className="max-w-[48%] max-h-7 w-auto object-contain"
+              style={{ mixBlendMode: "screen" }}
+            />
+          </div>
+        )}
+
+        {/* Infos bas */}
+        <div>
+          <p className="font-serif text-lg uppercase text-white leading-tight mb-1">
+            {partner.name}
+          </p>
+          {partner.description && (
+            <p className="text-[11px] text-white/50 leading-relaxed mb-3 line-clamp-2">
+              {partner.description}
+            </p>
+          )}
+          {hasLink ? (
+            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#7C3AED] hover:text-[#a78bfa] transition-colors">
+              Voir le projet <ExternalLink className="size-3" />
+            </span>
+          ) : (
+            <span className="text-[11px] text-[#7C3AED]/40 font-medium tracking-wide">
+              Client Prestigia
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* ── Bordure glow au hover ───────────────────────────────────── */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-transparent transition-all duration-500 group-hover:ring-[#7C3AED]/45"
+      />
     </div>
   );
 
-  return partner.website ? (
+  return hasLink ? (
     <Link
       href={partner.website}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label={`Visiter le site de ${partner.name}`}
+      aria-label={`Voir le projet ${partner.name}`}
     >
       {card}
     </Link>
   ) : (
-    <div role="img" aria-label={partner.name}>{card}</div>
+    <div role="img" aria-label={partner.name}>
+      {card}
+    </div>
   );
 }
 
+export function PartnersGrid({ partners }: { partners: Partner[] }) {
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+      {partners.map((partner) => (
+        <PartnerCard key={partner.id} partner={partner} />
+      ))}
+    </div>
+  );
+}
+
+/* ── Ancien marquee conservé pour compatibilité (non utilisé) ─────────────── */
 export function PartnersMarqueeInner({
   partners,
   duration,
@@ -131,57 +124,5 @@ export function PartnersMarqueeInner({
   partners: Partner[];
   duration: number;
 }) {
-  const [paused, setPaused] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-
-  function pause() {
-    clearTimeout(timerRef.current);
-    setPaused(true);
-  }
-  function resume() {
-    clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => setPaused(false), 500);
-  }
-
-  /* ── Track seamless ─────────────────────────────────────────── */
-  const cardWidth = 204; // 172px carte + 32px gap
-  const targetWidth = 5000;
-  const copiesNeeded = Math.max(
-    4,
-    Math.ceil(targetWidth / (partners.length * cardWidth))
-  );
-  const totalCopies = copiesNeeded % 2 === 0 ? copiesNeeded : copiesNeeded + 1;
-  const half = Array.from({ length: totalCopies / 2 }, () => partners).flat();
-  const track = [...half, ...half];
-
-  return (
-    <div
-      className="relative overflow-hidden"
-      style={{
-        maskImage:
-          "linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)",
-        WebkitMaskImage:
-          "linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)",
-      }}
-      onMouseEnter={pause}
-      onMouseLeave={resume}
-      onTouchStart={pause}
-      onTouchEnd={resume}
-    >
-      <div
-        className="flex items-center gap-8 w-max px-4"
-        style={{
-          animation: `marquee ${duration}s linear infinite`,
-          animationPlayState: paused ? "paused" : "running",
-          willChange: "transform",
-          WebkitBackfaceVisibility: "hidden",
-        } as React.CSSProperties}
-        aria-hidden="true"
-      >
-        {track.map((partner, i) => (
-          <PartnerCard key={`${partner.id}-${i}`} partner={partner} />
-        ))}
-      </div>
-    </div>
-  );
+  return <PartnersGrid partners={partners} />;
 }

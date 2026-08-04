@@ -1,21 +1,23 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Fraunces } from "next/font/google";
+import { Bebas_Neue, Montserrat } from "next/font/google";
 import "./globals.css";
 import { OrganizationJsonLd } from "@/components/seo/json-ld";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
 import { siteConfig } from "@/lib/site-config";
 
 // ── Polices ───────────────────────────────────────────────────────────────────
-// display: "swap" garantit un texte lisible pendant le chargement (LCP / CLS).
-const inter = Inter({
-  variable: "--font-inter",
+// Bebas Neue = équivalent libre de Coolvetica (condensé, impactant, display)
+// Montserrat = corps de texte, menus, boutons (lisible, moderne)
+const bebasNeue = Bebas_Neue({
+  variable: "--font-bebas",
   subsets: ["latin"],
+  weight: "400",
   display: "swap",
   preload: true,
 });
 
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
   subsets: ["latin"],
   display: "swap",
   preload: true,
@@ -115,7 +117,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="fr"
-      className={`${inter.variable} ${fraunces.variable} h-full antialiased`}
+      className={`${bebasNeue.variable} ${montserrat.variable} h-full antialiased`}
     >
       <head>
         {/* next/font auto-héberge les polices — pas besoin de préconnexions Google Fonts */}
@@ -129,6 +131,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {children}
         {/* GA4 — chargé après hydratation, production uniquement */}
         <GoogleAnalytics />
+        {/* Scroll reveal — observe .reveal et ajoute .visible au scroll */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var io=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target);}});},{threshold:0.12});document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});})();`,
+          }}
+        />
       </body>
     </html>
   );
