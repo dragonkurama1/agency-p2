@@ -28,8 +28,16 @@ export function Header() {
           : "bg-transparent border-b border-transparent"
       )}
     >
-      <div className="container-px mx-auto flex h-20 max-w-7xl items-center">
-
+      {/* Container aligné sur le même gabarit que le hero : 1600px / 70px */}
+      <div
+        className="mx-auto flex w-full items-center justify-between"
+        style={{
+          maxWidth: "1600px",
+          paddingLeft: "70px",
+          paddingRight: "70px",
+          height: "80px",
+        }}
+      >
         {/* Logo — extrême gauche */}
         <Link href="/" aria-label="Prestigia Agency — Accueil" className="flex-shrink-0">
           <Image
@@ -42,8 +50,12 @@ export function Header() {
           />
         </Link>
 
-        {/* Nav desktop — poussée à droite avec ml-auto */}
-        <nav className="hidden items-center gap-8 lg:flex ml-auto" aria-label="Navigation principale">
+        {/* Nav desktop — côté droit */}
+        <nav
+          className="hidden items-center lg:flex"
+          style={{ gap: "48px" }}
+          aria-label="Navigation principale"
+        >
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -66,7 +78,7 @@ export function Header() {
         <button
           aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
           aria-expanded={open}
-          className="lg:hidden p-1 ml-auto text-white/80 hover:text-white transition-colors"
+          className="lg:hidden p-1 text-white/80 hover:text-white transition-colors"
           onClick={() => setOpen(!open)}
         >
           {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
