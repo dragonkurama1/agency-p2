@@ -8,7 +8,6 @@ export async function PartnersMarquee() {
   return (
     <section
       className="py-24"
-      style={{ background: "#050505" }}
       aria-label="Nos clients et partenaires"
     >
       <div className="container-px mx-auto max-w-7xl">

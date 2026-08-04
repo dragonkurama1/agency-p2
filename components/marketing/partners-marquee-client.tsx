@@ -3,22 +3,35 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ExternalLink } from "lucide-react";
+import { useState } from "react";
 import { normalizeImageUrl } from "@/lib/parse";
 import type { Partner } from "@/data/partners";
 
 function PartnerCard({ partner }: { partner: Partner }) {
   const hasLink = Boolean(partner.website);
+  const [open, setOpen] = useState(false);
 
-  const card = (
+  return (
     <div
-      className="group relative h-44 rounded-2xl overflow-hidden cursor-default transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_8px_48px_rgba(124,58,237,0.22)]"
+      className="group relative h-44 rounded-2xl overflow-hidden cursor-pointer transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_8px_48px_rgba(124,58,237,0.28)]"
       style={{
-        background: "#200E3B",
-        border: "1px solid rgba(124,58,237,0.18)",
+        background: "rgba(8,6,20,0.45)",
+        backdropFilter: "blur(18px)",
+        WebkitBackdropFilter: "blur(18px)",
+        border: "1px solid rgba(140,82,255,0.18)",
+        boxShadow: "0 20px 60px rgba(0,0,0,0.4)",
       }}
+      onClick={() => setOpen((v) => !v)}
+      role="button"
+      aria-expanded={open}
+      aria-label={`${partner.name}${hasLink ? " — cliquer pour voir les infos" : ""}`}
     >
       {/* ── État par défaut : logo centré ───────────────────────────── */}
-      <div className="absolute inset-0 flex items-center justify-center transition-all duration-500 group-hover:opacity-0 group-hover:scale-90">
+      <div
+        className={`absolute inset-0 flex items-center justify-center transition-all duration-500 group-hover:opacity-0 group-hover:scale-90${
+          open ? " opacity-0 scale-90" : ""
+        }`}
+      >
         {partner.logo_url ? (
           <Image
             src={normalizeImageUrl(partner.logo_url)}
@@ -37,11 +50,16 @@ function PartnerCard({ partner }: { partner: Partner }) {
         )}
       </div>
 
-      {/* ── État hover : panneau d'info ─────────────────────────────── */}
+      {/* ── État hover/tap : panneau d'info ─────────────────────────── */}
       <div
-        className="absolute inset-0 flex flex-col justify-between p-5 opacity-0 translate-y-3 transition-all duration-400 ease-out group-hover:opacity-100 group-hover:translate-y-0"
+        className={`absolute inset-0 flex flex-col justify-between p-5 transition-all duration-400 ease-out group-hover:opacity-100 group-hover:translate-y-0${
+          open ? " opacity-100 translate-y-0" : " opacity-0 translate-y-3"
+        }`}
         style={{
-          background: "linear-gradient(145deg, #160830 0%, #200E3B 100%)",
+          background:
+            "linear-gradient(145deg, rgba(12,5,30,0.88) 0%, rgba(20,10,42,0.92) 100%)",
+          backdropFilter: "blur(24px)",
+          WebkitBackdropFilter: "blur(24px)",
         }}
       >
         {/* Logo petit en haut */}
@@ -66,42 +84,36 @@ function PartnerCard({ partner }: { partner: Partner }) {
             {partner.name}
           </p>
           {partner.description && (
-            <p className="text-[11px] text-white/50 leading-relaxed mb-3 line-clamp-2">
+            <p className="font-sans text-[11px] text-white/50 leading-relaxed mb-3 line-clamp-2">
               {partner.description}
             </p>
           )}
           {hasLink ? (
-            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#7C3AED] hover:text-[#a78bfa] transition-colors">
+            /* Lien explicite — stopPropagation pour ne pas toggler la carte */
+            <Link
+              href={partner.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#7C3AED] hover:text-[#a78bfa] transition-colors"
+            >
               Voir le projet <ExternalLink className="size-3" />
-            </span>
+            </Link>
           ) : (
-            <span className="text-[11px] text-[#7C3AED]/40 font-medium tracking-wide">
+            <span className="font-sans text-[11px] text-[#7C3AED]/40 font-medium tracking-wide">
               Client Prestigia
             </span>
           )}
         </div>
       </div>
 
-      {/* ── Bordure glow au hover ───────────────────────────────────── */}
+      {/* ── Bordure glow au hover/tap ───────────────────────────────── */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-transparent transition-all duration-500 group-hover:ring-[#7C3AED]/45"
+        className={`pointer-events-none absolute inset-0 rounded-2xl ring-1 transition-all duration-500 group-hover:ring-[#7C3AED]/45${
+          open ? " ring-[#7C3AED]/45" : " ring-transparent"
+        }`}
       />
-    </div>
-  );
-
-  return hasLink ? (
-    <Link
-      href={partner.website}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label={`Voir le projet ${partner.name}`}
-    >
-      {card}
-    </Link>
-  ) : (
-    <div role="img" aria-label={partner.name}>
-      {card}
     </div>
   );
 }

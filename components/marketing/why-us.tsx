@@ -51,7 +51,7 @@ export function WhyUs() {
             <p.icon className="size-5 text-[var(--accent-gold)] icon-halo" />
           </div>
 
-          <h3 className="font-semibold text-white mb-2">{p.title}</h3>
+          <h3 className="font-serif text-xl uppercase text-white mb-2">{p.title}</h3>
           <p className="text-sm text-[var(--muted-foreground)] leading-relaxed">{p.description}</p>
         </div>
       ))}

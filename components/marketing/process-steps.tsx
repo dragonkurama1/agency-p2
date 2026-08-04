@@ -39,7 +39,7 @@ export function ProcessSteps() {
             )}
           </div>
 
-          <h3 className="font-semibold text-white mb-2">{step.title}</h3>
+          <h3 className="font-serif text-xl uppercase text-white mb-2">{step.title}</h3>
           <p className="text-sm text-[var(--muted-foreground)] leading-relaxed">{step.description}</p>
         </div>
       ))}
