@@ -78,13 +78,15 @@ export function Hero({ section }: { section?: SectionContent | null }) {
         {/* Bloc texte — assez large pour accueillir les 3 lignes */}
         <div style={{ maxWidth: "1060px" }}>
 
-          {/* Eyebrow */}
+          {/* Eyebrow — Montserrat Regular */}
           <motion.p
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
-            className="font-semibold uppercase text-[#7C3AED]"
+            className="uppercase text-[#7C3AED]"
             style={{
+              fontFamily: "var(--font-montserrat)",
+              fontWeight: 400,
               fontSize: "11px",
               letterSpacing: "0.45em",
               marginBottom: "20px",
@@ -93,15 +95,16 @@ export function Hero({ section }: { section?: SectionContent | null }) {
             {DEFAULTS.eyebrow}
           </motion.p>
 
-          {/* H1 — 3 lignes précises : "une" / "qui attire," / "engage et convertit." */}
+          {/* H1 — Coolvetica (Bebas Neue) */}
           <motion.h1
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.75, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
-            className="font-serif uppercase text-white"
+            className="uppercase text-white"
             style={{
+              fontFamily: "var(--font-bebas)",
+              fontWeight: 400,
               fontSize: "clamp(58px, 5vw, 88px)",
-              fontWeight: 900,
               lineHeight: 0.95,
               letterSpacing: "-2px",
             }}
@@ -119,13 +122,15 @@ export function Hero({ section }: { section?: SectionContent | null }) {
             engage et convertit.
           </motion.h1>
 
-          {/* Sous-titre */}
+          {/* Sous-titre — Montserrat Regular */}
           <motion.p
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.65, delay: 0.15, ease: "easeOut" }}
             className="text-white/65"
             style={{
+              fontFamily: "var(--font-montserrat)",
+              fontWeight: 400,
               fontSize: "17px",
               lineHeight: 1.4,
               marginTop: "28px",
