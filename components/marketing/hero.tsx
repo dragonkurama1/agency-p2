@@ -41,7 +41,7 @@ export function Hero({ section }: { section?: SectionContent | null }) {
         <div
           className="absolute inset-0 scale-[1.15]"
           style={{
-            backgroundImage: "url('/hero-bg.jpg')",
+            backgroundImage: "url('/hero-bg.WEBP')",
             backgroundSize: "cover",
             /* planet visible dès le haut du hero, côté droit */
             backgroundPosition: "right top",
@@ -62,112 +62,140 @@ export function Hero({ section }: { section?: SectionContent | null }) {
         style={{ background: "rgba(124,58,237,0.12)" }}
       />
 
-      {/* ── Contenu principal ────────────────────────────────────────────── */}
+      {/* ── Contenu principal — pleine largeur, layout 2 colonnes ──────── */}
       <motion.div
         className="relative z-10 w-full"
         style={{
           y: contentY,
-          maxWidth: "1600px",
-          margin: "0 auto",
-          paddingLeft: "70px",
-          paddingRight: "70px",
+          paddingLeft: "clamp(24px, 3vw, 56px)",
+          paddingRight: "clamp(24px, 3vw, 56px)",
           paddingTop: "140px",
-          paddingBottom: "80px",
+          paddingBottom: "64px",
         }}
       >
-        {/* Bloc texte — assez large pour accueillir les 3 lignes */}
-        <div style={{ maxWidth: "1060px" }}>
+        {/* Flex row : texte gauche | boutons droite (bottom-aligned) */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "flex-end",
+            justifyContent: "space-between",
+            gap: "48px",
+            flexWrap: "wrap",
+          }}
+        >
+          {/* ── Colonne gauche : eyebrow + H1 + sous-titre ─────────────── */}
+          <div style={{ flex: "1 1 auto", minWidth: 0 }}>
 
-          {/* Eyebrow — Montserrat Regular */}
-          <motion.p
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
-            className="uppercase text-[#7C3AED]"
-            style={{
-              fontFamily: "var(--font-montserrat)",
-              fontWeight: 400,
-              fontSize: "11px",
-              letterSpacing: "0.45em",
-              marginBottom: "20px",
-            }}
-          >
-            {DEFAULTS.eyebrow}
-          </motion.p>
+            {/* Eyebrow — Montserrat Regular */}
+            <motion.p
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              className="uppercase text-[#7C3AED]"
+              style={{
+                fontFamily: "var(--font-montserrat)",
+                fontWeight: 400,
+                fontSize: "11px",
+                letterSpacing: "0.45em",
+                marginBottom: "20px",
+              }}
+            >
+              {DEFAULTS.eyebrow}
+            </motion.p>
 
-          {/* H1 — Coolvetica (Bebas Neue) */}
-          <motion.h1
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.75, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
-            className="uppercase text-white"
-            style={{
-              fontFamily: "var(--font-bebas)",
-              fontWeight: 400,
-              fontSize: "clamp(58px, 5vw, 88px)",
-              lineHeight: 0.95,
-              letterSpacing: "-2px",
-            }}
-          >
-            {/* Ligne 1 : NOUS CONSTRUISONS UNE */}
-            Nous construisons une
-            <br className="hidden lg:block" />
-            {" "}
-            {/* Ligne 2 : PRÉSENCE DIGITALE QUI ATTIRE, */}
-            <span style={{ color: "#7C3AED" }}>présence digitale</span>{" "}
-            qui attire,
-            <br className="hidden lg:block" />
-            {" "}
-            {/* Ligne 3 : ENGAGE ET CONVERTIT. */}
-            engage et convertit.
-          </motion.h1>
+            {/* H1 — Coolvetica (Bebas Neue) */}
+            <motion.h1
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.75, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
+              className="uppercase text-white"
+              style={{
+                fontFamily: "var(--font-bebas)",
+                fontWeight: 400,
+                fontSize: "clamp(52px, 5.5vw, 92px)",
+                lineHeight: 0.95,
+                letterSpacing: "-2px",
+              }}
+            >
+              Nous construisons une
+              <br className="hidden lg:block" />
+              {" "}
+              <span style={{ color: "#7C3AED" }}>présence digitale</span>{" "}
+              qui attire,
+              <br className="hidden lg:block" />
+              {" "}
+              engage et convertit.
+            </motion.h1>
 
-          {/* Sous-titre — Montserrat Regular */}
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.15, ease: "easeOut" }}
-            className="text-white/65"
-            style={{
-              fontFamily: "var(--font-montserrat)",
-              fontWeight: 400,
-              fontSize: "17px",
-              lineHeight: 1.4,
-              marginTop: "28px",
-              maxWidth: "640px",
-            }}
-          >
-            {subtitle}
-          </motion.p>
+            {/* Sous-titre — Montserrat Regular */}
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.65, delay: 0.15, ease: "easeOut" }}
+              className="text-white/65"
+              style={{
+                fontFamily: "var(--font-montserrat)",
+                fontWeight: 400,
+                fontSize: "17px",
+                lineHeight: 1.4,
+                marginTop: "28px",
+                maxWidth: "580px",
+              }}
+            >
+              {subtitle}
+            </motion.p>
 
-          {/* ── Boutons — juste sous le paragraphe ──────────────────────── */}
+            {/* Boutons — mobile uniquement (visibles < lg) */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.65, delay: 0.25, ease: "easeOut" }}
+              className="flex lg:hidden"
+              style={{ marginTop: "36px", gap: "16px", flexWrap: "wrap" }}
+            >
+              <Link
+                href={ctaHref}
+                className="group inline-flex items-center gap-2 rounded-full bg-[#7C3AED] text-white font-normal tracking-wide transition-all duration-300 hover:bg-[#8b5cf6] hover:shadow-[0_0_44px_rgba(124,58,237,0.55)] hover:-translate-y-0.5 active:translate-y-0"
+                style={{ padding: "13px 28px", fontSize: "14px" }}
+              >
+                {ctaText}
+                <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
+              </Link>
+              <Link
+                href={DEFAULTS.cta2Href}
+                className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/5 text-white font-normal tracking-wide backdrop-blur-sm transition-all duration-300 hover:border-[#7C3AED]/60 hover:bg-[#7C3AED]/10 hover:-translate-y-0.5 active:translate-y-0"
+                style={{ padding: "13px 28px", fontSize: "14px" }}
+              >
+                {DEFAULTS.cta2Text}
+              </Link>
+            </motion.div>
+          </div>
+
+          {/* ── Colonne droite : boutons desktop (bottom-right) ─────────── */}
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.25, ease: "easeOut" }}
+            transition={{ duration: 0.65, delay: 0.3, ease: "easeOut" }}
+            className="hidden lg:flex"
             style={{
-              marginTop: "42px",
-              display: "flex",
-              alignItems: "center",
-              gap: "24px",
-              flexWrap: "wrap",
+              flexDirection: "column",
+              gap: "16px",
+              flexShrink: 0,
+              alignItems: "flex-end",
             }}
           >
-            {/* Bouton principal */}
             <Link
               href={ctaHref}
               className="group inline-flex items-center gap-2 rounded-full bg-[#7C3AED] text-white font-normal tracking-wide transition-all duration-300 hover:bg-[#8b5cf6] hover:shadow-[0_0_44px_rgba(124,58,237,0.55)] hover:-translate-y-0.5 active:translate-y-0"
-              style={{ padding: "14px 32px", fontSize: "14px" }}
+              style={{ padding: "14px 36px", fontSize: "15px", whiteSpace: "nowrap" }}
             >
               {ctaText}
               <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
-
-            {/* Bouton secondaire */}
             <Link
               href={DEFAULTS.cta2Href}
               className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/5 text-white font-normal tracking-wide backdrop-blur-sm transition-all duration-300 hover:border-[#7C3AED]/60 hover:bg-[#7C3AED]/10 hover:-translate-y-0.5 active:translate-y-0"
-              style={{ padding: "14px 32px", fontSize: "14px" }}
+              style={{ padding: "14px 36px", fontSize: "15px", whiteSpace: "nowrap" }}
             >
               {DEFAULTS.cta2Text}
             </Link>
