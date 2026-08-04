@@ -20,8 +20,7 @@ export function Hero({ section }: { section?: SectionContent | null }) {
     target: ref,
     offset: ["start start", "end start"],
   });
-  /* Parallax : fond descend légèrement au scroll */
-  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "18%"]);
+  /* Léger parallax sur le contenu texte */
   const contentY = useTransform(scrollYProgress, [0, 1], ["0%", "8%"]);
 
   const subtitle =
@@ -36,19 +35,8 @@ export function Hero({ section }: { section?: SectionContent | null }) {
       className="relative -mt-20 min-h-screen overflow-hidden flex items-center"
       aria-label="Héro — Prestigia Agency"
     >
-      {/* ── Fond spatial avec parallax ───────────────────────────────────── */}
-      <motion.div className="absolute inset-0 -z-10" style={{ y: bgY }}>
-        <div
-          className="absolute inset-0 scale-[1.15]"
-          style={{
-            backgroundImage: "url('/hero-bg.WEBP')",
-            backgroundSize: "cover",
-            /* planet visible dès le haut du hero, côté droit */
-            backgroundPosition: "right top",
-            backgroundRepeat: "no-repeat",
-          }}
-        />
-      </motion.div>
+      {/* ── Le fond spatial vient du #space-bg fixe global (space-background.jpg) */}
+      {/* La planète est rendue via le canvas rotatif dans SpaceBackground        */}
 
       {/* ── Overlays ─────────────────────────────────────────────────────── */}
       {/* Gradient gauche pour lisibilité du texte */}
