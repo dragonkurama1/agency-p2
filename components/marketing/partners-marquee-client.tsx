@@ -95,7 +95,7 @@ function PartnerCard({ partner }: { partner: Partner }) {
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#7C3AED] hover:text-[#a78bfa] transition-colors"
+              className="inline-flex items-center gap-1 text-[11px] font-normal text-[#7C3AED] hover:text-[#a78bfa] transition-colors"
             >
               Voir le projet <ExternalLink className="size-3" />
             </Link>

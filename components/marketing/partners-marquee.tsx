@@ -21,7 +21,7 @@ export async function PartnersMarquee() {
                 "linear-gradient(to right, transparent, rgba(124,58,237,0.35))",
             }}
           />
-          <p className="whitespace-nowrap text-[10px] font-semibold uppercase tracking-[0.5em] text-white/35">
+          <p className="whitespace-nowrap text-[10px] font-normal uppercase tracking-[0.5em] text-white/35">
             Ils nous font confiance
           </p>
           <div

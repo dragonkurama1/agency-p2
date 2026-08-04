@@ -112,7 +112,7 @@ export async function Footer() {
 
           {/* Navigation */}
           <nav aria-label="Navigation principale">
-            <p className="text-sm font-semibold text-white mb-4 tracking-wide">Navigation</p>
+            <p className="text-sm font-normal text-white mb-4 tracking-wide">Navigation</p>
             <ul className="space-y-2.5">
               {navLinks.map((l) => (
                 <li key={l.href}>
@@ -126,7 +126,7 @@ export async function Footer() {
 
           {/* Contact */}
           <address className="not-italic">
-            <p className="text-sm font-semibold text-white mb-4 tracking-wide">Contact</p>
+            <p className="text-sm font-normal text-white mb-4 tracking-wide">Contact</p>
             <ul className="space-y-2.5 text-sm text-[var(--muted-foreground)]">
               <li>
                 <Link href={`tel:${phone}`} className="hover:text-[var(--accent-gold-text)] transition-colors duration-200" aria-label={`Appeler au ${phoneDisplay}`}>
@@ -144,10 +144,10 @@ export async function Footer() {
 
           {/* CTA */}
           <div>
-            <p className="text-sm font-semibold text-white mb-4 tracking-wide">
+            <p className="text-sm font-normal text-white mb-4 tracking-wide">
               Prêt à transformer votre présence digitale ?
             </p>
-            <Link href="/devis" className="footer-cta-btn inline-flex items-center rounded-full font-semibold text-white text-sm tracking-wide transition-all duration-300 hover:-translate-y-0.5">
+            <Link href="/devis" className="footer-cta-btn inline-flex items-center rounded-full font-normal text-white text-sm tracking-wide transition-all duration-300 hover:-translate-y-0.5">
               Demander un devis
             </Link>
           </div>

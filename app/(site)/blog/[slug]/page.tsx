@@ -221,7 +221,7 @@ export default async function BlogPostPage({ params }: Props) {
             className="mt-10 rounded-xl border border-[var(--border)] bg-[var(--muted)] p-5"
             aria-label="Sommaire de l'article"
           >
-            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--accent-gold-text)] mb-3">
+            <p className="text-xs font-normal uppercase tracking-wide text-[var(--accent-gold-text)] mb-3">
               Sommaire
             </p>
             <ul className="space-y-1.5 text-sm list-none p-0">

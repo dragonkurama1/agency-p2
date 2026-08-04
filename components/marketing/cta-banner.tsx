@@ -61,7 +61,7 @@ export function CtaBanner({
           {/* Bouton — hover géré par CSS uniquement, compatible Server Component */}
           <Link
             href={href}
-            className="cta-btn group mt-10 inline-flex items-center gap-2 rounded-full text-white font-semibold tracking-wide transition-all duration-300 hover:-translate-y-0.5"
+            className="cta-btn group mt-10 inline-flex items-center gap-2 rounded-full text-white font-normal tracking-wide transition-all duration-300 hover:-translate-y-0.5"
           >
             {cta}
             <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />

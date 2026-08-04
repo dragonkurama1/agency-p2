@@ -89,7 +89,7 @@ export function PortfolioGrid({
               {/* Featured badge */}
               {project.featured && (
                 <div className="absolute top-3 right-3">
-                  <span className="inline-flex items-center gap-1 rounded-full bg-[var(--accent-gold)] px-3 py-1 text-[11px] font-semibold text-white">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-[var(--accent-gold)] px-3 py-1 text-[11px] font-normal text-white">
                     ✦ Vedette
                   </span>
                 </div>
@@ -98,7 +98,7 @@ export function PortfolioGrid({
 
             {/* Contenu */}
             <div className="p-6 flex flex-col flex-1">
-              <p className="text-xs font-semibold uppercase tracking-widest text-[var(--accent-gold-text)]">
+              <p className="text-xs font-normal uppercase tracking-widest text-[var(--accent-gold-text)]">
                 {project.category}
               </p>
               <h3 className="mt-2 font-serif text-xl leading-snug group-hover:text-[var(--accent-gold)] transition-colors">

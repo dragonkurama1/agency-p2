@@ -43,7 +43,7 @@ export function ServicesGrid({ services, compact = false }: { services: Service[
             <p className="text-sm text-[var(--muted-foreground)] leading-relaxed">
               {service.short_description}
             </p>
-            <span className="mt-5 inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--accent-gold-text)] opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-1 group-hover:translate-y-0">
+            <span className="mt-5 inline-flex items-center gap-1.5 text-xs font-normal text-[var(--accent-gold-text)] opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-1 group-hover:translate-y-0">
               En savoir plus <ArrowUpRight className="size-3.5" />
             </span>
           </Link>

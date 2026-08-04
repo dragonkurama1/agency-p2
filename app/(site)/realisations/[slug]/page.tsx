@@ -111,7 +111,7 @@ export default async function ProjectDetailPage({ params }: Props) {
           {/* ── Colonne principale ──────────────────────────────────────── */}
           <div>
             {/* En-tête */}
-            <span className="text-xs font-semibold uppercase tracking-widest text-[var(--accent-gold-text)]">
+            <span className="text-xs font-normal uppercase tracking-widest text-[var(--accent-gold-text)]">
               {project.sector}
             </span>
             <h1 className="mt-3 font-serif text-4xl sm:text-5xl leading-tight">
@@ -136,7 +136,7 @@ export default async function ProjectDetailPage({ params }: Props) {
                     key={card.label}
                     className="rounded-2xl border border-[var(--border)] bg-[var(--muted)] p-6"
                   >
-                    <p className="text-xs font-semibold uppercase tracking-widest text-[var(--accent-gold-text)] mb-3">
+                    <p className="text-xs font-normal uppercase tracking-widest text-[var(--accent-gold-text)] mb-3">
                       {card.label}
                     </p>
                     <p className="text-sm leading-relaxed">{card.content}</p>
@@ -252,14 +252,14 @@ export default async function ProjectDetailPage({ params }: Props) {
             {/* Infos */}
             <div className="rounded-2xl border border-[var(--border)] bg-[var(--muted)] p-6 space-y-5">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-widest text-[var(--accent-gold-text)] mb-1">
+                <p className="text-xs font-normal uppercase tracking-widest text-[var(--accent-gold-text)] mb-1">
                   Client
                 </p>
                 <p className="font-medium">{project.client_name}</p>
               </div>
               <div className="border-t border-[var(--border)]" />
               <div>
-                <p className="text-xs font-semibold uppercase tracking-widest text-[var(--accent-gold-text)] mb-1">
+                <p className="text-xs font-normal uppercase tracking-widest text-[var(--accent-gold-text)] mb-1">
                   Secteur
                 </p>
                 <p className="font-medium">{project.sector}</p>
@@ -267,7 +267,7 @@ export default async function ProjectDetailPage({ params }: Props) {
               <div className="border-t border-[var(--border)]" />
               {project.services.length > 0 && (
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-widest text-[var(--accent-gold-text)] mb-3">
+                  <p className="text-xs font-normal uppercase tracking-widest text-[var(--accent-gold-text)] mb-3">
                     Services
                   </p>
                   <ul className="space-y-2">
@@ -285,7 +285,7 @@ export default async function ProjectDetailPage({ params }: Props) {
             {/* CTA contact */}
             <Link
               href="/contact"
-              className="block w-full text-center rounded-2xl bg-[var(--accent-gold)] text-white font-semibold py-4 px-6 transition-all duration-200 hover:bg-[var(--accent-gold-hover)] hover:shadow-[0_0_24px_var(--accent-gold)/40]"
+              className="block w-full text-center rounded-2xl bg-[var(--accent-gold)] text-white font-normal py-4 px-6 transition-all duration-200 hover:bg-[var(--accent-gold-hover)] hover:shadow-[0_0_24px_var(--accent-gold)/40]"
             >
               Un projet similaire ?
             </Link>

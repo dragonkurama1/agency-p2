@@ -20,7 +20,7 @@ export function Accordion({ items }: { items: { question: string; answer: string
             className="flex w-full items-center justify-between text-left px-6 py-5 group"
             aria-expanded={open === i}
           >
-            <span className="font-semibold text-white text-base pr-4 group-hover:text-[var(--accent-gold-text)] transition-colors duration-200">
+            <span className="font-normal text-white text-base pr-4 group-hover:text-[var(--accent-gold-text)] transition-colors duration-200">
               {item.question}
             </span>
             <ChevronDown

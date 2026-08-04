@@ -156,7 +156,7 @@ export function Hero({ section }: { section?: SectionContent | null }) {
             {/* Bouton principal */}
             <Link
               href={ctaHref}
-              className="group inline-flex items-center gap-2 rounded-full bg-[#7C3AED] text-white font-semibold tracking-wide transition-all duration-300 hover:bg-[#8b5cf6] hover:shadow-[0_0_44px_rgba(124,58,237,0.55)] hover:-translate-y-0.5 active:translate-y-0"
+              className="group inline-flex items-center gap-2 rounded-full bg-[#7C3AED] text-white font-normal tracking-wide transition-all duration-300 hover:bg-[#8b5cf6] hover:shadow-[0_0_44px_rgba(124,58,237,0.55)] hover:-translate-y-0.5 active:translate-y-0"
               style={{ padding: "14px 32px", fontSize: "14px" }}
             >
               {ctaText}
@@ -166,7 +166,7 @@ export function Hero({ section }: { section?: SectionContent | null }) {
             {/* Bouton secondaire */}
             <Link
               href={DEFAULTS.cta2Href}
-              className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/5 text-white font-semibold tracking-wide backdrop-blur-sm transition-all duration-300 hover:border-[#7C3AED]/60 hover:bg-[#7C3AED]/10 hover:-translate-y-0.5 active:translate-y-0"
+              className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/5 text-white font-normal tracking-wide backdrop-blur-sm transition-all duration-300 hover:border-[#7C3AED]/60 hover:bg-[#7C3AED]/10 hover:-translate-y-0.5 active:translate-y-0"
               style={{ padding: "14px 32px", fontSize: "14px" }}
             >
               {DEFAULTS.cta2Text}

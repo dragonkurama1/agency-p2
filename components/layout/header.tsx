@@ -97,7 +97,7 @@ export function Header() {
                 className={cn(
                   "text-base tracking-wide transition-colors py-1",
                   pathname === link.href
-                    ? "text-[#7C3AED] font-semibold"
+                    ? "text-[#7C3AED] font-normal"
                     : "text-white/70 hover:text-white"
                 )}
               >
@@ -107,7 +107,7 @@ export function Header() {
             <Link
               href="/devis"
               onClick={() => setOpen(false)}
-              className="mt-2 inline-flex items-center justify-center rounded-full bg-[#7C3AED] px-6 py-3 text-sm font-semibold text-white tracking-wide"
+              className="mt-2 inline-flex items-center justify-center rounded-full bg-[#7C3AED] px-6 py-3 text-sm font-normal text-white tracking-wide"
             >
               Demander un devis
             </Link>

@@ -69,7 +69,7 @@ function TestimonialCard({ t }: { t: Testimonial }) {
               border: "1px solid rgba(124,58,237,0.35)",
             }}
           >
-            <span className="text-sm font-semibold text-[var(--accent-gold-text)]">
+            <span className="text-sm font-normal text-[var(--accent-gold-text)]">
               {t.client_name.charAt(0).toUpperCase()}
             </span>
           </div>
