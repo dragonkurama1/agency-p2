@@ -247,10 +247,45 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   BOUTONS — glow & glass
+   BOUTONS — glow & glass (CSS pur, compatible Server Components)
    ═══════════════════════════════════════════════════════════════════════════ */
 .btn-glow:hover {
   box-shadow: 0 0 40px rgba(124, 58, 237, 0.6), 0 0 80px rgba(124, 58, 237, 0.2);
+}
+
+/* Bouton CTA Banner */
+.cta-btn {
+  background: linear-gradient(135deg, #7c3aed, #5b21b6);
+  padding: 14px 36px;
+  font-size: 15px;
+  box-shadow: 0 0 30px rgba(124, 58, 237, 0.4), 0 4px 24px rgba(0, 0, 0, 0.3);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+.cta-btn:hover {
+  box-shadow: 0 0 60px rgba(124, 58, 237, 0.65), 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* Bouton CTA Footer */
+.footer-cta-btn {
+  background: linear-gradient(135deg, #7c3aed, #5b21b6);
+  padding: 12px 24px;
+  box-shadow: 0 0 24px rgba(124, 58, 237, 0.35);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+.footer-cta-btn:hover {
+  box-shadow: 0 0 44px rgba(124, 58, 237, 0.6);
+}
+
+/* Liens réseaux sociaux footer */
+.social-link {
+  color: var(--muted-foreground);
+  display: inline-flex;
+  transition: color 0.25s ease, filter 0.25s ease, transform 0.25s ease;
+}
+.social-link:hover {
+  color: #b39dfa;
+  filter: drop-shadow(0 0 6px rgba(124, 58, 237, 0.7));
+  transform: scale(1.1);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════

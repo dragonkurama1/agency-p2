@@ -14,7 +14,7 @@ export function CtaBanner({
 }) {
   return (
     <section className="relative py-24 overflow-hidden">
-      {/* Lueurs cosmiques de fond */}
+      {/* Lueurs cosmiques */}
       <div
         aria-hidden="true"
         className="absolute inset-0 pointer-events-none"
@@ -25,13 +25,12 @@ export function CtaBanner({
         }}
       />
 
-      {/* Panel glass centré */}
       <div className="container-px mx-auto max-w-4xl text-center relative z-10">
         <div
           className="glass-dark rounded-3xl py-16 px-8 sm:px-16 relative overflow-hidden"
           style={{ border: "1px solid rgba(124,58,237,0.25)" }}
         >
-          {/* Anneau décoratif */}
+          {/* Halos décoratifs */}
           <div
             aria-hidden="true"
             className="absolute -top-32 -right-32 w-64 h-64 rounded-full pointer-events-none"
@@ -58,23 +57,11 @@ export function CtaBanner({
           <p className="mt-4 text-[var(--muted-foreground)] max-w-xl mx-auto text-[16px] leading-relaxed">
             {subtitle}
           </p>
+
+          {/* Bouton — hover géré par CSS uniquement, compatible Server Component */}
           <Link
             href={href}
-            className="group mt-10 inline-flex items-center gap-2 rounded-full text-white font-semibold tracking-wide transition-all duration-300 hover:-translate-y-0.5"
-            style={{
-              background: "linear-gradient(135deg, #7c3aed, #5b21b6)",
-              padding: "14px 36px",
-              fontSize: "15px",
-              boxShadow: "0 0 30px rgba(124,58,237,0.4), 0 4px 24px rgba(0,0,0,0.3)",
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.boxShadow =
-                "0 0 60px rgba(124,58,237,0.65), 0 8px 32px rgba(0,0,0,0.4)";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.boxShadow =
-                "0 0 30px rgba(124,58,237,0.4), 0 4px 24px rgba(0,0,0,0.3)";
-            }}
+            className="cta-btn group mt-10 inline-flex items-center gap-2 rounded-full text-white font-semibold tracking-wide transition-all duration-300 hover:-translate-y-0.5"
           >
             {cta}
             <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />

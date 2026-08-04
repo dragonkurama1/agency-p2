@@ -55,7 +55,7 @@ export async function Footer() {
       }}
       aria-label="Pied de page"
     >
-      {/* Lueur haut du footer */}
+      {/* Ligne lumineuse en haut */}
       <div
         aria-hidden="true"
         className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-px"
@@ -63,6 +63,7 @@ export async function Footer() {
           background: "linear-gradient(to right, transparent, rgba(124,58,237,0.5), transparent)",
         }}
       />
+      {/* Lueur au-dessus du footer */}
       <div
         aria-hidden="true"
         className="absolute -top-20 left-1/2 -translate-x-1/2 w-96 h-20 pointer-events-none"
@@ -78,63 +79,30 @@ export async function Footer() {
           {/* Colonne marque */}
           <div>
             <Link href="/" aria-label="Prestigia Agency — Accueil">
-              <Image
-                src="/logo-prestigia.png"
-                alt="Prestigia Agency"
-                width={125}
-                height={56}
-                className="h-8 w-auto"
-              />
+              <Image src="/logo-prestigia.png" alt="Prestigia Agency" width={125} height={56} className="h-8 w-auto" />
             </Link>
             <p className="mt-4 text-sm leading-relaxed text-[var(--muted-foreground)]">
               Transformez votre présence digitale avec notre expertise en marketing stratégique et développement web.
             </p>
-            {/* Réseaux sociaux */}
+            {/* Réseaux — hover géré par CSS (.social-link) */}
             <ul className="mt-6 flex gap-4 list-none p-0" aria-label="Nos réseaux sociaux">
               {instagram && (
                 <li>
-                  <Link
-                    href={instagram}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="Prestigia Agency sur Instagram"
-                    className="transition-all duration-300 hover:scale-110 inline-flex"
-                    style={{ color: "var(--muted-foreground)" }}
-                    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "#b39dfa"; (e.currentTarget as HTMLElement).style.filter = "drop-shadow(0 0 6px rgba(124,58,237,0.7))"; }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--muted-foreground)"; (e.currentTarget as HTMLElement).style.filter = "none"; }}
-                  >
+                  <Link href={instagram} target="_blank" rel="noopener noreferrer" aria-label="Prestigia Agency sur Instagram" className="social-link">
                     <InstagramIcon className="size-5" />
                   </Link>
                 </li>
               )}
               {linkedin && (
                 <li>
-                  <Link
-                    href={linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="Prestigia Agency sur LinkedIn"
-                    className="transition-all duration-300 hover:scale-110 inline-flex"
-                    style={{ color: "var(--muted-foreground)" }}
-                    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "#b39dfa"; (e.currentTarget as HTMLElement).style.filter = "drop-shadow(0 0 6px rgba(124,58,237,0.7))"; }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--muted-foreground)"; (e.currentTarget as HTMLElement).style.filter = "none"; }}
-                  >
+                  <Link href={linkedin} target="_blank" rel="noopener noreferrer" aria-label="Prestigia Agency sur LinkedIn" className="social-link">
                     <LinkedinIcon className="size-5" />
                   </Link>
                 </li>
               )}
               {facebook && (
                 <li>
-                  <Link
-                    href={facebook}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="Prestigia Agency sur Facebook"
-                    className="transition-all duration-300 hover:scale-110 inline-flex"
-                    style={{ color: "var(--muted-foreground)" }}
-                    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "#b39dfa"; (e.currentTarget as HTMLElement).style.filter = "drop-shadow(0 0 6px rgba(124,58,237,0.7))"; }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--muted-foreground)"; (e.currentTarget as HTMLElement).style.filter = "none"; }}
-                  >
+                  <Link href={facebook} target="_blank" rel="noopener noreferrer" aria-label="Prestigia Agency sur Facebook" className="social-link">
                     <FacebookIcon className="size-5" />
                   </Link>
                 </li>
@@ -148,10 +116,7 @@ export async function Footer() {
             <ul className="space-y-2.5">
               {navLinks.map((l) => (
                 <li key={l.href}>
-                  <Link
-                    href={l.href}
-                    className="text-sm text-[var(--muted-foreground)] hover:text-[var(--accent-gold-text)] transition-colors duration-200"
-                  >
+                  <Link href={l.href} className="text-sm text-[var(--muted-foreground)] hover:text-[var(--accent-gold-text)] transition-colors duration-200">
                     {l.label}
                   </Link>
                 </li>
@@ -164,28 +129,16 @@ export async function Footer() {
             <p className="text-sm font-semibold text-white mb-4 tracking-wide">Contact</p>
             <ul className="space-y-2.5 text-sm text-[var(--muted-foreground)]">
               <li>
-                <Link
-                  href={`tel:${phone}`}
-                  className="hover:text-[var(--accent-gold-text)] transition-colors duration-200"
-                  aria-label={`Appeler au ${phoneDisplay}`}
-                >
+                <Link href={`tel:${phone}`} className="hover:text-[var(--accent-gold-text)] transition-colors duration-200" aria-label={`Appeler au ${phoneDisplay}`}>
                   {phoneDisplay}
                 </Link>
               </li>
               <li>
-                <Link
-                  href={`mailto:${email}`}
-                  className="hover:text-[var(--accent-gold-text)] transition-colors duration-200"
-                  aria-label={`Email : ${email}`}
-                >
+                <Link href={`mailto:${email}`} className="hover:text-[var(--accent-gold-text)] transition-colors duration-200" aria-label={`Email : ${email}`}>
                   {email}
                 </Link>
               </li>
-              <li className="leading-relaxed">
-                {address}
-                <br />
-                {city}
-              </li>
+              <li className="leading-relaxed">{address}<br />{city}</li>
             </ul>
           </address>
 
@@ -194,21 +147,13 @@ export async function Footer() {
             <p className="text-sm font-semibold text-white mb-4 tracking-wide">
               Prêt à transformer votre présence digitale ?
             </p>
-            <Link
-              href="/devis"
-              className="inline-flex items-center rounded-full font-semibold text-white text-sm tracking-wide transition-all duration-300 hover:-translate-y-0.5"
-              style={{
-                background: "linear-gradient(135deg, #7c3aed, #5b21b6)",
-                padding: "12px 24px",
-                boxShadow: "0 0 24px rgba(124,58,237,0.35)",
-              }}
-            >
+            <Link href="/devis" className="footer-cta-btn inline-flex items-center rounded-full font-semibold text-white text-sm tracking-wide transition-all duration-300 hover:-translate-y-0.5">
               Demander un devis
             </Link>
           </div>
         </div>
 
-        {/* Bottom bar */}
+        {/* Bottom */}
         <div
           className="mt-12 flex flex-col gap-4 pt-8 text-xs text-[var(--muted-foreground)] md:flex-row md:items-center md:justify-between"
           style={{ borderTop: "1px solid rgba(124,58,237,0.12)" }}
@@ -216,12 +161,8 @@ export async function Footer() {
           <p>© {new Date().getFullYear()} Prestigia Agency. Tous droits réservés.</p>
           <nav aria-label="Liens légaux">
             <div className="flex gap-6">
-              <Link href="/mentions-legales" className="hover:text-[var(--accent-gold-text)] transition-colors">
-                Mentions légales
-              </Link>
-              <Link href="/confidentialite" className="hover:text-[var(--accent-gold-text)] transition-colors">
-                Confidentialité
-              </Link>
+              <Link href="/mentions-legales" className="hover:text-[var(--accent-gold-text)] transition-colors">Mentions légales</Link>
+              <Link href="/confidentialite" className="hover:text-[var(--accent-gold-text)] transition-colors">Confidentialité</Link>
             </div>
           </nav>
         </div>
