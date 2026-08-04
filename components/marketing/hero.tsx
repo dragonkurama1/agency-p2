@@ -75,8 +75,8 @@ export function Hero({ section }: { section?: SectionContent | null }) {
           paddingBottom: "80px",
         }}
       >
-        {/* Bloc texte — largeur 760px comme la référence */}
-        <div style={{ maxWidth: "760px" }}>
+        {/* Bloc texte — assez large pour accueillir les 3 lignes */}
+        <div style={{ maxWidth: "1060px" }}>
 
           {/* Eyebrow */}
           <motion.p
@@ -93,25 +93,29 @@ export function Hero({ section }: { section?: SectionContent | null }) {
             {DEFAULTS.eyebrow}
           </motion.p>
 
-          {/* H1 — taille et graisse exactes de la maquette */}
+          {/* H1 — 3 lignes précises : "une" / "qui attire," / "engage et convertit." */}
           <motion.h1
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.75, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
             className="font-serif uppercase text-white"
             style={{
-              fontSize: "clamp(68px, 5vw, 92px)",
+              fontSize: "clamp(58px, 5vw, 88px)",
               fontWeight: 900,
               lineHeight: 0.95,
-              letterSpacing: "-3px",
+              letterSpacing: "-2px",
             }}
           >
-            {/* Ligne 1 */}
-            Nous construisons une{" "}
-            {/* Ligne 2 — "présence digitale" en violet, suite en blanc */}
+            {/* Ligne 1 : NOUS CONSTRUISONS UNE */}
+            Nous construisons une
+            <br className="hidden lg:block" />
+            {" "}
+            {/* Ligne 2 : PRÉSENCE DIGITALE QUI ATTIRE, */}
             <span style={{ color: "#7C3AED" }}>présence digitale</span>{" "}
-            qui attire,{" "}
-            {/* Ligne 3 */}
+            qui attire,
+            <br className="hidden lg:block" />
+            {" "}
+            {/* Ligne 3 : ENGAGE ET CONVERTIT. */}
             engage et convertit.
           </motion.h1>
 
