@@ -45,9 +45,37 @@ export async function Footer() {
   ]);
 
   return (
-    <footer className="border-t border-[var(--border)] bg-[var(--background)]" aria-label="Pied de page">
+    <footer
+      className="relative mt-8"
+      style={{
+        borderTop: "1px solid rgba(124,58,237,0.18)",
+        backdropFilter: "blur(24px)",
+        WebkitBackdropFilter: "blur(24px)",
+        background: "rgba(4,3,10,0.75)",
+      }}
+      aria-label="Pied de page"
+    >
+      {/* Lueur haut du footer */}
+      <div
+        aria-hidden="true"
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-px"
+        style={{
+          background: "linear-gradient(to right, transparent, rgba(124,58,237,0.5), transparent)",
+        }}
+      />
+      <div
+        aria-hidden="true"
+        className="absolute -top-20 left-1/2 -translate-x-1/2 w-96 h-20 pointer-events-none"
+        style={{
+          background: "radial-gradient(ellipse, rgba(124,58,237,0.1), transparent 70%)",
+          filter: "blur(20px)",
+        }}
+      />
+
       <div className="container-px mx-auto max-w-7xl py-16">
         <div className="grid gap-12 md:grid-cols-4">
+
+          {/* Colonne marque */}
           <div>
             <Link href="/" aria-label="Prestigia Agency — Accueil">
               <Image
@@ -65,21 +93,48 @@ export async function Footer() {
             <ul className="mt-6 flex gap-4 list-none p-0" aria-label="Nos réseaux sociaux">
               {instagram && (
                 <li>
-                  <Link href={instagram} target="_blank" rel="noopener noreferrer" aria-label="Prestigia Agency sur Instagram" className="text-[var(--muted-foreground)] hover:text-[var(--accent-gold)] transition-colors">
+                  <Link
+                    href={instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Prestigia Agency sur Instagram"
+                    className="transition-all duration-300 hover:scale-110 inline-flex"
+                    style={{ color: "var(--muted-foreground)" }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "#b39dfa"; (e.currentTarget as HTMLElement).style.filter = "drop-shadow(0 0 6px rgba(124,58,237,0.7))"; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--muted-foreground)"; (e.currentTarget as HTMLElement).style.filter = "none"; }}
+                  >
                     <InstagramIcon className="size-5" />
                   </Link>
                 </li>
               )}
               {linkedin && (
                 <li>
-                  <Link href={linkedin} target="_blank" rel="noopener noreferrer" aria-label="Prestigia Agency sur LinkedIn" className="text-[var(--muted-foreground)] hover:text-[var(--accent-gold)] transition-colors">
+                  <Link
+                    href={linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Prestigia Agency sur LinkedIn"
+                    className="transition-all duration-300 hover:scale-110 inline-flex"
+                    style={{ color: "var(--muted-foreground)" }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "#b39dfa"; (e.currentTarget as HTMLElement).style.filter = "drop-shadow(0 0 6px rgba(124,58,237,0.7))"; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--muted-foreground)"; (e.currentTarget as HTMLElement).style.filter = "none"; }}
+                  >
                     <LinkedinIcon className="size-5" />
                   </Link>
                 </li>
               )}
               {facebook && (
                 <li>
-                  <Link href={facebook} target="_blank" rel="noopener noreferrer" aria-label="Prestigia Agency sur Facebook" className="text-[var(--muted-foreground)] hover:text-[var(--accent-gold)] transition-colors">
+                  <Link
+                    href={facebook}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Prestigia Agency sur Facebook"
+                    className="transition-all duration-300 hover:scale-110 inline-flex"
+                    style={{ color: "var(--muted-foreground)" }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "#b39dfa"; (e.currentTarget as HTMLElement).style.filter = "drop-shadow(0 0 6px rgba(124,58,237,0.7))"; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--muted-foreground)"; (e.currentTarget as HTMLElement).style.filter = "none"; }}
+                  >
                     <FacebookIcon className="size-5" />
                   </Link>
                 </li>
@@ -87,12 +142,16 @@ export async function Footer() {
             </ul>
           </div>
 
+          {/* Navigation */}
           <nav aria-label="Navigation principale">
-            <p className="text-sm font-medium text-[var(--foreground)]">Navigation</p>
-            <ul className="mt-4 space-y-2">
+            <p className="text-sm font-semibold text-white mb-4 tracking-wide">Navigation</p>
+            <ul className="space-y-2.5">
               {navLinks.map((l) => (
                 <li key={l.href}>
-                  <Link href={l.href} className="text-sm text-[var(--muted-foreground)] hover:text-[var(--accent-gold)]">
+                  <Link
+                    href={l.href}
+                    className="text-sm text-[var(--muted-foreground)] hover:text-[var(--accent-gold-text)] transition-colors duration-200"
+                  >
                     {l.label}
                   </Link>
                 </li>
@@ -100,20 +159,29 @@ export async function Footer() {
             </ul>
           </nav>
 
+          {/* Contact */}
           <address className="not-italic">
-            <p className="text-sm font-medium text-[var(--foreground)]">Contact</p>
-            <ul className="mt-4 space-y-2 text-sm text-[var(--muted-foreground)]">
+            <p className="text-sm font-semibold text-white mb-4 tracking-wide">Contact</p>
+            <ul className="space-y-2.5 text-sm text-[var(--muted-foreground)]">
               <li>
-                <Link href={`tel:${phone}`} className="hover:text-[var(--accent-gold)]" aria-label={`Appeler au ${phoneDisplay}`}>
+                <Link
+                  href={`tel:${phone}`}
+                  className="hover:text-[var(--accent-gold-text)] transition-colors duration-200"
+                  aria-label={`Appeler au ${phoneDisplay}`}
+                >
                   {phoneDisplay}
                 </Link>
               </li>
               <li>
-                <Link href={`mailto:${email}`} className="hover:text-[var(--accent-gold)]" aria-label={`Email : ${email}`}>
+                <Link
+                  href={`mailto:${email}`}
+                  className="hover:text-[var(--accent-gold-text)] transition-colors duration-200"
+                  aria-label={`Email : ${email}`}
+                >
                   {email}
                 </Link>
               </li>
-              <li>
+              <li className="leading-relaxed">
                 {address}
                 <br />
                 {city}
@@ -121,23 +189,39 @@ export async function Footer() {
             </ul>
           </address>
 
+          {/* CTA */}
           <div>
-            <p className="text-sm font-medium text-[var(--foreground)]">Prêt à transformer votre présence digitale ?</p>
+            <p className="text-sm font-semibold text-white mb-4 tracking-wide">
+              Prêt à transformer votre présence digitale ?
+            </p>
             <Link
               href="/devis"
-              className="mt-4 inline-block rounded-full bg-[var(--accent-gold)] px-6 py-3 text-sm font-medium text-white hover:bg-[var(--accent-gold-hover)]"
+              className="inline-flex items-center rounded-full font-semibold text-white text-sm tracking-wide transition-all duration-300 hover:-translate-y-0.5"
+              style={{
+                background: "linear-gradient(135deg, #7c3aed, #5b21b6)",
+                padding: "12px 24px",
+                boxShadow: "0 0 24px rgba(124,58,237,0.35)",
+              }}
             >
               Demander un devis
             </Link>
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col gap-4 border-t border-[var(--border)] pt-8 text-xs text-[var(--muted-foreground)] md:flex-row md:items-center md:justify-between">
+        {/* Bottom bar */}
+        <div
+          className="mt-12 flex flex-col gap-4 pt-8 text-xs text-[var(--muted-foreground)] md:flex-row md:items-center md:justify-between"
+          style={{ borderTop: "1px solid rgba(124,58,237,0.12)" }}
+        >
           <p>© {new Date().getFullYear()} Prestigia Agency. Tous droits réservés.</p>
           <nav aria-label="Liens légaux">
             <div className="flex gap-6">
-              <Link href="/mentions-legales" className="hover:text-[var(--accent-gold)]">Mentions légales</Link>
-              <Link href="/confidentialite" className="hover:text-[var(--accent-gold)]">Confidentialité</Link>
+              <Link href="/mentions-legales" className="hover:text-[var(--accent-gold-text)] transition-colors">
+                Mentions légales
+              </Link>
+              <Link href="/confidentialite" className="hover:text-[var(--accent-gold-text)] transition-colors">
+                Confidentialité
+              </Link>
             </div>
           </nav>
         </div>

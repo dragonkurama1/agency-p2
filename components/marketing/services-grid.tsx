@@ -6,20 +6,45 @@ import type { Service } from "@/lib/seed-data";
 export function ServicesGrid({ services, compact = false }: { services: Service[]; compact?: boolean }) {
   const items = compact ? services.slice(0, 6) : services;
   return (
-    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
       {items.map((service) => {
         const Icon = getIcon(service.icon);
         return (
           <Link
             key={service.slug}
             href={`/services/${service.slug}`}
-            className="group relative rounded-2xl border border-[var(--border)] bg-[var(--muted)] p-6 transition-colors hover:border-[var(--accent-gold)]"
+            className="group relative rounded-2xl p-6 transition-all duration-400 glass-card overflow-hidden"
           >
-            <Icon className="size-8 text-[var(--accent-gold)]" />
-            <h3 className="mt-5 font-serif text-xl leading-snug">{service.title}</h3>
-            <p className="mt-2 text-sm text-muted-foreground">{service.short_description}</p>
-            <span className="mt-4 inline-flex items-center gap-1 text-sm text-[var(--accent-gold)] opacity-0 transition-opacity group-hover:opacity-100">
-              En savoir plus <ArrowUpRight className="size-4" />
+            {/* Halo de fond au hover */}
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+              style={{
+                background:
+                  "radial-gradient(ellipse at 30% 50%, rgba(124,58,237,0.12) 0%, transparent 65%)",
+              }}
+            />
+
+            {/* Icône avec halo */}
+            <div className="relative inline-flex items-center justify-center size-12 rounded-xl mb-5"
+              style={{
+                background: "rgba(124,58,237,0.12)",
+                border: "1px solid rgba(124,58,237,0.22)",
+              }}
+            >
+              <Icon
+                className="size-6 text-[var(--accent-gold)] icon-halo transition-transform duration-300 group-hover:scale-110"
+              />
+            </div>
+
+            <h3 className="font-serif text-xl leading-snug text-white mb-2 group-hover:text-glow transition-all duration-300">
+              {service.title}
+            </h3>
+            <p className="text-sm text-[var(--muted-foreground)] leading-relaxed">
+              {service.short_description}
+            </p>
+            <span className="mt-5 inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--accent-gold-text)] opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-1 group-hover:translate-y-0">
+              En savoir plus <ArrowUpRight className="size-3.5" />
             </span>
           </Link>
         );

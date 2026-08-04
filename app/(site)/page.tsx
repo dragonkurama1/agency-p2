@@ -75,7 +75,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="section-light py-20" aria-label="Pourquoi choisir Prestigia Agency">
+      <section className="py-20" aria-label="Pourquoi choisir Prestigia Agency">
         <div className="container-px mx-auto max-w-7xl">
           <SectionHeading eyebrow="Pourquoi Prestigia" title="Une équipe, tous les leviers de croissance" />
           <div className="mt-12">
@@ -91,7 +91,7 @@ export default async function HomePage() {
             <Link
               key={project.slug}
               href={`/realisations/${project.slug}`}
-              className="group rounded-2xl border border-[var(--border)] bg-[var(--muted)] overflow-hidden"
+              className="group glass-card rounded-2xl overflow-hidden flex flex-col"
             >
               {project.cover_image ? (
                 <div className="relative aspect-[4/3] w-full overflow-hidden">
@@ -100,19 +100,29 @@ export default async function HomePage() {
                     alt={project.title}
                     fill
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    className="object-cover transition-transform duration-500 group-hover:scale-108"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
               ) : (
                 <div
-                  className="aspect-[4/3] bg-[linear-gradient(135deg,var(--border),var(--muted))]"
+                  className="aspect-[4/3]"
+                  style={{
+                    background: "linear-gradient(135deg, rgba(124,58,237,0.15), rgba(79,70,229,0.08))",
+                  }}
                   aria-hidden="true"
                 />
               )}
-              <div className="p-6">
-                <p className="text-xs uppercase tracking-wide text-[var(--accent-gold-text)]">{project.category}</p>
-                <h3 className="mt-2 font-serif text-lg leading-snug">{project.title}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">{project.results}</p>
+              <div className="p-6 flex-1">
+                <p className="text-[11px] uppercase tracking-[0.2em] text-[var(--accent-gold-text)] mb-2">
+                  {project.category}
+                </p>
+                <h3 className="font-serif text-lg leading-snug text-white group-hover:text-glow transition-all duration-300">
+                  {project.title}
+                </h3>
+                <p className="mt-2 text-sm text-[var(--muted-foreground)] leading-relaxed">
+                  {project.results}
+                </p>
               </div>
             </Link>
           ))}
@@ -126,7 +136,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="section-light py-20" aria-label="Notre méthode de travail">
+      <section className="py-20" aria-label="Notre méthode de travail">
         <div className="container-px mx-auto max-w-7xl">
           <SectionHeading eyebrow="Notre méthode" title="Un processus clair, en 4 étapes" align="center" />
           <div className="mt-12">
@@ -142,7 +152,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="section-light py-20" aria-label="Questions fréquentes">
+      <section className="py-20" aria-label="Questions fréquentes">
         <div className="container-px mx-auto max-w-3xl">
           <SectionHeading eyebrow="FAQ" title="Questions fréquentes" align="center" />
           <div className="mt-10">
