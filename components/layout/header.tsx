@@ -28,9 +28,9 @@ export function Header() {
           : "bg-transparent border-b border-transparent"
       )}
     >
-      <div className="container-px mx-auto flex h-20 max-w-7xl items-center justify-between">
+      <div className="container-px mx-auto flex h-20 max-w-7xl items-center">
 
-        {/* Logo */}
+        {/* Logo — extrême gauche */}
         <Link href="/" aria-label="Prestigia Agency — Accueil" className="flex-shrink-0">
           <Image
             src="/logo-prestigia.png"
@@ -42,19 +42,19 @@ export function Header() {
           />
         </Link>
 
-        {/* Nav desktop */}
-        <nav className="hidden items-center gap-8 lg:flex" aria-label="Navigation principale">
+        {/* Nav desktop — poussée à droite avec ml-auto */}
+        <nav className="hidden items-center gap-8 lg:flex ml-auto" aria-label="Navigation principale">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               className={cn(
-                "relative text-sm tracking-wide transition-colors duration-200",
+                "relative text-sm font-medium tracking-wide transition-colors duration-200",
                 "after:absolute after:-bottom-0.5 after:left-0 after:h-px",
                 "after:bg-[#7C3AED] after:transition-all after:duration-300",
                 pathname === link.href
                   ? "text-[#7C3AED] after:w-full"
-                  : "text-white/65 hover:text-white after:w-0 hover:after:w-full"
+                  : "text-white/70 hover:text-white after:w-0 hover:after:w-full"
               )}
             >
               {link.label}
@@ -62,21 +62,11 @@ export function Header() {
           ))}
         </nav>
 
-        {/* CTA desktop */}
-        <div className="hidden lg:block">
-          <Link
-            href="/devis"
-            className="inline-flex items-center rounded-full bg-[#7C3AED] px-6 py-2.5 text-sm font-semibold text-white tracking-wide transition-all duration-300 hover:bg-[#8b5cf6] hover:shadow-[0_0_30px_rgba(124,58,237,0.5)] hover:-translate-y-0.5 active:translate-y-0"
-          >
-            Demander un devis
-          </Link>
-        </div>
-
         {/* Burger mobile */}
         <button
           aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
           aria-expanded={open}
-          className="lg:hidden p-1 text-white/80 hover:text-white transition-colors"
+          className="lg:hidden p-1 ml-auto text-white/80 hover:text-white transition-colors"
           onClick={() => setOpen(!open)}
         >
           {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
