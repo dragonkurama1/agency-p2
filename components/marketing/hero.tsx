@@ -171,31 +171,31 @@ export function Hero({ section }: { section?: SectionContent | null }) {
             </motion.div>
           </div>
 
-          {/* ── Colonne droite : boutons desktop (bottom-right) ─────────── */}
+          {/* ── Colonne droite : boutons desktop côte à côte (bottom-right) ── */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.65, delay: 0.3, ease: "easeOut" }}
             className="hidden lg:flex"
             style={{
-              flexDirection: "column",
-              gap: "16px",
+              flexDirection: "row",
+              gap: "20px",
               flexShrink: 0,
-              alignItems: "flex-end",
+              alignItems: "center",
             }}
           >
             <Link
               href={ctaHref}
               className="group inline-flex items-center gap-2 rounded-full bg-[#7C3AED] text-white font-normal tracking-wide transition-all duration-300 hover:bg-[#8b5cf6] hover:shadow-[0_0_44px_rgba(124,58,237,0.55)] hover:-translate-y-0.5 active:translate-y-0"
-              style={{ padding: "14px 36px", fontSize: "15px", whiteSpace: "nowrap" }}
+              style={{ padding: "18px 44px", fontSize: "17px", whiteSpace: "nowrap" }}
             >
               {ctaText}
-              <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
+              <ArrowRight className="size-5 transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
             <Link
               href={DEFAULTS.cta2Href}
               className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/5 text-white font-normal tracking-wide backdrop-blur-sm transition-all duration-300 hover:border-[#7C3AED]/60 hover:bg-[#7C3AED]/10 hover:-translate-y-0.5 active:translate-y-0"
-              style={{ padding: "14px 36px", fontSize: "15px", whiteSpace: "nowrap" }}
+              style={{ padding: "18px 44px", fontSize: "17px", whiteSpace: "nowrap" }}
             >
               {DEFAULTS.cta2Text}
             </Link>
