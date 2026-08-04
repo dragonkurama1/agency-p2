@@ -28,13 +28,11 @@ export function Header() {
           : "bg-transparent border-b border-transparent"
       )}
     >
-      {/* Container aligné sur le même gabarit que le hero : 1600px / 70px */}
+      {/* Container aligné sur le même gabarit que le hero : 1600px / 70px desktop */}
       <div
-        className="mx-auto flex w-full items-center justify-between"
+        className="mx-auto flex w-full items-center justify-between px-4 sm:px-6 lg:px-[70px]"
         style={{
           maxWidth: "1600px",
-          paddingLeft: "70px",
-          paddingRight: "70px",
           height: "80px",
         }}
       >

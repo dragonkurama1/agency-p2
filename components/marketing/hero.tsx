@@ -64,13 +64,11 @@ export function Hero({ section }: { section?: SectionContent | null }) {
 
       {/* ── Contenu principal — centré avec marges ───────────────────────── */}
       <motion.div
-        className="relative z-10 w-full"
+        className="relative z-10 w-full px-4 sm:px-6 lg:px-[70px]"
         style={{
           y: contentY,
           maxWidth: "1600px",
           margin: "0 auto",
-          paddingLeft: "70px",
-          paddingRight: "70px",
           paddingTop: "140px",
           paddingBottom: "80px",
         }}

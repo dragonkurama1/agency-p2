@@ -118,13 +118,20 @@ body {
    LAYOUT
    ═══════════════════════════════════════════════════════════════════════════ */
 .container-px {
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
+  /* Mobile / tablette : padding réduit pour maximiser l'espace */
+  padding-left: 1rem;   /* 16px */
+  padding-right: 1rem;
+}
+@media (min-width: 640px) {
+  .container-px {
+    padding-left: 1.5rem; /* 24px tablette */
+    padding-right: 1.5rem;
+  }
 }
 @media (min-width: 1024px) {
   .container-px {
-    padding-left: 4rem;
-    padding-right: 4rem;
+    padding-left: 4.375rem; /* 70px desktop — aligné sur le hero/header */
+    padding-right: 4.375rem;
   }
 }
 
