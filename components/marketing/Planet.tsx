@@ -97,20 +97,31 @@ const SEGMENTS: Record<Tier, number> = {
 
 const DISPLACEMENT_SCALE: Record<Tier, number> = {
   mobile:  0,
-  tablet:  0.09,
-  desktop: 0.12,
+  tablet:  0.17,
+  desktop: 0.22,
 };
 
 const INFLATE_AMOUNT: Record<Tier, number> = {
   mobile:  0,
-  tablet:  0.04,
-  desktop: 0.06,
+  tablet:  0.07,
+  desktop: 0.10,
 };
 
 const TURBULENCE_AMOUNT: Record<Tier, number> = {
   mobile:  0,
-  tablet:  0.08,
-  desktop: 0.14,
+  tablet:  0.12,
+  desktop: 0.20,
+};
+
+/* Exaggerates the normal map's bump contribution to lighting (see
+ * perturbNormal() in the fragment shader) — a per-pixel shading effect,
+ * essentially free compared to geometric displacement, so even mobile
+ * (which keeps DISPLACEMENT_SCALE at 0 for performance) still gets visible
+ * surface relief from lighting alone. */
+const NORMAL_STRENGTH: Record<Tier, number> = {
+  mobile:  1.6,
+  tablet:  1.9,
+  desktop: 2.3,
 };
 
 /* ─── World-space sizing/positioning ────────────────────────────────────
@@ -341,6 +352,7 @@ uniform vec3 uAmbientColor;
 uniform vec3 uKeyLightDir;
 uniform vec3 uKeyLightColor;
 uniform vec3 uRimColor;
+uniform float uNormalStrength;
 
 varying vec2 vUv;
 varying vec3 vNormal;
@@ -364,6 +376,14 @@ mat3 cotangentFrame(vec3 N, vec3 p, vec2 uv) {
 
 vec3 perturbNormal(vec3 N, vec3 V, vec2 uv) {
   vec3 mapN = texture2D(uNormalMap, uv).xyz * 2.0 - 1.0;
+  /* Exaggerate the tangent-space XY tilt before renormalizing — this is
+   * the standard "normal strength" technique (scale bump direction, keep
+   * unit length) and is what gives the surface visible relief from
+   * lighting alone, on top of the (comparatively much subtler) geometric
+   * vertex displacement. Renormalizing after the scale keeps the vector
+   * a valid unit normal regardless of strength. */
+  mapN.xy *= uNormalStrength;
+  mapN = normalize(mapN);
   mat3 TBN = cotangentFrame(N, -V, uv);
   return normalize(TBN * mapN);
 }
@@ -393,9 +413,20 @@ void main() {
   float ao = texture2D(uAoMap, vUv).r;
   float roughness = texture2D(uRoughnessMap, vUv).r;
 
-  /* ── Procedural crack / vein mask — ridged fBm, animated ──────────────── */
+  /* ── Procedural crack / vein mask — ridged fBm, animated ────────────────
+   * The ridge is thresholded with an fwidth()-based adaptive smoothstep
+   * (screen-space derivative of the noise value) instead of a hard pow()
+   * cutoff — pow() alone creates a razor-thin, high-frequency ridge that
+   * shimmers/aliases as the surface rotates, independent of MSAA (MSAA only
+   * antialiases geometric silhouette edges, not per-fragment shader detail
+   * like this). Widening the transition band by exactly one derivative-
+   * width keeps the ridge looking crisp up close while remaining stable
+   * under motion and at a distance. */
   float crackNoise = fbm(vWorldPosition * 2.2 + vec3(0.0, uTime * 0.05, 0.0));
-  float crackMask = pow(clamp(1.0 - abs(crackNoise), 0.0, 1.0), 6.0);
+  float ridge = 1.0 - abs(crackNoise);
+  float ridgeAA = fwidth(ridge) + 0.0001;
+  float crackMask = smoothstep(0.72 - ridgeAA, 0.72 + ridgeAA, ridge);
+  crackMask = pow(crackMask, 2.2);
 
   /* Crystal growth follows its own slower noise field — this is what makes
    * the veins emerge from specific fracture points rather than uniformly. */
@@ -425,15 +456,20 @@ void main() {
    * single evolving rim uniform fulfils "Blue Rim / Purple Rim / Orange
    * Solar Light, evolving continuously" without three extra light objects
    * this material can't see anyway. ────────────────────────────────────── */
+  /* Ambient toned down and key light pushed up relative to the previous
+   * balance — a bright ambient term flattens exactly the kind of gradual
+   * shading that reads as "3D sphere" from a distance; a punchier
+   * diffuse+specular contrast is what sells the relief the normal map and
+   * displacement are actually producing. */
   float ndl = max(dot(N, normalize(uKeyLightDir)), 0.0);
-  vec3 lit = uAmbientColor * ao + uKeyLightColor * ndl * ao;
+  vec3 lit = uAmbientColor * ao * 0.6 + uKeyLightColor * ndl * ao * 1.35;
 
   vec3 H = normalize(normalize(uKeyLightDir) + V);
-  float spec = pow(max(dot(N, H), 0.0), mix(64.0, 8.0, roughness)) * (1.0 - roughness);
-  lit += uKeyLightColor * spec * 0.6;
+  float spec = pow(max(dot(N, H), 0.0), mix(180.0, 24.0, roughness)) * (1.0 - roughness);
+  lit += uKeyLightColor * spec * 1.1;
 
   float rimFactor = pow(1.0 - max(dot(N, V), 0.0), 2.5);
-  lit += uRimColor * rimFactor;
+  lit += uRimColor * rimFactor * 1.15;
 
   /* As the surface becomes self-luminous (sun stage) external lighting
    * matters less — it should glow from within, not reflect. */
@@ -749,6 +785,7 @@ export function Planet() {
         uKeyLightDir:        { value: new THREE.Vector3(-4, 3, 5).normalize() },
         uKeyLightColor:      { value: new THREE.Color(0xfff0e0) },
         uRimColor:           { value: new THREE.Color(RIM_BLUE) },
+        uNormalStrength:     { value: NORMAL_STRENGTH[tier] },
       };
 
       const mat = new THREE.ShaderMaterial({
@@ -888,7 +925,7 @@ export function Planet() {
       const renderTarget = new THREE.WebGLRenderTarget(W, H, {
         type:       THREE.HalfFloatType,
         colorSpace: THREE.NoColorSpace,
-        samples:    WANTS_MSAA[tier] ? 4 : 0,
+        samples:    WANTS_MSAA[tier] ? 8 : 0,
       });
       const composer = new EffectComposer(renderer, renderTarget);
       composer.setSize(W, H);
