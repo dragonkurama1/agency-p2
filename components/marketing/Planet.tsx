@@ -169,15 +169,20 @@ export function Planet() {
       let currentRY = 0;
 
       if (!prefersReduced) {
+        /*
+         * No trigger element: html has height:100% (shorter than the page),
+         * so element-based start/end would collapse to zero range.
+         * Absolute range 0 → maxScroll tracks the full page scroll instead.
+         */
         const st = ScrollTrigger.create({
-          trigger:  document.documentElement,
-          start:    "top top",
-          end:      "bottom bottom",
+          start:    0,
+          end:      () => ScrollTrigger.maxScroll(window),
           scrub:    1.2,
           onUpdate: (self) => {
             targetRY = self.progress * Math.PI * 2; // 0 → full 360°
           },
         });
+        ScrollTrigger.refresh();
         killScrollTrigger = () => st.kill();
       }
 
