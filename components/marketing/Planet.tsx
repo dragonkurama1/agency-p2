@@ -26,6 +26,16 @@ import { useEffect, useRef } from "react";
  * sphere surface, additive, orange→gold, no white flash) layers a final
  * "energy release" on top, sized per tier.
  *
+ * Transparency: THREE.UnrealBloomPass hardcodes alpha to 1.0 in its
+ * internal blur/composite shaders and additively blends a full-screen quad
+ * every frame, which saturates the whole canvas's alpha to ~1 regardless of
+ * content — left unfixed, this turns the canvas into an opaque black/white
+ * rectangle instead of a transparent element that only shows the sphere and
+ * its glow. A SavePass snapshots the clean alpha right after RenderPass
+ * (before bloom touches anything), and a final always-on ShaderPass
+ * restores that alpha into the fully-processed frame — on every tier,
+ * since bloom (and the corruption) runs on every tier.
+ *
  * Scope note: this stays a persistent, non-blocking decorative element (same
  * position/behaviour as before — fixed on the right, ~1/3 off-screen,
  * pointer-events: none, visible through the whole page scroll). It does NOT
@@ -408,6 +418,29 @@ void main() {
 }
 `;
 
+/* Restores a clean alpha channel at the very end of the chain. Necessary
+ * because THREE.UnrealBloomPass's internal blur/composite shaders hardcode
+ * alpha to 1.0 and additively blend a full-screen quad over the whole
+ * buffer every frame — this saturates alpha to ~1 across the ENTIRE canvas
+ * regardless of what was actually drawn, which is what turns this element
+ * into an opaque black/white rectangle instead of a transparent canvas that
+ * only shows the sphere/glow. tAlphaMask is a snapshot taken via SavePass
+ * immediately after RenderPass, before bloom (or anything else) has had a
+ * chance to touch alpha — its RGB is discarded, only its (correct) alpha
+ * survives into the final frame. Runs on every tier, since bloom runs on
+ * every tier and corrupts alpha on every tier. */
+const ALPHA_RESTORE_FRAGMENT = /* glsl */ `
+uniform sampler2D tDiffuse;
+uniform sampler2D tAlphaMask;
+varying vec2 vUv;
+
+void main() {
+  vec3 rgb = texture2D(tDiffuse, vUv).rgb;
+  float a = texture2D(tAlphaMask, vUv).a;
+  gl_FragColor = vec4(rgb, a);
+}
+`;
+
 /* Cheap screen-space heat shimmer — desktop only. Layered sine-wave UV
  * warp (far cheaper than per-pixel simplex/fBm) driven by uIntensity, which
  * JS ramps up as the lava/sun stages take over. */
@@ -548,6 +581,7 @@ export function Planet() {
         { UnrealBloomPass },
         { ShaderPass },
         { OutputPass },
+        { SavePass },
         { FXAAShader },
       ] = await Promise.all([
         import("three"),
@@ -558,6 +592,7 @@ export function Planet() {
         import("three/examples/jsm/postprocessing/UnrealBloomPass.js"),
         import("three/examples/jsm/postprocessing/ShaderPass.js"),
         import("three/examples/jsm/postprocessing/OutputPass.js"),
+        import("three/examples/jsm/postprocessing/SavePass.js"),
         import("three/examples/jsm/shaders/FXAAShader.js"),
       ]);
 
@@ -778,6 +813,15 @@ export function Planet() {
       renderPass.clearAlpha = 0;
       composer.addPass(renderPass);
 
+      /* Snapshot the CLEAN alpha (sphere silhouette + additive atmosphere/
+       * corona/particle build-up, transparent everywhere else) right after
+       * the base scene render and before bloom gets anywhere near it.
+       * needsSwap = false (SavePass's own default) means this is a pure
+       * side-tap — it does not consume or alter the main ping-pong chain
+       * that bloom/heat-distortion/output/FXAA continue to operate on. */
+      const savePass = new SavePass();
+      composer.addPass(savePass);
+
       const bloomPass = new UnrealBloomPass(
         new THREE.Vector2(W, H),
         BLOOM_STRENGTH[tier],
@@ -826,14 +870,36 @@ export function Planet() {
         composer.addPass(fxaaPass);
       }
 
+      /* ─── Alpha restore — MUST be the literal last pass, on every tier ───
+       * UnrealBloomPass's internal blur/composite shaders hardcode alpha to
+       * 1.0 and additively blend a full-screen quad every frame, which
+       * saturates the whole canvas's alpha to ~1 regardless of content —
+       * without this, the "decorative transparent canvas" turns into an
+       * opaque rectangle (confirmed by inspecting UnrealBloomPass's own
+       * source). This pass keeps whatever RGB the chain produced and
+       * replaces only the alpha channel with the clean savePass snapshot,
+       * so the canvas is genuinely transparent everywhere except where the
+       * sphere/atmosphere/corona/particles actually drew something — on
+       * mobile and tablet too, since bloom (and therefore this corruption)
+       * runs on every tier. */
+      const alphaRestorePass = new ShaderPass({
+        uniforms: {
+          tDiffuse:   { value: null },
+          tAlphaMask: { value: savePass.renderTarget.texture },
+        },
+        vertexShader:   PASSTHROUGH_VERTEX,
+        fragmentShader: ALPHA_RESTORE_FRAGMENT,
+      });
+      composer.addPass(alphaRestorePass);
+
       /* EffectComposer.dispose() only frees its own render targets +
        * internal copyPass — it does NOT cascade into passes added via
        * addPass() (verified against three.js's own source). Each pass that
-       * owns real GPU resources (materials, and for bloom, several
+       * owns real GPU resources (materials, and for bloom/SavePass, extra
        * internal render targets) must be disposed explicitly. RenderPass
        * holds no resources of its own (just scene/camera references) so
        * it's intentionally omitted. */
-      toDispose.push(composer, bloomPass, outputPass);
+      toDispose.push(composer, bloomPass, outputPass, savePass, alphaRestorePass);
       if (heatDistortionPass) toDispose.push(heatDistortionPass);
       if (finalCompositePass) toDispose.push(finalCompositePass);
       if (fxaaPass) toDispose.push(fxaaPass);
@@ -1089,7 +1155,12 @@ export function Planet() {
    * Size/margin use clamp() so desktop gets real breathing room instead of
    * scaling unbounded with viewport height (a 4K monitor no longer produces
    * an oversized canvas) while mobile/tablet keep the previous vh/vw-based
-   * feel, since their clamp floor/ceiling rarely bind at those widths.
+   * feel, since their clamp floor/ceiling rarely bind at those widths. The
+   * ceiling was raised (860px → 1180px) and the vh term loosened (112vh →
+   * 135vh) so bloom/corona have more room to breathe on large desktop
+   * screens before nearing the canvas's own edge, on top of the alpha fix
+   * above — the two together are what stop the effect from reading as a
+   * "boxed-in" rectangle on either desktop or mobile.
    *
    * The z-index (-1) matches the star canvas. Because <Planet> is rendered
    * BEFORE <SpaceBackground> in the layout, the stars canvas (later in DOM)
@@ -1106,8 +1177,8 @@ export function Planet() {
         transform:     `translateY(-50%) translateX(${TRANSLATE_X_PCT}%)`,
         pointerEvents: "none",
         zIndex:        -1,
-        width:         "clamp(340px, min(112vh, 96vw), 860px)",
-        height:        "clamp(340px, min(112vh, 96vw), 860px)",
+        width:         "clamp(340px, min(135vh, 96vw), 1180px)",
+        height:        "clamp(340px, min(135vh, 96vw), 1180px)",
       }}
     />
   );
