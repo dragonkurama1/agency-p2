@@ -36,20 +36,30 @@ import { useEffect, useRef } from "react";
  * restores that alpha into the fully-processed frame — on every tier,
  * since bloom (and the corruption) runs on every tier.
  *
- * Scope note: this stays a persistent, non-blocking decorative element (same
- * position/behaviour as before — fixed on the right, ~1/3 off-screen,
- * pointer-events: none, visible through the whole page scroll). It does NOT
- * take over the viewport or gate the rest of the site behind an intro
- * sequence — the post-processing/explosion additions above are layered onto
- * that existing element, not a replacement of it. This trade-off protects
- * the Lighthouse perf work already done on this page (22MB → ~2MB, 21s TBT →
- * idle-deferred), which is why every new pass is tier-gated and skipped
- * outright on mobile beyond a single cheap low-res bloom.
+ * Architecture: ONE global canvas, mounted ONCE at the (site) route-group's
+ * layout — never inside a section, never inside a wrapper with overflow/
+ * max-width/margins. The canvas is fixed to the full viewport (100vw x
+ * 100vh, top:0/left:0) and never moves; the HTML scrolls OVER it. The
+ * planet is not a DOM-sized/cropped element — it exists in 3D world space,
+ * and its on-screen size/position are computed purely from the camera's
+ * frustum (see updateGroupTransform()), sized ~50% of viewport width on
+ * desktop, ~20% smaller on tablet, capped sensibly on mobile portrait —
+ * partially exiting the right edge of the frustum by design, with nothing
+ * in the DOM to clip it. Camera is fixed for the component's whole
+ * lifetime (position/lookAt set once, never touched again); only the
+ * planet/atmosphere rotate and the shader evolves. Rotation AND uProgress
+ * both come from a single global ScrollTrigger mapped to the full document
+ * height (start 0 → end ScrollTrigger.maxScroll(window)) — there is no
+ * per-section trigger anywhere in this file. This is a decorative,
+ * non-blocking, pointer-events:none layer: it does not gate the site behind
+ * an intro sequence, and every post-processing pass below is tier-gated to
+ * protect the Lighthouse perf work already done on this page (22MB → ~2MB,
+ * 21s TBT → idle-deferred).
  *
  * Folder structure (existing project architecture, nothing new added):
  *   components/marketing/Planet.tsx   ← this file (shaders + passes inlined)
  *   public/textures/planet/*.webp     ← 10 PBR/narrative maps (compressed, seamless)
- *   app/(site)/layout.tsx             ← mounts <Planet /> globally
+ *   app/(site)/layout.tsx             ← mounts <Planet /> globally, once, at the top
  * ──────────────────────────────────────────────────────────────────────────
  */
 
@@ -59,7 +69,6 @@ const CAMERA_Z        = 10.5;
 const FOV             = 44;          // degrees
 const LERP_FACTOR     = 0.08;        // scroll-rotation / scroll-progress smoothing
 const PIXEL_RATIO_CAP = 2;           // GPU memory guard
-const TRANSLATE_X_PCT = 34;          // % of canvas pushed off-screen to the right
 
 /* Brand / narrative colours */
 const BRAND_VIOLET  = 0x7c3aed;
@@ -102,6 +111,37 @@ const TURBULENCE_AMOUNT: Record<Tier, number> = {
   mobile:  0,
   tablet:  0.08,
   desktop: 0.14,
+};
+
+/* ─── World-space sizing/positioning ────────────────────────────────────
+ * The planet is NOT a small DOM-sized decoration cropped by a small canvas
+ * — the canvas is the full viewport, and the planet's apparent size/
+ * position are computed in 3D world space from the camera's frustum at
+ * SPHERE_RADIUS's fixed depth (the camera never moves). This is what lets
+ * it sit "in space" behind the whole site, partially off the right edge,
+ * without ever being clipped by a container, max-width, or overflow rule —
+ * there simply isn't one; the only boundary is the viewport itself.
+ *
+ * SIZE_FRAC_WIDTH is the planet's target on-screen diameter as a fraction
+ * of viewport WIDTH (desktop ~50%, tablet ~20% smaller, per spec). Mobile
+ * keeps a comparable width fraction but is additionally capped as a
+ * fraction of viewport HEIGHT (MOBILE_HEIGHT_CAP) — mobile viewports are
+ * usually portrait, where width-only sizing would blow the sphere up to a
+ * comically large fraction of the screen height; the cap keeps it giant
+ * without becoming absurd. CENTER_X_FRAC places the sphere's center as a
+ * fraction of viewport width from the left (0.5 = dead centre, 1.0 = right
+ * edge) — desktop/tablet/mobile all sit right-of-centre with part of the
+ * sphere naturally exiting past the right edge of the frustum. */
+const SIZE_FRAC_WIDTH: Record<Tier, number> = {
+  mobile:  0.46,
+  tablet:  0.40,
+  desktop: 0.50,
+};
+const MOBILE_HEIGHT_CAP = 0.6; // sphere never exceeds ~60% of viewport height on mobile
+const CENTER_X_FRAC: Record<Tier, number> = {
+  mobile:  0.85,
+  tablet:  0.88,
+  desktop: 0.90,
 };
 
 /* Post-processing quality per tier — bloom always runs (cheapest, biggest
@@ -718,8 +758,21 @@ export function Planet() {
       });
 
       const planet = new THREE.Mesh(geo, mat);
-      scene.add(planet);
       toDispose.push(geo, mat);
+
+      /* ─── World-space group ──────────────────────────────────────────────
+       * Everything that makes up "the planet" (sphere, atmosphere, corona,
+       * particles) lives inside ONE Group so it can be positioned/scaled as
+       * a single rigid object in 3D space — never as a DOM-sized/cropped
+       * element. Only position + uniform scale are ever applied to this
+       * group; rotation stays on the individual meshes (planet/atm spin at
+       * slightly different rates, corona stays a flat camera-facing plane),
+       * so nesting everything here doesn't change any of that existing
+       * behaviour. See updateGroupTransform() below for the frustum math
+       * that keeps this sized/positioned correctly across every viewport. */
+      const planetGroup = new THREE.Group();
+      scene.add(planetGroup);
+      planetGroup.add(planet);
 
       /* ─── Atmosphere shell ───────────────────────────────────────────────
        * Kept as a plain additive-blended MeshBasicMaterial shell (unchanged
@@ -737,7 +790,7 @@ export function Planet() {
         depthWrite:  false,
       });
       const atm = new THREE.Mesh(atmGeo, atmMat);
-      scene.add(atm);
+      planetGroup.add(atm);
       toDispose.push(atmGeo, atmMat);
 
       /* ─── Solar corona — camera-facing glow plane, desktop/tablet only ───
@@ -758,7 +811,7 @@ export function Planet() {
         });
         corona = new THREE.Mesh(coronaGeo, coronaMat);
         corona.position.z = 0.15;
-        scene.add(corona);
+        planetGroup.add(corona);
         toDispose.push(coronaGeo, coronaMat);
       }
 
@@ -796,6 +849,37 @@ export function Planet() {
       const particles = new THREE.Points(particleGeo, particleMat);
       planet.add(particles);
       toDispose.push(particleGeo, particleMat);
+
+      /* ─── Frustum-based world-space transform ────────────────────────────
+       * Sizes and positions planetGroup purely from the camera's fixed FOV/
+       * distance and the current viewport's aspect ratio — never from CSS,
+       * never from a container's box. At depth CAMERA_Z (the group always
+       * sits at world z = 0, camera fixed at z = CAMERA_Z looking at the
+       * origin), the frustum's world-space width/height are exact functions
+       * of vFOV and aspect, so a target "% of viewport" size/position can be
+       * solved for directly instead of approximated. Re-run on every resize
+       * (see ResizeObserver below) since aspect changes with the viewport,
+       * not just on tier boundaries. */
+      const vFOV = THREE.MathUtils.degToRad(FOV);
+      function updateGroupTransform(w: number, h: number) {
+        const aspect = w / h;
+        const frustumHalfHeight = CAMERA_Z * Math.tan(vFOV / 2);
+        const frustumHeight = frustumHalfHeight * 2;
+        const frustumHalfWidth = frustumHalfHeight * aspect;
+        const frustumWidth = frustumHalfWidth * 2;
+
+        let worldDiameter = SIZE_FRAC_WIDTH[tier] * frustumWidth;
+        if (tier === "mobile") {
+          // Portrait guard: don't let a width-fraction sizing blow the
+          // sphere up to a huge fraction of a tall, narrow viewport.
+          worldDiameter = Math.min(worldDiameter, MOBILE_HEIGHT_CAP * frustumHeight);
+        }
+        planetGroup.scale.setScalar(worldDiameter / (SPHERE_RADIUS * 2));
+
+        const ndcX = CENTER_X_FRAC[tier] * 2 - 1;
+        planetGroup.position.x = ndcX * frustumHalfWidth;
+      }
+      updateGroupTransform(W, H);
 
       /* ─── Post-processing pipeline (EffectComposer, tiered) ─────────────
        * Linear-HDR render target so UnrealBloomPass can extract genuine
@@ -1086,6 +1170,7 @@ export function Planet() {
         renderer.setSize(w, h, false);
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
+        updateGroupTransform(w, h);
         composer.setSize(w, h);
         if (fxaaPass) {
           const pr = renderer.getPixelRatio();
@@ -1146,21 +1231,15 @@ export function Planet() {
   }, []);
 
   /*
-   * Canvas positioning:
-   *   · Fixed to the right, vertically centred
-   *   · translateY(-50%) centres it on the Y axis
-   *   · translateX(TRANSLATE_X_PCT%) pushes it ~1/3 off-screen to the right
-   *   · pointer-events: none — never blocks page interaction/content
-   *
-   * Size/margin use clamp() so desktop gets real breathing room instead of
-   * scaling unbounded with viewport height (a 4K monitor no longer produces
-   * an oversized canvas) while mobile/tablet keep the previous vh/vw-based
-   * feel, since their clamp floor/ceiling rarely bind at those widths. The
-   * ceiling was raised (860px → 1180px) and the vh term loosened (112vh →
-   * 135vh) so bloom/corona have more room to breathe on large desktop
-   * screens before nearing the canvas's own edge, on top of the alpha fix
-   * above — the two together are what stop the effect from reading as a
-   * "boxed-in" rectangle on either desktop or mobile.
+   * Canvas positioning — genuinely global, not a section decoration:
+   *   · Fixed to the full viewport (top:0, left:0, 100vw/100vh) — not a
+   *     small box cropped to a corner. No wrapper, no max-width, no
+   *     overflow rule, no container the planet could ever be clipped by.
+   *   · The planet's on-screen size/position come entirely from the 3D
+   *     world-space transform computed in updateGroupTransform() above,
+   *     not from CSS — this canvas is just a full-bleed viewport onto the
+   *     one scene that persists for the whole site.
+   *   · pointer-events: none — the canvas never blocks page interaction.
    *
    * The z-index (-1) matches the star canvas. Because <Planet> is rendered
    * BEFORE <SpaceBackground> in the layout, the stars canvas (later in DOM)
@@ -1172,13 +1251,12 @@ export function Planet() {
       aria-hidden="true"
       style={{
         position:      "fixed",
-        right:         "clamp(0px, 2vw, 56px)",
-        top:           "50%",
-        transform:     `translateY(-50%) translateX(${TRANSLATE_X_PCT}%)`,
+        top:           0,
+        left:          0,
+        width:         "100vw",
+        height:        "100vh",
         pointerEvents: "none",
         zIndex:        -1,
-        width:         "clamp(340px, min(135vh, 96vw), 1180px)",
-        height:        "clamp(340px, min(135vh, 96vw), 1180px)",
       }}
     />
   );
