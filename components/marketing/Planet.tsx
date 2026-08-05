@@ -8,7 +8,7 @@ const CAMERA_Z            = 10.5;
 const FOV                 = 44;           // degrees
 const LERP_FACTOR         = 0.055;        // rotation smoothing  (lower = smoother)
 const NORMAL_SCALE        = 1.8;          // normal map strength
-const DISPLACEMENT_SCALE  = 0.14;         // surface relief depth
+const DISPLACEMENT_SCALE  = 0.09;         // surface relief depth
 const ATM_SCALE           = 1.045;        // atmosphere sphere radius multiplier
 const ATM_OPACITY         = 0.65;
 const PIXEL_RATIO_CAP     = 2;            // GPU memory guard
@@ -90,6 +90,15 @@ export function Planet() {
 
       /* Color map is perceptual (sRGB); all others are linear data maps */
       colorTex.colorSpace = THREE.SRGBColorSpace;
+
+      /*
+       * Horizontal wrapping — the equirectangular maps meet at the sphere's
+       * longitude seam; RepeatWrapping lets texture filtering blend across
+       * it instead of clamping (which causes a visible vertical line).
+       */
+      [colorTex, normalTex, roughTex, dispTex, aoTex].forEach((t) => {
+        t.wrapS = THREE.RepeatWrapping;
+      });
 
       /* Register all textures for disposal */
       [colorTex, normalTex, roughTex, dispTex, aoTex, atmTex].forEach(t =>
