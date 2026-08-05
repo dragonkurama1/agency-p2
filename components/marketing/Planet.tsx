@@ -120,8 +120,10 @@ export function Planet() {
         displacementScale: DISPLACEMENT_SCALE,
         aoMap:             aoTex,
         aoMapIntensity:    1.4,
-        aoMapChannel:      1,          // matches the uv1 attribute above
       });
+
+      /* aoMap samples from uv1 — declared on the texture, not the material */
+      aoTex.channel = 1;
 
       const planet = new THREE.Mesh(geo, mat);
       scene.add(planet);
