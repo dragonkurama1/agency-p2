@@ -12,20 +12,32 @@ import { useEffect, useRef } from "react";
  * solar granulation are all computed per-fragment from simplex-noise/fBm
  * masks — nothing is a flat crossfade and nothing is a 2D image swap.
  *
+ * Post-processing (AAA cinematic pipeline, tiered per device):
+ * A THREE.EffectComposer chain — RenderPass → UnrealBloomPass → (desktop
+ * only) a custom heat-distortion ShaderPass → OutputPass (ACES filmic +
+ * sRGB, reading renderer.toneMapping/outputColorSpace) → (desktop only) a
+ * custom chromatic-aberration/vignette/procedural-lens-dirt ShaderPass →
+ * (desktop/tablet) FXAA — replaces the old hand-rolled in-shader tonemap.
+ * Because everything now composites through OutputPass at the very end,
+ * the planet's own fragment shader outputs raw linear HDR (no manual
+ * acesFilmic/linearToSRGB anymore) so bloom can correctly extract
+ * above-1.0 emissive values before the single final tonemap. At uProgress
+ * ≈ 0.94→1.0 a GPU-cheap THREE.Points particle burst (radial from the
+ * sphere surface, additive, orange→gold, no white flash) layers a final
+ * "energy release" on top, sized per tier.
+ *
  * Scope note: this stays a persistent, non-blocking decorative element (same
- * position/behaviour as before — fixed on the right, ~40% off-screen,
+ * position/behaviour as before — fixed on the right, ~1/3 off-screen,
  * pointer-events: none, visible through the whole page scroll). It does NOT
  * take over the viewport or gate the rest of the site behind an intro
- * sequence, and it does NOT use a post-processing pipeline (Bloom/FXAA/
- * chromatic aberration/heat-distortion passes) — bloom-like brightness is
- * approximated with a hand-rolled ACES tonemap + rising exposure uniform,
- * which gets the "getting hot" cinematic read without the GPU/perf cost of
- * EffectComposer. This trade-off was chosen explicitly to keep the element
- * decorative rather than a full-page takeover, and to protect the Lighthouse
- * perf work already done on this page (22MB → ~2MB, 21s TBT → idle-deferred).
+ * sequence — the post-processing/explosion additions above are layered onto
+ * that existing element, not a replacement of it. This trade-off protects
+ * the Lighthouse perf work already done on this page (22MB → ~2MB, 21s TBT →
+ * idle-deferred), which is why every new pass is tier-gated and skipped
+ * outright on mobile beyond a single cheap low-res bloom.
  *
  * Folder structure (existing project architecture, nothing new added):
- *   components/marketing/Planet.tsx   ← this file (shaders inlined below)
+ *   components/marketing/Planet.tsx   ← this file (shaders + passes inlined)
  *   public/textures/planet/*.webp     ← 10 PBR/narrative maps (compressed, seamless)
  *   app/(site)/layout.tsx             ← mounts <Planet /> globally
  * ──────────────────────────────────────────────────────────────────────────
@@ -59,7 +71,7 @@ function getTier(width: number): Tier {
  * mobile step down geometry density and vertex-shader relief (displacement
  * map amount, lava "inflate", sun-phase turbulence) to protect 60fps. */
 const SEGMENTS: Record<Tier, number> = {
-  mobile:  96,
+  mobile:  128,
   tablet:  256,
   desktop: 512,
 };
@@ -80,6 +92,36 @@ const TURBULENCE_AMOUNT: Record<Tier, number> = {
   mobile:  0,
   tablet:  0.08,
   desktop: 0.14,
+};
+
+/* Post-processing quality per tier — bloom always runs (cheapest, biggest
+ * visual win for the "getting hot" read); heat-distortion, chromatic
+ * aberration/lens-dirt and FXAA step in only where the device can afford
+ * the extra full-screen passes. */
+const BLOOM_STRENGTH: Record<Tier, number> = {
+  mobile:  0.45,
+  tablet:  0.85,
+  desktop: 1.25,
+};
+const BLOOM_RADIUS: Record<Tier, number> = {
+  mobile:  0.25,
+  tablet:  0.4,
+  desktop: 0.55,
+};
+const BLOOM_THRESHOLD: Record<Tier, number> = {
+  mobile:  0.8,
+  tablet:  0.68,
+  desktop: 0.55,
+};
+const WANTS_HEAT_DISTORTION: Record<Tier, boolean> = { mobile: false, tablet: false, desktop: true };
+const WANTS_FINAL_COMPOSITE: Record<Tier, boolean> = { mobile: false, tablet: false, desktop: true };
+const WANTS_FXAA: Record<Tier, boolean> = { mobile: false, tablet: true, desktop: true };
+const WANTS_MSAA: Record<Tier, boolean> = { mobile: false, tablet: false, desktop: true };
+
+const PARTICLE_COUNT: Record<Tier, number> = {
+  mobile:  80,
+  tablet:  220,
+  desktop: 480,
 };
 
 /* ─── Shared GLSL: simplex noise + fBm ──────────────────────────────────────
@@ -219,14 +261,16 @@ void main() {
  * "nothing suddenly appears" requirement: every transition is a continuous
  * cross-blend, not a cut.
  *
- * Tonemap: this material writes its own ACES-filmic + linear-to-sRGB encode
- * at the very end (see acesFilmic/linearToSRGB) rather than relying on
- * three.js's auto-injected chunk system, since that system only reliably
- * activates for built-in materials — doing it by hand here is version-proof
- * and keeps this shader fully self-contained. uExposure is kept in lockstep
- * with renderer.toneMappingExposure from the JS side every frame, so the
- * whole scene (this shader + the plain-material atmosphere/corona) brightens
- * together as the planet becomes a sun.
+ * Output: this material now writes RAW LINEAR HDR colour (no manual
+ * tonemap/encode) because the render pipeline runs through an
+ * EffectComposer — UnrealBloomPass needs to see genuine above-1.0 emissive
+ * values to extract believable glow, and OutputPass applies the single,
+ * correct ACES-filmic + sRGB conversion once at the very end of the chain,
+ * after bloom/distortion/aberration have all operated on the linear image.
+ * uExposure is still kept in lockstep with renderer.toneMappingExposure
+ * from the JS side every frame, so the whole scene (this shader + the
+ * plain-material atmosphere/corona/particles) brightens together as the
+ * planet becomes a sun.
  */
 const FRAGMENT_SHADER = /* glsl */ `
 ${NOISE_GLSL}
@@ -272,19 +316,6 @@ vec3 perturbNormal(vec3 N, vec3 V, vec2 uv) {
   vec3 mapN = texture2D(uNormalMap, uv).xyz * 2.0 - 1.0;
   mat3 TBN = cotangentFrame(N, -V, uv);
   return normalize(TBN * mapN);
-}
-
-vec3 acesFilmic(vec3 x) {
-  float a = 2.51;
-  float b = 0.03;
-  float c = 2.43;
-  float d = 0.59;
-  float e = 0.14;
-  return clamp((x * (a * x + b)) / (x * (c * x + d) + e), 0.0, 1.0);
-}
-
-vec3 linearToSRGB(vec3 c) {
-  return mix(c * 12.92, 1.055 * pow(max(c, 0.0), vec3(1.0 / 2.4)) - 0.055, step(0.0031308, c));
 }
 
 void main() {
@@ -359,10 +390,132 @@ void main() {
   float litFade = 1.0 - wSun * 0.92;
   vec3 finalColor = albedo * lit * litFade + emissive;
 
-  vec3 toneMapped = acesFilmic(finalColor * uExposure);
-  vec3 outputColor = linearToSRGB(toneMapped);
+  gl_FragColor = vec4(finalColor * uExposure, 1.0);
+}
+`;
 
-  gl_FragColor = vec4(outputColor, 1.0);
+/* ─── Custom post-process passes (ShaderPass definitions) ─────────────────
+ * Shared full-screen-quad vertex shader — the standard boilerplate used by
+ * every custom ShaderPass in three.js's own examples (CopyShader, DotScreen,
+ * RGBShift, etc.): position/uv come from ShaderPass's internal quad
+ * geometry, projectionMatrix/modelViewMatrix from its internal ortho camera.
+ */
+const PASSTHROUGH_VERTEX = /* glsl */ `
+varying vec2 vUv;
+void main() {
+  vUv = uv;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+}
+`;
+
+/* Cheap screen-space heat shimmer — desktop only. Layered sine-wave UV
+ * warp (far cheaper than per-pixel simplex/fBm) driven by uIntensity, which
+ * JS ramps up as the lava/sun stages take over. */
+const HEAT_DISTORTION_FRAGMENT = /* glsl */ `
+uniform sampler2D tDiffuse;
+uniform float uTime;
+uniform float uIntensity;
+varying vec2 vUv;
+
+void main() {
+  vec2 uv = vUv;
+  float shift = uIntensity * 0.012;
+  uv.x += sin(uv.y * 38.0 + uTime * 2.6) * shift;
+  uv.y += cos(uv.x * 34.0 + uTime * 2.1) * shift * 0.6;
+  gl_FragColor = texture2D(tDiffuse, uv);
+}
+`;
+
+/* Subtle chromatic aberration (radial RGB channel offset, stronger at the
+ * edges) + soft vignette + procedural lens-dirt smudges modulated by local
+ * scene brightness (so dirt only "catches light" near bloom highlights,
+ * never a flat overlay). Desktop only — this runs after OutputPass, i.e. on
+ * the already-tonemapped/encoded image, which is the correct place for a
+ * lens/sensor artifact like this. */
+const FINAL_COMPOSITE_FRAGMENT = /* glsl */ `
+uniform sampler2D tDiffuse;
+uniform float uAberration;
+uniform float uDirtIntensity;
+varying vec2 vUv;
+
+float smudge(vec2 uv, vec2 center, float radius, float soft) {
+  float d = length(uv - center);
+  return 1.0 - smoothstep(radius - soft, radius + soft, d);
+}
+
+void main() {
+  vec2 center = vec2(0.5);
+  vec2 toCenter = vUv - center;
+  float dist = length(toCenter);
+
+  vec2 dir = toCenter / max(dist, 0.0001);
+  float amt = uAberration * dist * dist;
+  float r = texture2D(tDiffuse, vUv - dir * amt).r;
+  float g = texture2D(tDiffuse, vUv).g;
+  float b = texture2D(tDiffuse, vUv + dir * amt).b;
+  vec3 color = vec3(r, g, b);
+
+  float vig = smoothstep(0.95, 0.35, dist);
+  color *= mix(0.82, 1.0, vig);
+
+  float luma = dot(color, vec3(0.299, 0.587, 0.114));
+  float dirt = 0.0;
+  dirt += smudge(vUv, vec2(0.28, 0.64), 0.22, 0.28) * 0.5;
+  dirt += smudge(vUv, vec2(0.70, 0.22), 0.16, 0.24) * 0.4;
+  dirt += smudge(vUv, vec2(0.82, 0.78), 0.12, 0.20) * 0.35;
+  color += dirt * uDirtIntensity * luma * vec3(1.0, 0.92, 0.8);
+
+  gl_FragColor = vec4(color, 1.0);
+}
+`;
+
+/* ─── Particle explosion (uProgress ≈ 0.94 → 1.0) ───────────────────────────
+ * A single THREE.Points cloud, GPU-driven (no per-frame CPU simulation):
+ * each particle spawns at a random point on the sphere's surface and flies
+ * radially outward as uBurst (a smoothstep band near the very end of the
+ * scroll) rises, fading in then back out — "no white flash", just an
+ * orange→gold energy release consistent with the sun-stage palette. */
+const PARTICLE_VERTEX = /* glsl */ `
+attribute float aSeed;
+uniform float uBurst;
+uniform float uTime;
+varying float vAlpha;
+varying float vSeed;
+
+void main() {
+  vSeed = aSeed;
+  vec3 dir = normalize(position);
+  float travel = uBurst * (2.2 + aSeed * 2.2);
+  vec3 wobble = vec3(
+    sin(uTime * 3.0 + aSeed * 40.0),
+    cos(uTime * 2.4 + aSeed * 30.0),
+    sin(uTime * 2.8 + aSeed * 20.0)
+  ) * 0.10 * uBurst;
+  vec3 displaced = position + dir * travel + wobble;
+
+  vAlpha = smoothstep(0.0, 0.10, uBurst) * (1.0 - smoothstep(0.5, 1.0, uBurst));
+
+  vec4 mvPosition = modelViewMatrix * vec4(displaced, 1.0);
+  gl_PointSize = (6.0 + aSeed * 16.0) * vAlpha * (240.0 / max(-mvPosition.z, 0.001));
+  gl_Position = projectionMatrix * mvPosition;
+}
+`;
+
+const PARTICLE_FRAGMENT = /* glsl */ `
+varying float vAlpha;
+varying float vSeed;
+
+void main() {
+  vec2 c = gl_PointCoord - 0.5;
+  float d = length(c);
+  float soft = smoothstep(0.5, 0.0, d);
+  if (soft <= 0.0 || vAlpha <= 0.0) discard;
+
+  vec3 orange = vec3(1.0, 0.45, 0.08);
+  vec3 gold   = vec3(1.0, 0.78, 0.35);
+  vec3 color = mix(orange, gold, vSeed);
+
+  gl_FragColor = vec4(color * soft * 1.6, soft * vAlpha);
 }
 `;
 
@@ -390,10 +543,22 @@ export function Planet() {
         THREE,
         { default: gsap },
         { ScrollTrigger },
+        { EffectComposer },
+        { RenderPass },
+        { UnrealBloomPass },
+        { ShaderPass },
+        { OutputPass },
+        { FXAAShader },
       ] = await Promise.all([
         import("three"),
         import("gsap"),
         import("gsap/ScrollTrigger"),
+        import("three/examples/jsm/postprocessing/EffectComposer.js"),
+        import("three/examples/jsm/postprocessing/RenderPass.js"),
+        import("three/examples/jsm/postprocessing/UnrealBloomPass.js"),
+        import("three/examples/jsm/postprocessing/ShaderPass.js"),
+        import("three/examples/jsm/postprocessing/OutputPass.js"),
+        import("three/examples/jsm/shaders/FXAAShader.js"),
       ]);
 
       if (!mounted || !canvas) return;
@@ -408,6 +573,7 @@ export function Planet() {
         precision:       "highp",
       });
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, PIXEL_RATIO_CAP));
+      renderer.setClearAlpha(0);
       renderer.outputColorSpace    = THREE.SRGBColorSpace;
       renderer.toneMapping         = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.15;
@@ -561,6 +727,117 @@ export function Planet() {
         toDispose.push(coronaGeo, coronaMat);
       }
 
+      /* ─── Particle explosion — child of the planet mesh so it inherits
+       * the same scroll-driven rotation for free ────────────────────────── */
+      const particleCount = PARTICLE_COUNT[tier];
+      const particlePositions = new Float32Array(particleCount * 3);
+      const particleSeeds = new Float32Array(particleCount);
+      for (let i = 0; i < particleCount; i++) {
+        const u = Math.random();
+        const v = Math.random();
+        const theta = 2 * Math.PI * u;
+        const phi = Math.acos(2 * v - 1);
+        const r = SPHERE_RADIUS * (1.0 + Math.random() * 0.04);
+        particlePositions[i * 3 + 0] = r * Math.sin(phi) * Math.cos(theta);
+        particlePositions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+        particlePositions[i * 3 + 2] = r * Math.cos(phi);
+        particleSeeds[i] = Math.random();
+      }
+      const particleGeo = new THREE.BufferGeometry();
+      particleGeo.setAttribute("position", new THREE.BufferAttribute(particlePositions, 3));
+      particleGeo.setAttribute("aSeed", new THREE.BufferAttribute(particleSeeds, 1));
+      const particleUniforms = {
+        uBurst: { value: 0 },
+        uTime:  { value: 0 },
+      };
+      const particleMat = new THREE.ShaderMaterial({
+        vertexShader:   PARTICLE_VERTEX,
+        fragmentShader: PARTICLE_FRAGMENT,
+        uniforms:       particleUniforms,
+        transparent:    true,
+        depthWrite:     false,
+        blending:       THREE.AdditiveBlending,
+      });
+      const particles = new THREE.Points(particleGeo, particleMat);
+      planet.add(particles);
+      toDispose.push(particleGeo, particleMat);
+
+      /* ─── Post-processing pipeline (EffectComposer, tiered) ─────────────
+       * Linear-HDR render target so UnrealBloomPass can extract genuine
+       * above-1.0 emissive brightness; OutputPass applies the single
+       * correct ACES + sRGB conversion at the end of the chain. */
+      const renderTarget = new THREE.WebGLRenderTarget(W, H, {
+        type:       THREE.HalfFloatType,
+        colorSpace: THREE.NoColorSpace,
+        samples:    WANTS_MSAA[tier] ? 4 : 0,
+      });
+      const composer = new EffectComposer(renderer, renderTarget);
+      composer.setSize(W, H);
+
+      const renderPass = new RenderPass(scene, camera);
+      renderPass.clearAlpha = 0;
+      composer.addPass(renderPass);
+
+      const bloomPass = new UnrealBloomPass(
+        new THREE.Vector2(W, H),
+        BLOOM_STRENGTH[tier],
+        BLOOM_RADIUS[tier],
+        BLOOM_THRESHOLD[tier],
+      );
+      composer.addPass(bloomPass);
+
+      let heatDistortionPass: InstanceType<typeof ShaderPass> | null = null;
+      if (WANTS_HEAT_DISTORTION[tier]) {
+        heatDistortionPass = new ShaderPass({
+          uniforms: {
+            tDiffuse:   { value: null },
+            uTime:      { value: 0 },
+            uIntensity: { value: 0 },
+          },
+          vertexShader:   PASSTHROUGH_VERTEX,
+          fragmentShader: HEAT_DISTORTION_FRAGMENT,
+        });
+        composer.addPass(heatDistortionPass);
+      }
+
+      const outputPass = new OutputPass();
+      composer.addPass(outputPass);
+
+      let finalCompositePass: InstanceType<typeof ShaderPass> | null = null;
+      if (WANTS_FINAL_COMPOSITE[tier]) {
+        finalCompositePass = new ShaderPass({
+          uniforms: {
+            tDiffuse:       { value: null },
+            uAberration:    { value: 0.003 },
+            uDirtIntensity: { value: 0.3 },
+          },
+          vertexShader:   PASSTHROUGH_VERTEX,
+          fragmentShader: FINAL_COMPOSITE_FRAGMENT,
+        });
+        composer.addPass(finalCompositePass);
+      }
+
+      let fxaaPass: InstanceType<typeof ShaderPass> | null = null;
+      if (WANTS_FXAA[tier]) {
+        fxaaPass = new ShaderPass(FXAAShader);
+        const pr = renderer.getPixelRatio();
+        (fxaaPass.material.uniforms["resolution"].value as InstanceType<typeof THREE.Vector2>)
+          .set(1 / (W * pr), 1 / (H * pr));
+        composer.addPass(fxaaPass);
+      }
+
+      /* EffectComposer.dispose() only frees its own render targets +
+       * internal copyPass — it does NOT cascade into passes added via
+       * addPass() (verified against three.js's own source). Each pass that
+       * owns real GPU resources (materials, and for bloom, several
+       * internal render targets) must be disposed explicitly. RenderPass
+       * holds no resources of its own (just scene/camera references) so
+       * it's intentionally omitted. */
+      toDispose.push(composer, bloomPass, outputPass);
+      if (heatDistortionPass) toDispose.push(heatDistortionPass);
+      if (finalCompositePass) toDispose.push(finalCompositePass);
+      if (fxaaPass) toDispose.push(fxaaPass);
+
       /* ─── GSAP ScrollTrigger — the only source of rotation AND progress ──
        * progress 0→1 maps to rotation 0→2π and to uProgress. Scrolling up
        * decreases progress and naturally reverses both — no separate
@@ -712,11 +989,30 @@ export function Planet() {
         renderer.toneMappingExposure = exposure;
         uniforms.uExposure.value = exposure;
 
-        renderer.render(scene, camera);
+        /* Particle explosion burst, driven by the same progress timeline —
+         * only ever active in the last ~6% of the scroll. */
+        const burst = THREE.MathUtils.smoothstep(currentProgress, 0.94, 1.0);
+        particleUniforms.uBurst.value = burst;
+        particleUniforms.uTime.value = elapsed;
+
+        /* Bloom intensifies toward the explosion; heat-distortion ramps
+         * with the lava/sun stages (mirrors the shader's own wLava+wSun
+         * bands via the same smoothstep on currentProgress). */
+        bloomPass.strength = BLOOM_STRENGTH[tier] * (1 + coronaGrowth * 0.5);
+        if (heatDistortionPass) {
+          const heatT = THREE.MathUtils.smoothstep(currentProgress, 0.45, 0.85);
+          heatDistortionPass.uniforms.uIntensity.value = heatT;
+          heatDistortionPass.uniforms.uTime.value = elapsed;
+        }
+        if (finalCompositePass) {
+          finalCompositePass.uniforms.uAberration.value = THREE.MathUtils.lerp(0.002, 0.01, coronaGrowth);
+        }
+
+        composer.render();
       }
       rafId = requestAnimationFrame(tick);
 
-      /* ─── ResizeObserver — keep canvas / camera in sync ────────────────── */
+      /* ─── ResizeObserver — keep canvas / camera / composer in sync ──────── */
       const ro = new ResizeObserver(() => {
         const w = canvas.offsetWidth;
         const h = canvas.offsetHeight;
@@ -724,6 +1020,12 @@ export function Planet() {
         renderer.setSize(w, h, false);
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
+        composer.setSize(w, h);
+        if (fxaaPass) {
+          const pr = renderer.getPixelRatio();
+          (fxaaPass.material.uniforms["resolution"].value as InstanceType<typeof THREE.Vector2>)
+            .set(1 / (w * pr), 1 / (h * pr));
+        }
       });
       ro.observe(canvas);
       killResizeObserver = () => ro.disconnect();
