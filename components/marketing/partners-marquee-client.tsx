@@ -13,7 +13,7 @@ function PartnerCard({ partner }: { partner: Partner }) {
 
   return (
     <div
-      className="group relative h-44 rounded-2xl overflow-hidden cursor-pointer transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_8px_48px_rgba(124,58,237,0.28)]"
+      className="group relative h-44 rounded-2xl overflow-hidden cursor-pointer transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_8px_48px_rgb(var(--accent-gold-rgb)/28%)]"
       style={{
         background: "rgba(8,6,20,0.45)",
         backdropFilter: "blur(18px)",
@@ -95,12 +95,12 @@ function PartnerCard({ partner }: { partner: Partner }) {
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="inline-flex items-center gap-1 text-[11px] font-normal text-[#7C3AED] hover:text-[#a78bfa] transition-colors"
+              className="inline-flex items-center gap-1 text-[11px] font-normal text-[var(--accent-gold)] hover:text-[var(--accent-gold-text)] transition-colors"
             >
               Voir le projet <ExternalLink className="size-3" />
             </Link>
           ) : (
-            <span className="font-sans text-[11px] text-[#7C3AED]/40 font-medium tracking-wide">
+            <span className="font-sans text-[11px] text-[rgb(var(--accent-gold-rgb)/40%)] font-medium tracking-wide">
               Client Prestigia
             </span>
           )}
@@ -110,8 +110,8 @@ function PartnerCard({ partner }: { partner: Partner }) {
       {/* ── Bordure glow au hover/tap ───────────────────────────────── */}
       <div
         aria-hidden="true"
-        className={`pointer-events-none absolute inset-0 rounded-2xl ring-1 transition-all duration-500 group-hover:ring-[#7C3AED]/45${
-          open ? " ring-[#7C3AED]/45" : " ring-transparent"
+        className={`pointer-events-none absolute inset-0 rounded-2xl ring-1 transition-all duration-500 group-hover:ring-[rgb(var(--accent-gold-rgb)/45%)]${
+          open ? " ring-[rgb(var(--accent-gold-rgb)/45%)]" : " ring-transparent"
         }`}
       />
     </div>

@@ -37,7 +37,7 @@ const CAMERA_Z        = 10.5;
 const FOV             = 44;          // degrees
 const LERP_FACTOR     = 0.08;        // scroll-rotation / scroll-progress smoothing
 const PIXEL_RATIO_CAP = 2;           // GPU memory guard
-const TRANSLATE_X_PCT = 38;          // % of canvas pushed off-screen to the right
+const TRANSLATE_X_PCT = 34;          // % of canvas pushed off-screen to the right
 
 /* Brand / narrative colours */
 const BRAND_VIOLET  = 0x7c3aed;
@@ -570,6 +570,9 @@ export function Planet() {
       let targetProgress = 0;
       let currentProgress = 0;
 
+      let handleWindowLoad: (() => void) | null = null;
+      let refreshTimeouts: number[] = [];
+
       if (!prefersReduced) {
         const st = ScrollTrigger.create({
           start:    0,
@@ -581,7 +584,34 @@ export function Planet() {
           },
         });
         ScrollTrigger.refresh();
-        killScrollTrigger = () => st.kill();
+
+        /*
+         * Bug fix: on mobile the planet would stop rotating partway down
+         * the page. Root cause — `end` is re-evaluated only when
+         * ScrollTrigger recalculates (window resize or an explicit
+         * .refresh()), never automatically when the DOCUMENT gets taller
+         * without a viewport resize (e.g. below-the-fold images or web
+         * fonts finishing load on a slow mobile connection, after our
+         * idle-deferred init already ran and captured maxScroll too early).
+         * Once the page grows past that stale maxScroll, progress clamps
+         * at 1 and the planet visibly freezes in its final state for the
+         * rest of the scroll. Re-running refresh() after full load, plus a
+         * couple of delayed fallbacks for late client-rendered content,
+         * fixes it without needing every other component to know about
+         * this ScrollTrigger instance.
+         */
+        handleWindowLoad = () => ScrollTrigger.refresh();
+        window.addEventListener("load", handleWindowLoad);
+        refreshTimeouts = [
+          window.setTimeout(() => ScrollTrigger.refresh(), 800),
+          window.setTimeout(() => ScrollTrigger.refresh(), 2500),
+        ];
+
+        killScrollTrigger = () => {
+          st.kill();
+          if (handleWindowLoad) window.removeEventListener("load", handleWindowLoad);
+          refreshTimeouts.forEach((id) => window.clearTimeout(id));
+        };
       }
 
       /* ─── Render loop ───────────────────────────────────────────────────
@@ -596,6 +626,32 @@ export function Planet() {
       const atmOrangeCol = new THREE.Color(ATM_ORANGE);
       const atmTarget    = new THREE.Color();
       const clock = new THREE.Clock();
+
+      /* ─── Site-wide colour sync ───────────────────────────────────────────
+       * The same rim-colour ramp that lights the planet also drives the
+       * public site's shared design tokens (--accent-gold and friends,
+       * --glow-violet/--glow-blue) so buttons, borders, icons and the global
+       * ambient background glow all track the planet's current narrative
+       * stage. This only ever touches document.documentElement while THIS
+       * component is mounted — Planet only renders inside the (site) route
+       * group, so /dashboard and /login never see it move, and the cleanup
+       * below removes every override on unmount so a client-side navigation
+       * away from a site page can't leave a stale colour behind. */
+      const cssRoot = document.documentElement.style;
+      const white       = new THREE.Color(0xffffff);
+      const hoverTmp     = new THREE.Color();
+      const textTmp      = new THREE.Color();
+      const glowBlueTmp  = new THREE.Color();
+
+      function toSRGBChannels(c: InstanceType<typeof THREE.Color>) {
+        const hex = c.getHexString(THREE.SRGBColorSpace);
+        return {
+          hex: `#${hex}`,
+          r: parseInt(hex.slice(0, 2), 16),
+          g: parseInt(hex.slice(2, 4), 16),
+          b: parseInt(hex.slice(4, 6), 16),
+        };
+      }
 
       function tick() {
         if (!mounted) return;
@@ -618,6 +674,25 @@ export function Planet() {
           rimTmp.lerpColors(rimViolet, rimOrange, (currentProgress - 0.5) / 0.5);
         }
         uniforms.uRimColor.value.copy(rimTmp);
+
+        /* Site-wide tokens: same rim colour, two lighter derived tints
+         * (hover / text) matching the existing static ratios in globals.css
+         * (#7c3aed → #8b5cf6 hover, → #b39dfa text), plus the two glow tones
+         * consumed by the global ambient background layer. */
+        const rim = toSRGBChannels(rimTmp);
+        hoverTmp.copy(rimTmp).lerp(white, 0.15);
+        textTmp.copy(rimTmp).lerp(white, 0.45);
+        glowBlueTmp.copy(rimTmp).lerp(rimBlue, 0.5);
+        const hover = toSRGBChannels(hoverTmp);
+        const text = toSRGBChannels(textTmp);
+        const glowBlue = toSRGBChannels(glowBlueTmp);
+
+        cssRoot.setProperty("--accent-gold", rim.hex);
+        cssRoot.setProperty("--accent-gold-rgb", `${rim.r} ${rim.g} ${rim.b}`);
+        cssRoot.setProperty("--accent-gold-hover", hover.hex);
+        cssRoot.setProperty("--accent-gold-text", text.hex);
+        cssRoot.setProperty("--glow-violet", `rgba(${rim.r}, ${rim.g}, ${rim.b}, 0.45)`);
+        cssRoot.setProperty("--glow-blue", `rgba(${glowBlue.r}, ${glowBlue.g}, ${glowBlue.b}, 0.35)`);
 
         /* Atmosphere: blue → orange, growing into a corona near the end */
         const atmT = THREE.MathUtils.smoothstep(currentProgress, 0.15, 0.75);
@@ -689,15 +764,30 @@ export function Planet() {
       killResizeObserver?.();
       toDispose.forEach((item) => item.dispose());
       disposeRenderer?.();
+
+      /* Release the shared design-token overrides so a client-side
+       * navigation to /dashboard or /login (same <html>, no full reload)
+       * falls back to the static brand violet defined in globals.css
+       * instead of freezing on whatever colour the planet last showed. */
+      const root = document.documentElement.style;
+      [
+        "--accent-gold", "--accent-gold-rgb", "--accent-gold-hover",
+        "--accent-gold-text", "--glow-violet", "--glow-blue",
+      ].forEach((prop) => root.removeProperty(prop));
     };
   }, []);
 
   /*
-   * Canvas positioning — unchanged from before:
+   * Canvas positioning:
    *   · Fixed to the right, vertically centred
    *   · translateY(-50%) centres it on the Y axis
-   *   · translateX(TRANSLATE_X_PCT%) pushes it ~40% off-screen to the right
+   *   · translateX(TRANSLATE_X_PCT%) pushes it ~1/3 off-screen to the right
    *   · pointer-events: none — never blocks page interaction/content
+   *
+   * Size/margin use clamp() so desktop gets real breathing room instead of
+   * scaling unbounded with viewport height (a 4K monitor no longer produces
+   * an oversized canvas) while mobile/tablet keep the previous vh/vw-based
+   * feel, since their clamp floor/ceiling rarely bind at those widths.
    *
    * The z-index (-1) matches the star canvas. Because <Planet> is rendered
    * BEFORE <SpaceBackground> in the layout, the stars canvas (later in DOM)
@@ -709,13 +799,13 @@ export function Planet() {
       aria-hidden="true"
       style={{
         position:      "fixed",
-        right:         0,
+        right:         "clamp(0px, 2vw, 56px)",
         top:           "50%",
         transform:     `translateY(-50%) translateX(${TRANSLATE_X_PCT}%)`,
         pointerEvents: "none",
         zIndex:        -1,
-        width:         "min(112vh, 96vw)",
-        height:        "min(112vh, 96vw)",
+        width:         "clamp(340px, min(112vh, 96vw), 860px)",
+        height:        "clamp(340px, min(112vh, 96vw), 860px)",
       }}
     />
   );

@@ -5,9 +5,9 @@ export function StatsBar() {
     <section
       className="relative py-12"
       style={{
-        background: "linear-gradient(to right, rgba(124,58,237,0.06), rgba(79,70,229,0.06))",
-        borderTop: "1px solid rgba(124,58,237,0.12)",
-        borderBottom: "1px solid rgba(124,58,237,0.12)",
+        background: "linear-gradient(to right, rgb(var(--accent-gold-rgb) / 0.06), rgba(79,70,229,0.06))",
+        borderTop: "1px solid rgb(var(--accent-gold-rgb) / 0.12)",
+        borderBottom: "1px solid rgb(var(--accent-gold-rgb) / 0.12)",
         backdropFilter: "blur(12px)",
         WebkitBackdropFilter: "blur(12px)",
       }}
@@ -18,7 +18,7 @@ export function StatsBar() {
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse at 50% 50%, rgba(124,58,237,0.08) 0%, transparent 70%)",
+            "radial-gradient(ellipse at 50% 50%, rgb(var(--accent-gold-rgb) / 0.08) 0%, transparent 70%)",
         }}
       />
       <div className="container-px mx-auto max-w-7xl grid grid-cols-2 sm:grid-cols-4 gap-8 relative">
@@ -27,8 +27,8 @@ export function StatsBar() {
             <p
               className="font-serif text-3xl sm:text-4xl text-glow"
               style={{
-                color: "#b39dfa",
-                textShadow: "0 0 30px rgba(124,58,237,0.5)",
+                color: "var(--accent-gold-text)",
+                textShadow: "0 0 30px rgb(var(--accent-gold-rgb) / 0.5)",
               }}
             >
               {stat.value}

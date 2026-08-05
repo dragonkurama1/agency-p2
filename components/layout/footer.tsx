@@ -48,7 +48,7 @@ export async function Footer() {
     <footer
       className="relative mt-8"
       style={{
-        borderTop: "1px solid rgba(124,58,237,0.18)",
+        borderTop: "1px solid rgb(var(--accent-gold-rgb) / 0.18)",
         backdropFilter: "blur(24px)",
         WebkitBackdropFilter: "blur(24px)",
         background: "rgba(4,3,10,0.75)",
@@ -60,7 +60,7 @@ export async function Footer() {
         aria-hidden="true"
         className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-px"
         style={{
-          background: "linear-gradient(to right, transparent, rgba(124,58,237,0.5), transparent)",
+          background: "linear-gradient(to right, transparent, rgb(var(--accent-gold-rgb) / 0.5), transparent)",
         }}
       />
       {/* Lueur au-dessus du footer */}
@@ -68,7 +68,7 @@ export async function Footer() {
         aria-hidden="true"
         className="absolute -top-20 left-1/2 -translate-x-1/2 w-96 h-20 pointer-events-none"
         style={{
-          background: "radial-gradient(ellipse, rgba(124,58,237,0.1), transparent 70%)",
+          background: "radial-gradient(ellipse, rgb(var(--accent-gold-rgb) / 0.1), transparent 70%)",
           filter: "blur(20px)",
         }}
       />
@@ -156,7 +156,7 @@ export async function Footer() {
         {/* Bottom */}
         <div
           className="mt-12 flex flex-col gap-4 pt-8 text-xs text-[var(--muted-foreground)] md:flex-row md:items-center md:justify-between"
-          style={{ borderTop: "1px solid rgba(124,58,237,0.12)" }}
+          style={{ borderTop: "1px solid rgb(var(--accent-gold-rgb) / 0.12)" }}
         >
           <p>© {new Date().getFullYear()} Prestigia Agency. Tous droits réservés.</p>
           <nav aria-label="Liens légaux">

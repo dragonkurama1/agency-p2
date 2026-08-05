@@ -24,7 +24,7 @@ export function Header() {
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
         scrolled
-          ? "bg-black/75 backdrop-blur-xl border-b border-[rgba(124,58,237,0.2)] shadow-[0_4px_40px_rgba(0,0,0,0.5)]"
+          ? "bg-black/75 backdrop-blur-xl border-b border-[rgb(var(--accent-gold-rgb)/20%)] shadow-[0_4px_40px_rgba(0,0,0,0.5)]"
           : "bg-transparent border-b border-transparent"
       )}
     >
@@ -61,9 +61,9 @@ export function Header() {
               className={cn(
                 "relative text-sm font-medium tracking-wide transition-colors duration-200",
                 "after:absolute after:-bottom-0.5 after:left-0 after:h-px",
-                "after:bg-[#7C3AED] after:transition-all after:duration-300",
+                "after:bg-[var(--accent-gold)] after:transition-all after:duration-300",
                 pathname === link.href
-                  ? "text-[#7C3AED] after:w-full"
+                  ? "text-[var(--accent-gold)] after:w-full"
                   : "text-white/70 hover:text-white after:w-0 hover:after:w-full"
               )}
             >
@@ -85,7 +85,7 @@ export function Header() {
 
       {/* Menu mobile */}
       {open && (
-        <div className="border-t border-[rgba(124,58,237,0.2)] bg-black/90 backdrop-blur-xl px-6 py-6 lg:hidden">
+        <div className="border-t border-[rgb(var(--accent-gold-rgb)/20%)] bg-black/90 backdrop-blur-xl px-6 py-6 lg:hidden">
           <nav className="flex flex-col gap-4" aria-label="Navigation mobile">
             {navLinks.map((link) => (
               <Link
@@ -95,7 +95,7 @@ export function Header() {
                 className={cn(
                   "text-base tracking-wide transition-colors py-1",
                   pathname === link.href
-                    ? "text-[#7C3AED] font-normal"
+                    ? "text-[var(--accent-gold)] font-normal"
                     : "text-white/70 hover:text-white"
                 )}
               >
@@ -105,7 +105,7 @@ export function Header() {
             <Link
               href="/devis"
               onClick={() => setOpen(false)}
-              className="mt-2 inline-flex items-center justify-center rounded-full bg-[#7C3AED] px-6 py-3 text-sm font-normal text-white tracking-wide"
+              className="mt-2 inline-flex items-center justify-center rounded-full bg-[var(--accent-gold)] px-6 py-3 text-sm font-normal text-white tracking-wide"
             >
               Demander un devis
             </Link>

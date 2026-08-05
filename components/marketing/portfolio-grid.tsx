@@ -63,7 +63,7 @@ export function PortfolioGrid({
             href={`/realisations/${project.slug}`}
             className="group relative rounded-2xl border border-[var(--border)] bg-[var(--muted)] overflow-hidden
                        transition-all duration-300 hover:border-[var(--accent-gold)]/40
-                       hover:shadow-[0_0_32px_rgba(124,58,237,0.12)] flex flex-col"
+                       hover:shadow-[0_0_32px_rgb(var(--accent-gold-rgb)/12%)] flex flex-col"
           >
             {/* Image */}
             <div className="relative aspect-[16/10] w-full overflow-hidden bg-[var(--border)]">
@@ -140,7 +140,7 @@ export function PortfolioGrid({
               className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
               style={{
                 background:
-                  "linear-gradient(135deg, rgba(124,58,237,0.06) 0%, transparent 60%)",
+                  "linear-gradient(135deg, rgb(var(--accent-gold-rgb) / 0.06) 0%, transparent 60%)",
               }}
             />
           </Link>

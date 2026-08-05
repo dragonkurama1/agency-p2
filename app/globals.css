@@ -13,8 +13,19 @@
   --muted-foreground: #a89bc2;
   --border: rgba(124, 58, 237, 0.18);
 
-  /* Accents violet / spatial */
+  /* Accents violet / spatial
+   * --accent-gold-rgb holds the same colour as --accent-gold, expressed as
+   * space-separated channels ("R G B") so component classes can apply a
+   * custom alpha via the CSS rgb(var(--accent-gold-rgb) / 10%) syntax —
+   * Tailwind's own /opacity modifier only works on literal colours, not on
+   * an arbitrary var(), so this companion token is what makes translucent
+   * accent tints (borders, hover fills) follow the same dynamic colour.
+   * On public site pages, Planet.tsx overwrites both of these every frame
+   * to track the planet's current narrative stage (blue → violet → orange)
+   * and removes the override on unmount, so every other route (dashboard,
+   * login) always sees the static brand violet below. */
   --accent-gold: #7c3aed;
+  --accent-gold-rgb: 124 58 237;
   --accent-gold-hover: #8b5cf6;
   --accent-gold-text: #b39dfa;
   --accent-blue: rgba(32, 14, 59, 0.6);
@@ -24,8 +35,8 @@
   --glass-bg: rgba(8, 6, 20, 0.45);
   --glass-bg-hover: rgba(14, 10, 32, 0.65);
   --glass-border: rgba(140, 82, 255, 0.18);
-  --glass-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(124,58,237,0.08);
-  --glass-shadow-hover: 0 28px 80px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(124,58,237,0.2);
+  --glass-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 0 1px rgb(var(--accent-gold-rgb) / 0.08);
+  --glass-shadow-hover: 0 28px 80px rgba(0, 0, 0, 0.55), 0 0 0 1px rgb(var(--accent-gold-rgb) / 0.2);
 
   /* Glow */
   --glow-violet: rgba(124, 58, 237, 0.45);
@@ -113,7 +124,7 @@ body {
   background: rgba(8, 6, 20, 0.55);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(124, 58, 237, 0.12);
+  border: 1px solid rgb(var(--accent-gold-rgb) / 0.12);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -161,6 +172,27 @@ body {
   background: rgba(4, 3, 10, 0.62);
 }
 
+/*
+ * Ambient colour wash — reads --glow-violet / --glow-blue. Static fallback
+ * values live in :root above; on site pages Planet.tsx overwrites both
+ * every animation frame to track the planet's current stage (frozen blue
+ * → crystal violet → lava/sun orange), so this single layer washes every
+ * section of the page with that colour without each section needing its
+ * own glow element. z-index matches #space-bg; DOM order (this div comes
+ * after #space-bg) puts the wash on top of the static image, and it stays
+ * below the star/planet canvases (-1) and all real content.
+ */
+#ambient-glow {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(60% 50% at 82% 28%, var(--glow-violet), transparent 70%),
+    radial-gradient(50% 45% at 12% 78%, var(--glow-blue), transparent 70%);
+  mix-blend-mode: screen;
+}
+
 /* Canvas particules étoiles */
 #space-canvas {
   position: fixed;
@@ -191,8 +223,8 @@ body {
 
 /* Glow pulsant pour accents */
 @keyframes glow-pulse {
-  0%, 100% { box-shadow: 0 0 16px rgba(124,58,237,0.3); }
-  50%       { box-shadow: 0 0 40px rgba(124,58,237,0.65); }
+  0%, 100% { box-shadow: 0 0 16px rgb(var(--accent-gold-rgb) / 0.3); }
+  50%       { box-shadow: 0 0 40px rgb(var(--accent-gold-rgb) / 0.65); }
 }
 .glow-pulse { animation: glow-pulse 3s ease-in-out infinite; }
 
@@ -243,7 +275,7 @@ body {
    TYPOGRAPHIE — glow sur titres, gradient
    ═══════════════════════════════════════════════════════════════════════════ */
 .text-gradient {
-  background: linear-gradient(90deg, #7c3aed, #b39dfa, #7c3aed);
+  background: linear-gradient(90deg, var(--accent-gold), var(--accent-gold-text), var(--accent-gold));
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -252,37 +284,37 @@ body {
 }
 
 .text-glow {
-  text-shadow: 0 0 40px rgba(124, 58, 237, 0.5), 0 0 80px rgba(124, 58, 237, 0.2);
+  text-shadow: 0 0 40px rgb(var(--accent-gold-rgb) / 0.5), 0 0 80px rgb(var(--accent-gold-rgb) / 0.2);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
    BOUTONS — glow & glass (CSS pur, compatible Server Components)
    ═══════════════════════════════════════════════════════════════════════════ */
 .btn-glow:hover {
-  box-shadow: 0 0 40px rgba(124, 58, 237, 0.6), 0 0 80px rgba(124, 58, 237, 0.2);
+  box-shadow: 0 0 40px rgb(var(--accent-gold-rgb) / 0.6), 0 0 80px rgb(var(--accent-gold-rgb) / 0.2);
 }
 
 /* Bouton CTA Banner */
 .cta-btn {
-  background: linear-gradient(135deg, #7c3aed, #5b21b6);
+  background: linear-gradient(135deg, var(--accent-gold), #5b21b6);
   padding: 14px 36px;
   font-size: 15px;
-  box-shadow: 0 0 30px rgba(124, 58, 237, 0.4), 0 4px 24px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 30px rgb(var(--accent-gold-rgb) / 0.4), 0 4px 24px rgba(0, 0, 0, 0.3);
   transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 .cta-btn:hover {
-  box-shadow: 0 0 60px rgba(124, 58, 237, 0.65), 0 8px 32px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 60px rgb(var(--accent-gold-rgb) / 0.65), 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 /* Bouton CTA Footer */
 .footer-cta-btn {
-  background: linear-gradient(135deg, #7c3aed, #5b21b6);
+  background: linear-gradient(135deg, var(--accent-gold), #5b21b6);
   padding: 12px 24px;
-  box-shadow: 0 0 24px rgba(124, 58, 237, 0.35);
+  box-shadow: 0 0 24px rgb(var(--accent-gold-rgb) / 0.35);
   transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 .footer-cta-btn:hover {
-  box-shadow: 0 0 44px rgba(124, 58, 237, 0.6);
+  box-shadow: 0 0 44px rgb(var(--accent-gold-rgb) / 0.6);
 }
 
 /* Liens réseaux sociaux footer */
@@ -292,8 +324,8 @@ body {
   transition: color 0.25s ease, filter 0.25s ease, transform 0.25s ease;
 }
 .social-link:hover {
-  color: #b39dfa;
-  filter: drop-shadow(0 0 6px rgba(124, 58, 237, 0.7));
+  color: var(--accent-gold-text);
+  filter: drop-shadow(0 0 6px rgb(var(--accent-gold-rgb) / 0.7));
   transform: scale(1.1);
 }
 
@@ -304,8 +336,8 @@ body {
   background: linear-gradient(
     to right,
     transparent 0%,
-    rgba(124, 58, 237, 0.4) 40%,
-    rgba(124, 58, 237, 0.4) 60%,
+    rgb(var(--accent-gold-rgb) / 0.4) 40%,
+    rgb(var(--accent-gold-rgb) / 0.4) 60%,
     transparent 100%
   );
   height: 1px;
@@ -327,7 +359,7 @@ body {
 .cosmic-glow-violet {
   position: absolute;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(124,58,237,0.25) 0%, transparent 70%);
+  background: radial-gradient(circle, rgb(var(--accent-gold-rgb) / 0.25) 0%, transparent 70%);
   pointer-events: none;
   filter: blur(60px);
 }
@@ -335,7 +367,7 @@ body {
 .cosmic-glow-blue {
   position: absolute;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(79,70,229,0.2) 0%, transparent 70%);
+  background: radial-gradient(circle, var(--glow-blue) 0%, transparent 70%);
   pointer-events: none;
   filter: blur(80px);
 }
@@ -344,5 +376,5 @@ body {
    ICÔNES — halo
    ═══════════════════════════════════════════════════════════════════════════ */
 .icon-halo {
-  filter: drop-shadow(0 0 8px rgba(124, 58, 237, 0.6));
+  filter: drop-shadow(0 0 8px rgb(var(--accent-gold-rgb) / 0.6));
 }

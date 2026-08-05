@@ -108,7 +108,7 @@ export default async function HomePage() {
                 <div
                   className="aspect-[4/3]"
                   style={{
-                    background: "linear-gradient(135deg, rgba(124,58,237,0.15), rgba(79,70,229,0.08))",
+                    background: "linear-gradient(135deg, rgb(var(--accent-gold-rgb) / 0.15), rgba(79,70,229,0.08))",
                   }}
                   aria-hidden="true"
                 />

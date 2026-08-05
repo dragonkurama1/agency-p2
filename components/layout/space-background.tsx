@@ -125,6 +125,17 @@ export function SpaceBackground() {
       {/* ── Spatial background (space-background.webp via CSS #space-bg) ── */}
       <div id="space-bg" aria-hidden="true" />
 
+      {/*
+       * ── Ambient colour wash ─────────────────────────────────────────
+       * Reads --glow-violet / --glow-blue (defined in globals.css, static
+       * fallback values). On site pages, Planet.tsx overwrites both of
+       * these every frame to track the planet's current narrative stage,
+       * so this single fixed layer is what makes "every part of the site"
+       * wash with the planet's colour as you scroll, without touching each
+       * section component individually.
+       */}
+      <div id="ambient-glow" aria-hidden="true" />
+
       {/* ── Star particle canvas ──────────────────────────────────────── */}
       <canvas ref={starsRef} id="space-canvas" aria-hidden="true" />
     </>

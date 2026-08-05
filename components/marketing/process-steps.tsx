@@ -12,7 +12,7 @@ export function ProcessSteps() {
           <div
             aria-hidden="true"
             className="absolute -right-3 -top-4 font-serif text-[5.5rem] leading-none font-black pointer-events-none select-none opacity-[0.06] group-hover:opacity-[0.1] transition-opacity duration-500"
-            style={{ color: "#7c3aed" }}
+            style={{ color: "var(--accent-gold)" }}
           >
             {String(index + 1).padStart(2, "0")}
           </div>
@@ -22,8 +22,8 @@ export function ProcessSteps() {
             <div
               className="size-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
               style={{
-                background: "linear-gradient(135deg, #7c3aed, #5b21b6)",
-                boxShadow: "0 0 16px rgba(124,58,237,0.45)",
+                background: "linear-gradient(135deg, var(--accent-gold), #5b21b6)",
+                boxShadow: "0 0 16px rgb(var(--accent-gold-rgb) / 0.45)",
               }}
             >
               {String(index + 1).padStart(2, "0")}
@@ -33,7 +33,7 @@ export function ProcessSteps() {
               <div
                 className="hidden lg:block h-px flex-1"
                 style={{
-                  background: "linear-gradient(to right, rgba(124,58,237,0.5), transparent)",
+                  background: "linear-gradient(to right, rgb(var(--accent-gold-rgb) / 0.5), transparent)",
                 }}
               />
             )}

@@ -3,14 +3,14 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-normal tracking-wide transition-all duration-300 disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C3AED] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] hover:-translate-y-0.5 active:translate-y-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-normal tracking-wide transition-all duration-300 disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] hover:-translate-y-0.5 active:translate-y-0",
   {
     variants: {
       variant: {
         primary:
-          "bg-[#7C3AED] text-white hover:bg-[#8b5cf6] hover:shadow-[0_0_40px_rgba(124,58,237,0.5)]",
+          "bg-[var(--accent-gold)] text-white hover:bg-[var(--accent-gold-hover)] hover:shadow-[0_0_40px_rgb(var(--accent-gold-rgb)/50%)]",
         outline:
-          "border border-[rgba(124,58,237,0.35)] text-white backdrop-blur-sm hover:border-[#7C3AED]/70 hover:bg-[#7C3AED]/10 hover:text-white",
+          "border border-[rgb(var(--accent-gold-rgb)/35%)] text-white backdrop-blur-sm hover:border-[rgb(var(--accent-gold-rgb)/70%)] hover:bg-[rgb(var(--accent-gold-rgb)/10%)] hover:text-white",
         ghost:
           "text-white/70 hover:text-white hover:bg-white/5",
         dark:

@@ -21,15 +21,15 @@ export function ServicesGrid({ services, compact = false }: { services: Service[
               className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
               style={{
                 background:
-                  "radial-gradient(ellipse at 30% 50%, rgba(124,58,237,0.12) 0%, transparent 65%)",
+                  "radial-gradient(ellipse at 30% 50%, rgb(var(--accent-gold-rgb) / 0.12) 0%, transparent 65%)",
               }}
             />
 
             {/* Icône avec halo */}
             <div className="relative inline-flex items-center justify-center size-12 rounded-xl mb-5"
               style={{
-                background: "rgba(124,58,237,0.12)",
-                border: "1px solid rgba(124,58,237,0.22)",
+                background: "rgb(var(--accent-gold-rgb) / 0.12)",
+                border: "1px solid rgb(var(--accent-gold-rgb) / 0.22)",
               }}
             >
               <Icon

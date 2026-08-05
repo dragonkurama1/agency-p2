@@ -16,7 +16,7 @@ function TestimonialCard({ t }: { t: Testimonial }) {
         aria-hidden="true"
         className="absolute -top-8 -left-8 w-24 h-24 rounded-full pointer-events-none"
         style={{
-          background: "radial-gradient(circle, rgba(124,58,237,0.2), transparent 70%)",
+          background: "radial-gradient(circle, rgb(var(--accent-gold-rgb) / 0.2), transparent 70%)",
           filter: "blur(12px)",
         }}
       />
@@ -28,9 +28,9 @@ function TestimonialCard({ t }: { t: Testimonial }) {
             key={i}
             className="size-4"
             style={{
-              fill: "#b39dfa",
-              color: "#b39dfa",
-              filter: "drop-shadow(0 0 4px rgba(124,58,237,0.6))",
+              fill: "var(--accent-gold-text)",
+              color: "var(--accent-gold-text)",
+              filter: "drop-shadow(0 0 4px rgb(var(--accent-gold-rgb) / 0.6))",
             }}
           />
         ))}
@@ -44,7 +44,7 @@ function TestimonialCard({ t }: { t: Testimonial }) {
       <div
         className="my-4 h-px"
         style={{
-          background: "linear-gradient(to right, rgba(124,58,237,0.3), transparent)",
+          background: "linear-gradient(to right, rgb(var(--accent-gold-rgb) / 0.3), transparent)",
         }}
       />
 
@@ -57,7 +57,7 @@ function TestimonialCard({ t }: { t: Testimonial }) {
             height={40}
             className="size-10 rounded-full object-cover flex-shrink-0"
             style={{
-              boxShadow: "0 0 0 2px rgba(124,58,237,0.35), 0 0 12px rgba(124,58,237,0.2)",
+              boxShadow: "0 0 0 2px rgb(var(--accent-gold-rgb) / 0.35), 0 0 12px rgb(var(--accent-gold-rgb) / 0.2)",
             }}
             draggable={false}
           />
@@ -65,8 +65,8 @@ function TestimonialCard({ t }: { t: Testimonial }) {
           <div
             className="size-10 rounded-full flex-shrink-0 flex items-center justify-center"
             style={{
-              background: "rgba(124,58,237,0.2)",
-              border: "1px solid rgba(124,58,237,0.35)",
+              background: "rgb(var(--accent-gold-rgb) / 0.2)",
+              border: "1px solid rgb(var(--accent-gold-rgb) / 0.35)",
             }}
           >
             <span className="text-sm font-normal text-[var(--accent-gold-text)]">

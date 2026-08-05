@@ -12,7 +12,7 @@ export function Accordion({ items }: { items: { question: string; answer: string
           key={i}
           className={cn(
             "glass-card rounded-xl overflow-hidden transition-all duration-300",
-            open === i && "border-[rgba(124,58,237,0.35)]"
+            open === i && "border-[rgb(var(--accent-gold-rgb)/35%)]"
           )}
         >
           <button
@@ -43,7 +43,7 @@ export function Accordion({ items }: { items: { question: string; answer: string
               <div
                 className="h-px mb-4"
                 style={{
-                  background: "linear-gradient(to right, rgba(124,58,237,0.3), transparent)",
+                  background: "linear-gradient(to right, rgb(var(--accent-gold-rgb) / 0.3), transparent)",
                 }}
               />
               <p className="text-sm leading-relaxed text-[var(--muted-foreground)]">

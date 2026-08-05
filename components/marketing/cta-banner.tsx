@@ -20,7 +20,7 @@ export function CtaBanner({
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse at 50% 0%, rgba(124,58,237,0.18) 0%, transparent 65%)," +
+            "radial-gradient(ellipse at 50% 0%, rgb(var(--accent-gold-rgb) / 0.18) 0%, transparent 65%)," +
             "radial-gradient(ellipse at 80% 100%, rgba(79,70,229,0.12) 0%, transparent 55%)",
         }}
       />
@@ -28,14 +28,14 @@ export function CtaBanner({
       <div className="container-px mx-auto max-w-4xl text-center relative z-10">
         <div
           className="glass-dark rounded-3xl py-16 px-8 sm:px-16 relative overflow-hidden"
-          style={{ border: "1px solid rgba(124,58,237,0.25)" }}
+          style={{ border: "1px solid rgb(var(--accent-gold-rgb) / 0.25)" }}
         >
           {/* Halos décoratifs */}
           <div
             aria-hidden="true"
             className="absolute -top-32 -right-32 w-64 h-64 rounded-full pointer-events-none"
             style={{
-              background: "radial-gradient(circle, rgba(124,58,237,0.15), transparent 70%)",
+              background: "radial-gradient(circle, rgb(var(--accent-gold-rgb) / 0.15), transparent 70%)",
               filter: "blur(40px)",
             }}
           />

@@ -36,7 +36,7 @@ export function WhyUs() {
             aria-hidden="true"
             className="absolute top-0 right-0 w-32 h-32 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
             style={{
-              background: "radial-gradient(circle at top right, rgba(124,58,237,0.15), transparent 70%)",
+              background: "radial-gradient(circle at top right, rgb(var(--accent-gold-rgb) / 0.15), transparent 70%)",
             }}
           />
 
@@ -44,8 +44,8 @@ export function WhyUs() {
           <div
             className="inline-flex items-center justify-center size-11 rounded-xl mb-5 float"
             style={{
-              background: "rgba(124,58,237,0.1)",
-              border: "1px solid rgba(124,58,237,0.2)",
+              background: "rgb(var(--accent-gold-rgb) / 0.1)",
+              border: "1px solid rgb(var(--accent-gold-rgb) / 0.2)",
             }}
           >
             <p.icon className="size-5 text-[var(--accent-gold)] icon-halo" />

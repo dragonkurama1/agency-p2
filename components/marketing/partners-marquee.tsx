@@ -18,7 +18,7 @@ export async function PartnersMarquee() {
             className="h-px flex-1"
             style={{
               background:
-                "linear-gradient(to right, transparent, rgba(124,58,237,0.35))",
+                "linear-gradient(to right, transparent, rgb(var(--accent-gold-rgb) / 0.35))",
             }}
           />
           <p className="whitespace-nowrap text-[10px] font-normal uppercase tracking-[0.5em] text-white/35">
@@ -28,7 +28,7 @@ export async function PartnersMarquee() {
             className="h-px flex-1"
             style={{
               background:
-                "linear-gradient(to left, transparent, rgba(124,58,237,0.35))",
+                "linear-gradient(to left, transparent, rgb(var(--accent-gold-rgb) / 0.35))",
             }}
           />
         </div>
