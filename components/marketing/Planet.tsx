@@ -48,7 +48,7 @@ export function Planet() {
         import("gsap/ScrollTrigger"),
       ]);
 
-      if (!mounted) return;
+      if (!mounted || !canvas) return;
       gsap.registerPlugin(ScrollTrigger);
 
       /* ─── Renderer ───────────────────────────────────────────────────── */
