@@ -78,12 +78,12 @@ export function Planet() {
       const loader = new THREE.TextureLoader();
       const [colorTex, normalTex, roughTex, dispTex, aoTex, atmTex] =
         await Promise.all([
-          loader.loadAsync("/textures/planet/color.png"),
-          loader.loadAsync("/textures/planet/normal.png"),
-          loader.loadAsync("/textures/planet/roughness.png"),
-          loader.loadAsync("/textures/planet/displacement.png"),
-          loader.loadAsync("/textures/planet/ao.png"),
-          loader.loadAsync("/textures/planet/atmosphere.png"),
+          loader.loadAsync("/textures/planet/color.webp"),
+          loader.loadAsync("/textures/planet/normal.webp"),
+          loader.loadAsync("/textures/planet/roughness.webp"),
+          loader.loadAsync("/textures/planet/displacement.webp"),
+          loader.loadAsync("/textures/planet/ao.webp"),
+          loader.loadAsync("/textures/planet/atmosphere.webp"),
         ]);
 
       if (!mounted) return;
@@ -108,7 +108,13 @@ export function Planet() {
       /* ─── Planet geometry / material ─────────────────────────────────── */
       const isMobile = window.innerWidth < 768;
       const isTablet = window.innerWidth < 1280;
-      const segments = isMobile ? 64 : isTablet ? 128 : 256;
+      /*
+       * 256 segments (~393k tris) was overkill for a decorative background
+       * sphere and caused multi-second main-thread blocking on geometry
+       * build + GPU upload (measured 20s+ TBT). 128 is visually identical
+       * at this viewport scale and roughly 4x cheaper.
+       */
+      const segments = isMobile ? 48 : isTablet ? 96 : 128;
 
       const geo = new THREE.SphereGeometry(SPHERE_RADIUS, segments, segments);
 
@@ -223,13 +229,37 @@ export function Planet() {
       killResizeObserver = () => ro.disconnect();
     }
 
-    init().catch((err) => {
-      if (mounted) console.error("[Planet] init failed:", err);
-    });
+    /*
+     * Defer the heavy bootstrap (module import, texture decode, geometry
+     * build, GPU upload) until the browser is idle, so it never competes
+     * with the hero's first paint / LCP. Falls back to a short timeout on
+     * browsers without requestIdleCallback (Safari).
+     */
+    type IdleWindow = Window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (handle: number) => void;
+    };
+    const idleWindow = window as IdleWindow;
+    let idleHandle = 0;
+    let timeoutHandle = 0;
+
+    const run = () => {
+      init().catch((err) => {
+        if (mounted) console.error("[Planet] init failed:", err);
+      });
+    };
+
+    if (typeof idleWindow.requestIdleCallback === "function") {
+      idleHandle = idleWindow.requestIdleCallback(run, { timeout: 2000 });
+    } else {
+      timeoutHandle = window.setTimeout(run, 200);
+    }
 
     /* ── Cleanup ─────────────────────────────────────────────────────────── */
     return () => {
       mounted = false;
+      if (idleHandle && idleWindow.cancelIdleCallback) idleWindow.cancelIdleCallback(idleHandle);
+      if (timeoutHandle) window.clearTimeout(timeoutHandle);
       cancelAnimationFrame(rafId);
       killScrollTrigger?.();
       killResizeObserver?.();

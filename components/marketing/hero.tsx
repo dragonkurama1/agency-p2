@@ -35,7 +35,7 @@ export function Hero({ section }: { section?: SectionContent | null }) {
       className="relative -mt-20 min-h-screen overflow-hidden flex items-center"
       aria-label="Héro — Prestigia Agency"
     >
-      {/* ── Le fond spatial vient du #space-bg fixe global (space-background.jpg) */}
+      {/* ── Le fond spatial vient du #space-bg fixe global (space-background.webp) */}
       {/* La planète est rendue via le canvas rotatif dans SpaceBackground        */}
 
       {/* ── Overlays ─────────────────────────────────────────────────────── */}

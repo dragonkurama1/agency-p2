@@ -122,7 +122,7 @@ export function SpaceBackground() {
 
   return (
     <>
-      {/* ── Spatial background (space-background.jpg via CSS #space-bg) ── */}
+      {/* ── Spatial background (space-background.webp via CSS #space-bg) ── */}
       <div id="space-bg" aria-hidden="true" />
 
       {/* ── Star particle canvas ──────────────────────────────────────── */}
