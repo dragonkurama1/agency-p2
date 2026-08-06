@@ -74,7 +74,7 @@ const PIXEL_RATIO_CAP = 2;           // GPU memory guard
 /* Brand / narrative colours */
 const BRAND_VIOLET  = 0x7c3aed;
 const BRAND_DEEP    = 0x200e3b;
-const RIM_BLUE       = 0x3b82f6;
+const RIM_BLUE       = 0x2563eb;
 const RIM_ORANGE     = 0xff7a1a;
 const ATM_BLUE       = 0x4c6ef5;
 const ATM_ORANGE     = 0xff8c1a;
