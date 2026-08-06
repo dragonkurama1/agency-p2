@@ -17,11 +17,37 @@
  * flag used when encoding). Forcing a mipmap filter on a texture with no
  * baked levels renders solid black, so the filter is chosen based on how
  * many levels actually transcoded in, per texture.
+ *
+ * Transcoder path: prefers self-hosted /basis/ (audit du 6 août 2026,
+ * point 5 — removes a third-party origin, one less DNS+TLS round trip,
+ * addresses Lighthouse "Réduisez et différez le chargement du code
+ * tiers"). Place basis_transcoder.js + basis_transcoder.wasm from
+ * https://cdn.jsdelivr.net/npm/three@0.168.0/examples/jsm/libs/basis/
+ * into public/basis/ (see chat for the exact download commands).
+ * resolveTranscoderPath() below checks the local file actually exists
+ * first and falls back to the jsDelivr CDN otherwise — safe to deploy
+ * immediately, before or after the files are added.
  */
 
 import type * as THREE_NS from "three";
 
 export type TextureMap = Record<string, InstanceType<typeof THREE_NS.CompressedTexture>>;
+
+const LOCAL_TRANSCODER_PATH = "/basis/";
+const CDN_TRANSCODER_PATH   = "https://cdn.jsdelivr.net/npm/three@0.168.0/examples/jsm/libs/basis/";
+
+/* HEAD-checks the self-hosted transcoder before committing to it — if the
+ * files haven't been added to public/basis/ yet (see file header), this
+ * silently falls back to the jsDelivr CDN instead of failing to load the
+ * planet's textures entirely. */
+async function resolveTranscoderPath(): Promise<string> {
+  try {
+    const res = await fetch(`${LOCAL_TRANSCODER_PATH}basis_transcoder.js`, { method: "HEAD" });
+    return res.ok ? LOCAL_TRANSCODER_PATH : CDN_TRANSCODER_PATH;
+  } catch {
+    return CDN_TRANSCODER_PATH;
+  }
+}
 
 export async function loadKTX2Textures(
   THREE: typeof THREE_NS,
@@ -30,8 +56,9 @@ export async function loadKTX2Textures(
 ): Promise<{ textures: TextureMap; dispose: () => void }> {
   const { KTX2Loader } = await import("three/examples/jsm/loaders/KTX2Loader.js");
 
+  const transcoderPath = await resolveTranscoderPath();
   const loader = new KTX2Loader()
-    .setTranscoderPath("https://cdn.jsdelivr.net/npm/three@0.168.0/examples/jsm/libs/basis/")
+    .setTranscoderPath(transcoderPath)
     .detectSupport(renderer);
 
   const entries = Object.entries(sources);

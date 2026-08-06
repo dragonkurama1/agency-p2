@@ -256,6 +256,18 @@ body {
   transform: translateY(0);
 }
 
+/* Hero — entrée en fondu pur CSS (jamais gatée par l'hydratation React,
+ * contrairement à l'ancienne version Framer Motion initial={{opacity:0}}
+ * qui retardait le LCP jusqu'à 21,9s sur mobile — voir hero.tsx). Tourne
+ * dès que le navigateur peint l'élément, indépendamment du JS. */
+@keyframes hero-fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hero-fade-up {
+  animation: hero-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
 /* Border spin (partner cards) */
 @keyframes border-spin {
   to { transform: rotate(360deg); }

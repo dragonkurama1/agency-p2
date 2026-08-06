@@ -63,7 +63,7 @@ export function Header() {
                 "after:absolute after:-bottom-0.5 after:left-0 after:h-px",
                 "after:bg-[var(--accent-gold)] after:transition-all after:duration-300",
                 pathname === link.href
-                  ? "text-[var(--accent-gold)] after:w-full"
+                  ? "text-[var(--accent-gold-text)] after:w-full"
                   : "text-white/70 hover:text-white after:w-0 hover:after:w-full"
               )}
             >
@@ -95,7 +95,7 @@ export function Header() {
                 className={cn(
                   "text-base tracking-wide transition-colors py-1",
                   pathname === link.href
-                    ? "text-[var(--accent-gold)] font-normal"
+                    ? "text-[var(--accent-gold-text)] font-normal"
                     : "text-white/70 hover:text-white"
                 )}
               >

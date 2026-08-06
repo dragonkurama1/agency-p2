@@ -6,6 +6,25 @@ import { ArrowRight } from "lucide-react";
 import { useRef } from "react";
 import type { SectionContent } from "@/data/sections";
 
+/*
+ * ─── LCP fix (audit du 6 août 2026) ────────────────────────────────────
+ * Le H1 ci-dessous était un <motion.h1 initial={{opacity:0}}...>. Framer
+ * Motion applique ce style "initial" dès le rendu serveur — le HTML envoyé
+ * au navigateur contenait donc déjà opacity:0 sur l'élément LCP, qui ne
+ * devenait visible qu'après hydratation + fin de l'animation (0.75s,
+ * potentiellement bien plus tard si le thread principal est occupé par le
+ * rendu Canvas/WebGL — voir Planet.tsx). Chrome exclut un élément de la
+ * liste des candidats LCP tant qu'il n'a pas d'opacité significative,
+ * d'où un LCP mesuré à 21,9s sur mobile alors que le FCP était à 0,9s.
+ *
+ * Fix : le H1 (et l'eyebrow/sous-titre/boutons) sont maintenant de simples
+ * éléments statiques, visibles immédiatement dans le HTML servi, animés
+ * en CSS pur (@keyframes hero-fade-up, globals.css) qui ne dépend d'aucune
+ * hydratation JS. Seul le parallax (`contentY`, un pur decalage de
+ * position, jamais une opacité) reste sur un <motion.div> — il ne masque
+ * jamais le contenu, donc ne peut pas retarder le LCP.
+ */
+
 const DEFAULTS = {
   eyebrow: "Agence Marketing Digital — Casablanca",
   ctaText: "Demander un devis",
@@ -63,28 +82,25 @@ export function Hero({ section }: { section?: SectionContent | null }) {
       >
         <div style={{ maxWidth: "760px" }}>
 
-          {/* Eyebrow — Montserrat Regular */}
-          <motion.p
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
-            className="uppercase text-[var(--accent-gold)]"
+          {/* Eyebrow — statique + animation CSS pure (jamais gatée par l'hydratation) */}
+          <p
+            className="uppercase text-[var(--accent-gold-text)] hero-fade-up"
             style={{
               fontFamily: "var(--font-montserrat)",
               fontWeight: 400,
               fontSize: "11px",
               letterSpacing: "0.45em",
               marginBottom: "20px",
+              animationDelay: "0s",
             }}
           >
             {DEFAULTS.eyebrow}
-          </motion.p>
+          </p>
 
-          {/* H1 — Coolvetica (Bebas Neue) */}
-          <motion.h1
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.75, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
+          {/* H1 — élément LCP : statique, visible à 100% d'opacité dès le
+              HTML servi, aucune dépendance à l'hydratation JS (voir note
+              en tête de fichier). */}
+          <h1
             className="uppercase text-white"
             style={{
               fontFamily: "var(--font-bebas)",
@@ -95,16 +111,13 @@ export function Hero({ section }: { section?: SectionContent | null }) {
             }}
           >
             Nous construisons une{" "}
-            <span style={{ color: "var(--accent-gold)" }}>présence digitale</span>{" "}
+            <span style={{ color: "var(--accent-gold-text)" }}>présence digitale</span>{" "}
             qui attire, engage et convertit.
-          </motion.h1>
+          </h1>
 
-          {/* Sous-titre — Montserrat Regular */}
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.15, ease: "easeOut" }}
-            className="text-white/65"
+          {/* Sous-titre */}
+          <p
+            className="text-white/65 hero-fade-up"
             style={{
               fontFamily: "var(--font-montserrat)",
               fontWeight: 400,
@@ -112,22 +125,22 @@ export function Hero({ section }: { section?: SectionContent | null }) {
               lineHeight: 1.4,
               marginTop: "28px",
               maxWidth: "560px",
+              animationDelay: "0.12s",
             }}
           >
             {subtitle}
-          </motion.p>
+          </p>
 
           {/* Boutons côte à côte */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.25, ease: "easeOut" }}
+          <div
+            className="hero-fade-up"
             style={{
               marginTop: "42px",
               display: "flex",
               alignItems: "center",
               gap: "20px",
               flexWrap: "wrap",
+              animationDelay: "0.22s",
             }}
           >
             <Link
@@ -145,7 +158,7 @@ export function Hero({ section }: { section?: SectionContent | null }) {
             >
               {DEFAULTS.cta2Text}
             </Link>
-          </motion.div>
+          </div>
         </div>
       </motion.div>
     </section>

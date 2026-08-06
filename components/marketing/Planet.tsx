@@ -75,6 +75,7 @@ export function Planet() {
     let disposeTextures: (() => void) | null = null;
     let killResizeObserver: (() => void) | null = null;
     let killScrollTrigger: (() => void) | null = null;
+    let killVisibility: (() => void) | null = null;
 
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -339,7 +340,29 @@ export function Planet() {
           renderer.render(scene, camera);
         }
       }
-      rafId = requestAnimationFrame(tick);
+
+      /* ─── Pause on hidden tab ────────────────────────────────────────────
+       * WebGL rendering (especially with the bloom composer's 5 passes) is
+       * real, continuous main-thread/GPU work. A background tab has no
+       * visible pixels to update, so canceling the loop there costs nothing
+       * visually and stops that work entirely for users who leave the tab
+       * open in the background — and prevents this loop from competing with
+       * the page's own hydration/interaction work while it's not visible. */
+      function handleVisibility() {
+        if (document.hidden) {
+          if (rafId) cancelAnimationFrame(rafId);
+          rafId = 0;
+        } else if (mounted && !rafId) {
+          lastFrameTime = 0;
+          rafId = requestAnimationFrame(tick);
+        }
+      }
+      document.addEventListener("visibilitychange", handleVisibility);
+      killVisibility = () => document.removeEventListener("visibilitychange", handleVisibility);
+
+      if (!document.hidden) {
+        rafId = requestAnimationFrame(tick);
+      }
 
       /* ─── Resize ─────────────────────────────────────────────────────── */
       const ro = new ResizeObserver(() => {
@@ -374,6 +397,7 @@ export function Planet() {
       cancelAnimationFrame(rafId);
       killResizeObserver?.();
       killScrollTrigger?.();
+      killVisibility?.();
       toDispose.forEach((d) => d.dispose());
       disposeTextures?.();
       disposeRenderer?.();
