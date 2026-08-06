@@ -17,6 +17,15 @@ const STAR_COUNT = 160;
 const BASE_ALPHA_MIN = 0.08;
 const BASE_ALPHA_MAX = 0.55;
 
+/* Uncapped requestAnimationFrame here means this loop runs at whatever
+ * refresh rate the display/browser gives it (60-144Hz), forever, on every
+ * single page — unlike Planet.tsx (which is frame-rate-capped per quality
+ * profile), nothing throttled this. 30fps is visually identical for a
+ * slow star drift but roughly halves (or more) the sustained main-thread
+ * work Lighthouse (and real low-end devices) see on every page load. */
+const TARGET_FPS = 30;
+const FRAME_INTERVAL_MS = 1000 / TARGET_FPS;
+
 /* ─── Component ─────────────────────────────────────────────────────────── */
 export function SpaceBackground() {
   const starsRef = useRef<HTMLCanvasElement>(null);
@@ -58,11 +67,41 @@ export function SpaceBackground() {
       phase: Math.random() * Math.PI * 2,
     }));
 
+    /* Pre-bake the particle glow once into an offscreen sprite instead of
+     * calling ctx.createRadialGradient() + fill() for every particle on
+     * every frame. Gradient construction is the expensive part; drawImage
+     * of a cached bitmap is cheap. Sized for the largest possible particle
+     * radius (r up to ~3.2) so it can be scaled down for smaller ones. */
+    const GLOW_SPRITE_SIZE = 64;
+    const glowSprite = document.createElement("canvas");
+    glowSprite.width = GLOW_SPRITE_SIZE;
+    glowSprite.height = GLOW_SPRITE_SIZE;
+    const glowCtx = glowSprite.getContext("2d");
+    if (glowCtx) {
+      const c = GLOW_SPRITE_SIZE / 2;
+      const grad = glowCtx.createRadialGradient(c, c, 0, c, c, c);
+      grad.addColorStop(0, "rgba(160, 130, 255, 1)");
+      grad.addColorStop(1, "rgba(160, 130, 255, 0)");
+      glowCtx.fillStyle = grad;
+      glowCtx.beginPath();
+      glowCtx.arc(c, c, c, 0, Math.PI * 2);
+      glowCtx.fill();
+    }
+
     let rafId: number;
     let t = 0;
+    let lastFrameTime = 0;
 
-    function draw() {
+    function draw(now: number) {
       if (!canvas || !ctx) return;
+      rafId = requestAnimationFrame(draw);
+
+      // Cap the loop to TARGET_FPS — this canvas runs on every page for
+      // the whole session, so an uncapped rAF loop is pure wasted work
+      // above what's visually perceptible for a slow star drift.
+      if (now - lastFrameTime < FRAME_INTERVAL_MS) return;
+      lastFrameTime = now;
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       if (reduced) {
@@ -95,21 +134,16 @@ export function SpaceBackground() {
         if (p.x < -4)                p.x = canvas.width  + 4;
         if (p.x > canvas.width  + 4) p.x = -4;
 
-        const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 4);
-        grad.addColorStop(0, `rgba(160, 130, 255, ${a})`);
-        grad.addColorStop(1, "rgba(160, 130, 255, 0)");
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r * 4, 0, Math.PI * 2);
-        ctx.fillStyle = grad;
-        ctx.fill();
+        const glowR = p.r * 4;
+        ctx.globalAlpha = a;
+        ctx.drawImage(glowSprite, p.x - glowR, p.y - glowR, glowR * 2, glowR * 2);
+        ctx.globalAlpha = 1;
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(220, 210, 255, ${Math.min(a * 2, 0.8)})`;
         ctx.fill();
       });
-
-      rafId = requestAnimationFrame(draw);
     }
 
     rafId = requestAnimationFrame(draw);
