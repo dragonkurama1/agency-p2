@@ -127,14 +127,12 @@ export function SpaceBackground() {
 
       {/*
        * ── Ambient colour wash ─────────────────────────────────────────
-       * Reads --glow-violet / --glow-blue (defined in globals.css). These
-       * currently sit at their static fallback values — the old Planet.tsx
-       * used to overwrite both every frame to track the 3D scene's current
-       * narrative stage, washing the whole site in its colour as you
-       * scrolled. That link is gone since Planet.tsx was removed for the
-       * rebuild; the new scene should restore it the same way (write to
-       * these two CSS custom properties on document.documentElement) if the
-       * site-wide colour-sync behaviour is meant to come back.
+       * Reads --glow-violet / --glow-blue (defined in globals.css, static
+       * fallback values). Planet.tsx overwrites both every frame to track
+       * the 3D scene's current narrative stage, so this single fixed layer
+       * is what makes "every part of the site" wash with the planet's
+       * colour as you scroll, without touching each section component
+       * individually.
        */}
       <div id="ambient-glow" aria-hidden="true" />
 

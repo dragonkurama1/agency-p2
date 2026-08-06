@@ -38,6 +38,11 @@ const RIM_ORANGE = 0xff7a1a;
 const ATM_BLUE   = 0x3b82f6;
 const ATM_ORANGE = 0xff7a1a;
 
+const CSS_VARS = [
+  "--accent-gold", "--accent-gold-rgb", "--accent-gold-hover",
+  "--accent-gold-text", "--glow-violet", "--glow-blue",
+] as const;
+
 export function Planet() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -222,6 +227,33 @@ export function Planet() {
       const atmTmp    = new THREE.Color();
       const clock = new THREE.Clock();
 
+      /* ─── Site-wide colour sync ───────────────────────────────────────
+       * The same rim-colour ramp that lights the planet also drives the
+       * public site's shared design tokens (--accent-gold and friends,
+       * --glow-violet/--glow-blue) so buttons, borders, and the global
+       * ambient background glow all track the planet's current stage.
+       * Only ever touches document.documentElement while Planet is
+       * mounted — Planet only renders inside the (site) route group, and
+       * cleanup below removes every override on unmount so navigating to
+       * /dashboard or /login can't leave a stale colour behind. Already
+       * naturally throttled to profile.targetFPS by the frame-skip check
+       * at the top of tick() — no separate throttle needed. */
+      const cssRoot    = document.documentElement.style;
+      const white      = new THREE.Color(0xffffff);
+      const hoverTmp   = new THREE.Color();
+      const textTmp    = new THREE.Color();
+      const glowBlueTmp = new THREE.Color();
+
+      function toSRGBChannels(c: InstanceType<typeof THREE.Color>) {
+        const hex = c.getHexString();
+        return {
+          hex: `#${hex}`,
+          r: parseInt(hex.slice(0, 2), 16),
+          g: parseInt(hex.slice(2, 4), 16),
+          b: parseInt(hex.slice(4, 6), 16),
+        };
+      }
+
       let lastFrameTime = 0;
       const frameInterval = 1000 / profile.targetFPS;
       function tick(now: number) {
@@ -245,6 +277,21 @@ export function Planet() {
           rimTmp.lerpColors(rimViolet, rimOrange, (currentProgress - 0.5) / 0.5);
         }
         uniforms.uRimColor.value.copy(rimTmp);
+
+        const rim = toSRGBChannels(rimTmp);
+        hoverTmp.copy(rimTmp).lerp(white, 0.15);
+        textTmp.copy(rimTmp).lerp(white, 0.45);
+        glowBlueTmp.copy(rimTmp).lerp(rimBlue, 0.5);
+        const hover = toSRGBChannels(hoverTmp);
+        const text = toSRGBChannels(textTmp);
+        const glowBlue = toSRGBChannels(glowBlueTmp);
+
+        cssRoot.setProperty("--accent-gold", rim.hex);
+        cssRoot.setProperty("--accent-gold-rgb", `${rim.r} ${rim.g} ${rim.b}`);
+        cssRoot.setProperty("--accent-gold-hover", hover.hex);
+        cssRoot.setProperty("--accent-gold-text", text.hex);
+        cssRoot.setProperty("--glow-violet", `rgba(${rim.r}, ${rim.g}, ${rim.b}, 0.45)`);
+        cssRoot.setProperty("--glow-blue", `rgba(${glowBlue.r}, ${glowBlue.g}, ${glowBlue.b}, 0.35)`);
 
         const atmT = THREE.MathUtils.smoothstep(currentProgress, 0.15, 0.75);
         atmTmp.lerpColors(atmBlue, atmOrange, atmT);
@@ -302,6 +349,7 @@ export function Planet() {
       toDispose.forEach((d) => d.dispose());
       disposeTextures?.();
       disposeRenderer?.();
+      CSS_VARS.forEach((name) => document.documentElement.style.removeProperty(name));
       if (idleWindow.cancelIdleCallback && idleHandle) idleWindow.cancelIdleCallback(idleHandle);
       if (timeoutHandle) window.clearTimeout(timeoutHandle);
     };
