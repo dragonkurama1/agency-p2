@@ -71,3 +71,30 @@ export function detectQualityProfile(): QualityProfile {
   if (score >= 1.5) return MID_PROFILE;
   return LOW_PROFILE;
 }
+
+/*
+ * ─── isTouchHandheld() ───────────────────────────────────────────────────
+ * Used by PlanetLazy.tsx to decide whether to even DOWNLOAD the WebGL/
+ * three.js chunk, before any QualityProfile scoring happens. Deliberately
+ * ignores navigator.hardwareConcurrency / deviceMemory — testing (real
+ * device + PageSpeed Insights' Moto G Power emulation) showed those two
+ * signals are unreliable inside throttled/emulated environments: Chrome's
+ * device emulation spoofs viewport, DPR, user agent and pointer type, but
+ * NOT navigator.hardwareConcurrency/deviceMemory, which keep reporting the
+ * HOST machine's real specs (e.g. a many-core cloud runner) even while the
+ * page is being CPU-throttled 4-6x as if it were a weak phone. That skewed
+ * detectQualityProfile() toward "mid" (bloom on) on what was actually being
+ * measured as a small, coarse-pointer, heavily-throttled device — this
+ * function is a coarser but far more trustworthy signal for the
+ * highest-stakes decision (mount WebGL at all, yes/no), based only on
+ * pointer type and viewport size, both of which ARE faithfully emulated.
+ * Math.min(width,height) < 700 catches phones in either orientation while
+ * excluding tablets/small laptops (iPad mini's 768px shorter side stays
+ * above the threshold, laptops are pointer:fine).
+ */
+export function isTouchHandheld(): boolean {
+  if (typeof window === "undefined") return false;
+  const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
+  const smallestSide = Math.min(window.innerWidth, window.innerHeight);
+  return coarsePointer && smallestSide < 700;
+}
