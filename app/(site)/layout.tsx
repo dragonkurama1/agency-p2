@@ -2,7 +2,7 @@ import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { WhatsappButton } from "@/components/marketing/whatsapp-button";
 import { SpaceBackground } from "@/components/layout/space-background";
-import { Planet } from "@/components/marketing/Planet";
+import Planet from "@/components/marketing/PlanetLazy";
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (

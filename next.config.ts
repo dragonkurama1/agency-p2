@@ -24,6 +24,9 @@ const nextConfig: NextConfig = {
     ],
     // Formats modernes prioritaires — réduit la taille de 30-50 %
     formats: ["image/avif", "image/webp"],
+    // Next 16 n'autorise que les qualités listées ici (défaut : [75] seul) —
+    // 75/85/90 sont utilisées à différents endroits du site (logos, blog).
+    qualities: [75, 85, 90],
     // Autorise les SVG (logos partenaires) — sandboxé par la CSP ci-dessous
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
