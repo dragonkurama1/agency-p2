@@ -135,21 +135,23 @@ const NORMAL_STRENGTH: Record<Tier, number> = {
  * there simply isn't one; the only boundary is the viewport itself.
  *
  * SIZE_FRAC_WIDTH is the planet's target on-screen diameter as a fraction
- * of viewport WIDTH (desktop ~50%, tablet ~20% smaller, per spec). Mobile
- * keeps a comparable width fraction but is additionally capped as a
- * fraction of viewport HEIGHT (MOBILE_HEIGHT_CAP) — mobile viewports are
- * usually portrait, where width-only sizing would blow the sphere up to a
- * comically large fraction of the screen height; the cap keeps it giant
- * without becoming absurd. CENTER_X_FRAC places the sphere's center as a
+ * of viewport WIDTH — same value on every tier (desktop/tablet/mobile) so
+ * the planet reads as the same relative size everywhere, not just bigger
+ * on wide desktop screens because there's more frustum width to claim.
+ * MOBILE_HEIGHT_CAP additionally caps that diameter as a fraction of
+ * viewport HEIGHT, applied on every tier too — without it, a wide landscape
+ * viewport (lots of width, less height) would size the sphere far larger
+ * than the same width-fraction produces on a narrow portrait one.
+ * CENTER_X_FRAC places the sphere's center as a
  * fraction of viewport width from the left (0.5 = dead centre, 1.0 = right
  * edge) — desktop/tablet/mobile all sit right-of-centre with part of the
  * sphere naturally exiting past the right edge of the frustum. */
 const SIZE_FRAC_WIDTH: Record<Tier, number> = {
   mobile:  0.46,
-  tablet:  0.40,
-  desktop: 0.50,
+  tablet:  0.46,
+  desktop: 0.46,
 };
-const MOBILE_HEIGHT_CAP = 0.6; // sphere never exceeds ~60% of viewport height on mobile
+const MOBILE_HEIGHT_CAP = 0.6; // sphere never exceeds ~60% of viewport height, every tier
 const CENTER_X_FRAC: Record<Tier, number> = {
   mobile:  0.85,
   tablet:  0.88,
@@ -981,12 +983,11 @@ export function Planet() {
         const frustumHalfWidth = frustumHalfHeight * aspect;
         const frustumWidth = frustumHalfWidth * 2;
 
+        // Same width-fraction AND height cap on every tier — desktop no
+        // longer looks bigger than mobile just because a wide landscape
+        // viewport has more frustum width to work with at the same %.
         let worldDiameter = SIZE_FRAC_WIDTH[tier] * frustumWidth;
-        if (tier === "mobile") {
-          // Portrait guard: don't let a width-fraction sizing blow the
-          // sphere up to a huge fraction of a tall, narrow viewport.
-          worldDiameter = Math.min(worldDiameter, MOBILE_HEIGHT_CAP * frustumHeight);
-        }
+        worldDiameter = Math.min(worldDiameter, MOBILE_HEIGHT_CAP * frustumHeight);
         planetGroup.scale.setScalar(worldDiameter / (SPHERE_RADIUS * 2));
 
         const ndcX = CENTER_X_FRAC[tier] * 2 - 1;
