@@ -1082,11 +1082,19 @@ export function Planet() {
       const alphaRestorePass = new ShaderPass({
         uniforms: {
           tDiffuse:   { value: null },
-          tAlphaMask: { value: savePass.renderTarget.texture },
+          tAlphaMask: { value: null },
         },
         vertexShader:   PASSTHROUGH_VERTEX,
         fragmentShader: ALPHA_RESTORE_FRAGMENT,
       });
+      /* Assigned post-construction rather than in the uniforms object above:
+       * ShaderPass's constructor clones the shader's uniforms via
+       * UniformsUtils.clone(), and THREE explicitly warns that render-target
+       * textures "cannot be cloned" — savePass.renderTarget.texture is
+       * exactly that. Harmless in practice (the clone keeps the reference,
+       * it's a one-time console warning, not a per-frame cost), but setting
+       * it directly here avoids the warning and the clone step entirely. */
+      alphaRestorePass.uniforms.tAlphaMask.value = savePass.renderTarget.texture;
       composer.addPass(alphaRestorePass);
 
       /* EffectComposer.dispose() only frees its own render targets +
