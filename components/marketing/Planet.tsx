@@ -186,6 +186,37 @@ const PARTICLE_COUNT: Record<Tier, number> = {
   desktop: 480,
 };
 
+/* ─── Render-cost controls ───────────────────────────────────────────────
+ * Confirmed via Lighthouse (24.7s TBT, 23.6s LCP, present on both mobile
+ * AND desktop, present before the KTX2 migration too): the bottleneck was
+ * never texture loading — it's the per-frame cost of running a full
+ * EffectComposer chain (render + save + bloom + heat-distortion + output +
+ * chromatic-aberration/lens-dirt + FXAA + alpha-restore, some with 8x MSAA)
+ * across a FULL-VIEWPORT canvas, every frame, for as long as the page stays
+ * open. None of the individual passes are new or wasteful on their own —
+ * the total pixel count they're running across is the problem.
+ *
+ * RENDER_SCALE keeps the canvas's CSS size at 100vw/100vh (the visual
+ * footprint doesn't change) but renders the actual WebGL drawing buffer at
+ * a fraction of that resolution — every single pass in the chain operates
+ * on fewer pixels as a direct result, which is by far the biggest lever
+ * available without removing any visual feature. The browser upscales the
+ * canvas via ordinary CSS scaling, which reads as essentially free for a
+ * soft, blurry, glow-heavy background element like this one.
+ *
+ * TARGET_FPS caps how often the composer actually re-renders — GSAP's own
+ * scroll smoothing plus our lerp already make large per-frame jumps rare,
+ * so rendering at ~30fps instead of an uncapped ~60fps halves the sustained
+ * per-frame cost with only a barely-perceptible smoothness cost on a
+ * decorative, non-interactive layer. */
+const RENDER_SCALE: Record<Tier, number> = {
+  mobile:  0.55,
+  tablet:  0.7,
+  desktop: 0.8,
+};
+const TARGET_FPS = 30;
+const FRAME_INTERVAL_MS = 1000 / TARGET_FPS;
+
 /* ─── Shared GLSL: simplex noise + fBm ──────────────────────────────────────
  * Classic Ashima Arts 3D simplex noise (public-domain-equivalent, MIT
  * licence, the standard implementation embedded in virtually every WebGL
@@ -679,6 +710,12 @@ export function Planet() {
       if (!mounted || !canvas) return;
       gsap.registerPlugin(ScrollTrigger);
 
+      /* ─── Tier — resolved once at boot ─────────────────────────────────── */
+      const tier = getTier(window.innerWidth);
+      const wantsDisplacement = tier !== "mobile";
+      const wantsCorona = tier !== "mobile";
+      const renderScale = RENDER_SCALE[tier];
+
       /* ─── Renderer ───────────────────────────────────────────────────── */
       const renderer = new THREE.WebGLRenderer({
         canvas,
@@ -695,7 +732,12 @@ export function Planet() {
 
       const W = canvas.offsetWidth  || 800;
       const H = canvas.offsetHeight || 800;
-      renderer.setSize(W, H, false);
+      /* Drawing buffer is rendered smaller than the CSS box (updateStyle=
+       * false leaves the canvas's own 100vw/100vh style untouched) and the
+       * browser upscales it via CSS — this is the single biggest per-frame
+       * GPU cost lever for a full-viewport canvas with a heavy composer
+       * chain running continuously behind the whole site. */
+      renderer.setSize(W * renderScale, H * renderScale, false);
 
       disposeRenderer = () => renderer.dispose();
 
@@ -706,11 +748,6 @@ export function Planet() {
       const camera = new THREE.PerspectiveCamera(FOV, W / H, 0.1, 100);
       camera.position.set(0, 0, CAMERA_Z);
       camera.lookAt(0, 0, 0);
-
-      /* ─── Tier — resolved once at boot ─────────────────────────────────── */
-      const tier = getTier(window.innerWidth);
-      const wantsDisplacement = tier !== "mobile";
-      const wantsCorona = tier !== "mobile";
 
       /* ─── Texture loading (lazy — only after idle, see bottom) ───────────
        * KTX2 (Basis Universal) instead of WebP: transcoded straight to a
@@ -961,13 +998,13 @@ export function Planet() {
        * Linear-HDR render target so UnrealBloomPass can extract genuine
        * above-1.0 emissive brightness; OutputPass applies the single
        * correct ACES + sRGB conversion at the end of the chain. */
-      const renderTarget = new THREE.WebGLRenderTarget(W, H, {
+      const renderTarget = new THREE.WebGLRenderTarget(W * renderScale, H * renderScale, {
         type:       THREE.HalfFloatType,
         colorSpace: THREE.NoColorSpace,
-        samples:    WANTS_MSAA[tier] ? 8 : 0,
+        samples:    WANTS_MSAA[tier] ? 4 : 0,
       });
       const composer = new EffectComposer(renderer, renderTarget);
-      composer.setSize(W, H);
+      composer.setSize(W * renderScale, H * renderScale);
 
       const renderPass = new RenderPass(scene, camera);
       renderPass.clearAlpha = 0;
@@ -983,7 +1020,7 @@ export function Planet() {
       composer.addPass(savePass);
 
       const bloomPass = new UnrealBloomPass(
-        new THREE.Vector2(W, H),
+        new THREE.Vector2(W * renderScale, H * renderScale),
         BLOOM_STRENGTH[tier],
         BLOOM_RADIUS[tier],
         BLOOM_THRESHOLD[tier],
@@ -1026,7 +1063,7 @@ export function Planet() {
         fxaaPass = new ShaderPass(FXAAShader);
         const pr = renderer.getPixelRatio();
         (fxaaPass.material.uniforms["resolution"].value as InstanceType<typeof THREE.Vector2>)
-          .set(1 / (W * pr), 1 / (H * pr));
+          .set(1 / (W * renderScale * pr), 1 / (H * renderScale * pr));
         composer.addPass(fxaaPass);
       }
 
@@ -1130,6 +1167,14 @@ export function Planet() {
       const atmTarget    = new THREE.Color();
       const clock = new THREE.Clock();
 
+      /* Composer.render() (GPU submit across the whole post-processing
+       * chain) and the CSS custom-property writes (Style/Layout cost) are
+       * the two expensive parts of this loop — both are gated to
+       * TARGET_FPS. Rotation/progress lerp and uniform updates stay on
+       * every rAF tick since they're plain JS math, so scrubbing still
+       * feels smooth even though the visible frame only refreshes ~30x/s. */
+      let lastRenderTime = 0;
+
       /* ─── Site-wide colour sync ───────────────────────────────────────────
        * The same rim-colour ramp that lights the planet also drives the
        * public site's shared design tokens (--accent-gold and friends,
@@ -1178,24 +1223,33 @@ export function Planet() {
         }
         uniforms.uRimColor.value.copy(rimTmp);
 
-        /* Site-wide tokens: same rim colour, two lighter derived tints
-         * (hover / text) matching the existing static ratios in globals.css
-         * (#7c3aed → #8b5cf6 hover, → #b39dfa text), plus the two glow tones
-         * consumed by the global ambient background layer. */
-        const rim = toSRGBChannels(rimTmp);
-        hoverTmp.copy(rimTmp).lerp(white, 0.15);
-        textTmp.copy(rimTmp).lerp(white, 0.45);
-        glowBlueTmp.copy(rimTmp).lerp(rimBlue, 0.5);
-        const hover = toSRGBChannels(hoverTmp);
-        const text = toSRGBChannels(textTmp);
-        const glowBlue = toSRGBChannels(glowBlueTmp);
+        /* Gate: only re-render the composer and re-write the CSS design
+         * tokens ~TARGET_FPS times/sec — both are Style/Layout + GPU-submit
+         * costs, and neither needs to run faster than the eye can see on a
+         * decorative full-viewport background element. */
+        const now = performance.now();
+        const shouldRender = now - lastRenderTime >= FRAME_INTERVAL_MS;
 
-        cssRoot.setProperty("--accent-gold", rim.hex);
-        cssRoot.setProperty("--accent-gold-rgb", `${rim.r} ${rim.g} ${rim.b}`);
-        cssRoot.setProperty("--accent-gold-hover", hover.hex);
-        cssRoot.setProperty("--accent-gold-text", text.hex);
-        cssRoot.setProperty("--glow-violet", `rgba(${rim.r}, ${rim.g}, ${rim.b}, 0.45)`);
-        cssRoot.setProperty("--glow-blue", `rgba(${glowBlue.r}, ${glowBlue.g}, ${glowBlue.b}, 0.35)`);
+        if (shouldRender) {
+          /* Site-wide tokens: same rim colour, two lighter derived tints
+           * (hover / text) matching the existing static ratios in globals.css
+           * (#7c3aed → #8b5cf6 hover, → #b39dfa text), plus the two glow tones
+           * consumed by the global ambient background layer. */
+          const rim = toSRGBChannels(rimTmp);
+          hoverTmp.copy(rimTmp).lerp(white, 0.15);
+          textTmp.copy(rimTmp).lerp(white, 0.45);
+          glowBlueTmp.copy(rimTmp).lerp(rimBlue, 0.5);
+          const hover = toSRGBChannels(hoverTmp);
+          const text = toSRGBChannels(textTmp);
+          const glowBlue = toSRGBChannels(glowBlueTmp);
+
+          cssRoot.setProperty("--accent-gold", rim.hex);
+          cssRoot.setProperty("--accent-gold-rgb", `${rim.r} ${rim.g} ${rim.b}`);
+          cssRoot.setProperty("--accent-gold-hover", hover.hex);
+          cssRoot.setProperty("--accent-gold-text", text.hex);
+          cssRoot.setProperty("--glow-violet", `rgba(${rim.r}, ${rim.g}, ${rim.b}, 0.45)`);
+          cssRoot.setProperty("--glow-blue", `rgba(${glowBlue.r}, ${glowBlue.g}, ${glowBlue.b}, 0.35)`);
+        }
 
         /* Atmosphere: blue → orange, growing into a corona near the end */
         const atmT = THREE.MathUtils.smoothstep(currentProgress, 0.15, 0.75);
@@ -1234,7 +1288,10 @@ export function Planet() {
           finalCompositePass.uniforms.uAberration.value = THREE.MathUtils.lerp(0.002, 0.01, coronaGrowth);
         }
 
-        composer.render();
+        if (shouldRender) {
+          lastRenderTime = now;
+          composer.render();
+        }
       }
       rafId = requestAnimationFrame(tick);
 
@@ -1243,15 +1300,15 @@ export function Planet() {
         const w = canvas.offsetWidth;
         const h = canvas.offsetHeight;
         if (!w || !h) return;
-        renderer.setSize(w, h, false);
+        renderer.setSize(w * renderScale, h * renderScale, false);
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
         updateGroupTransform(w, h);
-        composer.setSize(w, h);
+        composer.setSize(w * renderScale, h * renderScale);
         if (fxaaPass) {
           const pr = renderer.getPixelRatio();
           (fxaaPass.material.uniforms["resolution"].value as InstanceType<typeof THREE.Vector2>)
-            .set(1 / (w * pr), 1 / (h * pr));
+            .set(1 / (w * renderScale * pr), 1 / (h * renderScale * pr));
         }
       });
       ro.observe(canvas);
