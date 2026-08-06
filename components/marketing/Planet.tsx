@@ -58,7 +58,8 @@ import { useEffect, useRef } from "react";
  *
  * Folder structure (existing project architecture, nothing new added):
  *   components/marketing/Planet.tsx   ← this file (shaders + passes inlined)
- *   public/textures/planet/*.webp     ← 10 PBR/narrative maps (compressed, seamless)
+ *   public/textures/planet/*.ktx2     ← 10 PBR/narrative maps, GPU block-compressed
+ *                                        (Basis Universal), transcoded via KTX2Loader
  *   app/(site)/layout.tsx             ← mounts <Planet /> globally, once, at the top
  * ──────────────────────────────────────────────────────────────────────────
  */
@@ -645,6 +646,7 @@ export function Planet() {
     let killScrollTrigger:  (() => void) | null = null;
     let killResizeObserver: (() => void) | null = null;
     let disposeRenderer:    (() => void) | null = null;
+    let disposeKTX2Loader:  (() => void) | null = null;
 
     /* ── Async bootstrap ───────────────────────────────────────────────── */
     async function init() {
@@ -659,6 +661,7 @@ export function Planet() {
         { OutputPass },
         { SavePass },
         { FXAAShader },
+        { KTX2Loader },
       ] = await Promise.all([
         import("three"),
         import("gsap"),
@@ -670,6 +673,7 @@ export function Planet() {
         import("three/examples/jsm/postprocessing/OutputPass.js"),
         import("three/examples/jsm/postprocessing/SavePass.js"),
         import("three/examples/jsm/shaders/FXAAShader.js"),
+        import("three/examples/jsm/loaders/KTX2Loader.js"),
       ]);
 
       if (!mounted || !canvas) return;
@@ -708,26 +712,51 @@ export function Planet() {
       const wantsDisplacement = tier !== "mobile";
       const wantsCorona = tier !== "mobile";
 
-      /* ─── Texture loading (lazy — only after idle, see bottom) ─────────── */
-      const loader = new THREE.TextureLoader();
+      /* ─── Texture loading (lazy — only after idle, see bottom) ───────────
+       * KTX2 (Basis Universal) instead of WebP: transcoded straight to a
+       * GPU-native compressed format (BC7/ASTC/ETC2/... depending on what
+       * the device supports, resolved by detectSupport()), so these upload
+       * to the GPU already compressed instead of being decoded to a full
+       * RGBA bitmap first — smaller download AND smaller GPU memory
+       * footprint, which is the point on a scene with this many maps.
+       * setTranscoderPath (not setDecoderPath, which is DRACOLoader's
+       * geometry-decoder method — KTX2Loader's texture transcoder uses this
+       * name) points at three.js's own CDN-hosted transcoder bundle so the
+       * .wasm/.js transcoder files never need to live in this repo; pinned
+       * to the exact three version in package.json to avoid any API drift
+       * between the local three.js build and the fetched transcoder. */
+      const ktx2Loader = new KTX2Loader()
+        .setTranscoderPath("https://cdn.jsdelivr.net/npm/three@0.168.0/examples/jsm/libs/basis/")
+        .detectSupport(renderer);
+
       const [
         colorTex, normalTex, roughTex, aoTex,
         crystalTex, lavaTex, sunTex, atmTex,
         dispTexLoaded, coronaTex,
       ] = await Promise.all([
-        loader.loadAsync("/textures/planet/color.webp"),
-        loader.loadAsync("/textures/planet/normal.webp"),
-        loader.loadAsync("/textures/planet/roughness.webp"),
-        loader.loadAsync("/textures/planet/ao.webp"),
-        loader.loadAsync("/textures/planet/crystal.webp"),
-        loader.loadAsync("/textures/planet/lava.webp"),
-        loader.loadAsync("/textures/planet/sun.webp"),
-        loader.loadAsync("/textures/planet/atmosphere.webp"),
-        wantsDisplacement ? loader.loadAsync("/textures/planet/displacement.webp") : Promise.resolve(null),
-        wantsCorona ? loader.loadAsync("/textures/planet/corona.webp") : Promise.resolve(null),
+        ktx2Loader.loadAsync("/textures/planet/color.ktx2"),
+        ktx2Loader.loadAsync("/textures/planet/normal.ktx2"),
+        ktx2Loader.loadAsync("/textures/planet/roughness.ktx2"),
+        ktx2Loader.loadAsync("/textures/planet/ao.ktx2"),
+        ktx2Loader.loadAsync("/textures/planet/crystal.ktx2"),
+        ktx2Loader.loadAsync("/textures/planet/lava.ktx2"),
+        ktx2Loader.loadAsync("/textures/planet/sun.ktx2"),
+        ktx2Loader.loadAsync("/textures/planet/atmosphere.ktx2"),
+        wantsDisplacement ? ktx2Loader.loadAsync("/textures/planet/displacement.ktx2") : Promise.resolve(null),
+        wantsCorona ? ktx2Loader.loadAsync("/textures/planet/corona.ktx2") : Promise.resolve(null),
       ]);
 
-      if (!mounted) return;
+      /* The loader's worker pool / transcoder module isn't needed once every
+       * texture has been transcoded — release it now rather than waiting
+       * for unmount, and again in cleanup in case the component unmounts
+       * before we get here. */
+      disposeKTX2Loader = () => ktx2Loader.dispose();
+
+      if (!mounted) {
+        disposeKTX2Loader();
+        return;
+      }
+      disposeKTX2Loader();
 
       /* Mobile: skip the displacement fetch and reuse colorTex as an inert
        * filler for the sampler slot — uDisplacementScale is 0 on mobile so
@@ -741,15 +770,25 @@ export function Planet() {
       sunTex.colorSpace     = THREE.SRGBColorSpace;
 
       /* Seamless horizontal wrap (source textures were pre-processed with a
-       * cross-faded edge band); vertical clamp so poles never wrap/stretch. */
+       * cross-faded edge band); vertical clamp so poles never wrap/stretch.
+       *
+       * generateMipmaps is intentionally NOT forced on here (it was under
+       * the old WebP/TextureLoader path). These are now GPU block-compressed
+       * CompressedTexture instances — WebGL cannot generate mipmaps for
+       * compressed internal formats at runtime; a mip chain has to already
+       * be baked into the .ktx2 file. CompressedTexture already defaults
+       * generateMipmaps to false, which is correct here. Forcing a mipmap
+       * minFilter on a texture that has no baked mip levels renders solid
+       * black (an "incomplete texture" in WebGL terms), so the filter is
+       * chosen based on how many levels actually transcoded in. */
       [colorTex, normalTex, roughTex, aoTex, crystalTex, lavaTex, sunTex, dispTexLoaded]
-        .filter((t): t is InstanceType<typeof THREE.Texture> => t !== null)
+        .filter((t): t is InstanceType<typeof THREE.CompressedTexture> => t !== null)
         .forEach((t) => {
           t.wrapS = THREE.RepeatWrapping;
           t.wrapT = THREE.ClampToEdgeWrapping;
           t.anisotropy = maxAnisotropy;
-          t.generateMipmaps = true;
-          t.minFilter = THREE.LinearMipmapLinearFilter;
+          const hasMipmaps = Array.isArray(t.mipmaps) && t.mipmaps.length > 1;
+          t.minFilter = hasMipmaps ? THREE.LinearMipmapLinearFilter : THREE.LinearFilter;
           t.magFilter = THREE.LinearFilter;
         });
 
@@ -1254,6 +1293,10 @@ export function Planet() {
       killResizeObserver?.();
       toDispose.forEach((item) => item.dispose());
       disposeRenderer?.();
+      // Defensive/idempotent — init() already disposes the KTX2 loader's
+      // worker pool as soon as textures resolve; this only matters if
+      // unmount happens before that point is ever reached.
+      disposeKTX2Loader?.();
 
       /* Release the shared design-token overrides so a client-side
        * navigation to /dashboard or /login (same <html>, no full reload)
