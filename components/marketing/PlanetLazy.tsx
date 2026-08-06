@@ -11,20 +11,16 @@
  * throws a build error if you try. Routing the dynamic import through this
  * dedicated "use client" file is the standard workaround.
  *
- * loading: () => null — both variants are fully decorative,
- * pointer-events-none background layers with no layout impact (position:
- * fixed), so there's nothing to reserve space for and no risk of CLS while
- * either chunk streams in.
+ * loading: () => null — Planet is a fully decorative, pointer-events-none
+ * background layer with no layout impact (position: fixed), so there's
+ * nothing to reserve space for and no risk of CLS while the chunk streams in.
  *
- * Device split (audit du 6 août 2026 — testé en conditions réelles) :
- * isTouchHandheld() decides which component to dynamically import BEFORE
- * either import() call runs — on a touch/small-screen device, Planet's
- * factory function is simply never invoked, so three.js/GSAP never get
- * fetched, parsed, or executed at all, not just "rendered less". The
- * decision happens client-side after mount (matching the rest of this
- * module's client-only pattern) to avoid any SSR/hydration mismatch;
- * nothing visible renders until it resolves, same as the previous
- * single-variant loading:()=>null behaviour.
+ * Mobile: nothing renders at all (demande explicite du 6 août 2026 — retirer
+ * tout code 3D sur mobile, pas seulement l'alléger). isTouchHandheld()
+ * decides BEFORE the import() call runs — on a touch/small-screen device,
+ * Planet's factory function is never invoked, so three.js/GSAP are never
+ * fetched, parsed, or executed. Decision happens client-side after mount to
+ * avoid any SSR/hydration mismatch.
  */
 
 import dynamic from "next/dynamic";
@@ -36,18 +32,12 @@ const PlanetWebGL = dynamic(() => import("./Planet").then((mod) => mod.Planet), 
   loading: () => null,
 });
 
-const PlanetStatic = dynamic(
-  () => import("./PlanetStaticFallback").then((mod) => mod.PlanetStaticFallback),
-  { ssr: false, loading: () => null },
-);
-
 export default function PlanetLazy() {
-  const [mode, setMode] = useState<"pending" | "webgl" | "static">("pending");
+  const [showPlanet, setShowPlanet] = useState(false);
 
   useEffect(() => {
-    setMode(isTouchHandheld() ? "static" : "webgl");
+    setShowPlanet(!isTouchHandheld());
   }, []);
 
-  if (mode === "pending") return null;
-  return mode === "static" ? <PlanetStatic /> : <PlanetWebGL />;
+  return showPlanet ? <PlanetWebGL /> : null;
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { isTouchHandheld } from "@/components/marketing/planet/capabilities";
 
 /* ─── Types ─────────────────────────────────────────────────────────────── */
 interface Star {
@@ -30,8 +31,16 @@ const FRAME_INTERVAL_MS = 1000 / TARGET_FPS;
 export function SpaceBackground() {
   const starsRef = useRef<HTMLCanvasElement>(null);
 
-  /* ── Star particle animation (unchanged) ─────────────────────────────── */
+  /* ── Star particle animation — desktop/pointer:fine only ──────────────
+   * Mobile/handheld (isTouchHandheld() — same signal PlanetLazy.tsx uses
+   * to skip WebGL) never runs any of this: no canvas context, no star/
+   * particle arrays, no requestAnimationFrame loop at all. Real-device
+   * testing this session showed the WebGL planet was the dominant mobile
+   * cost, but this canvas ran unconditionally on every page too — cutting
+   * it on mobile removes that cost entirely rather than just capping it. */
   useEffect(() => {
+    if (isTouchHandheld()) return;
+
     const canvas = starsRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -162,11 +171,11 @@ export function SpaceBackground() {
       {/*
        * ── Ambient colour wash ─────────────────────────────────────────
        * Reads --glow-violet / --glow-blue (defined in globals.css, static
-       * fallback values). Planet.tsx overwrites both every frame to track
-       * the 3D scene's current narrative stage, so this single fixed layer
-       * is what makes "every part of the site" wash with the planet's
-       * colour as you scroll, without touching each section component
-       * individually.
+       * fallback values). On desktop, Planet.tsx overwrites both every
+       * frame to track the 3D scene's current narrative stage. On mobile,
+       * nothing overrides them (Planet renders nothing there at all — see
+       * PlanetLazy.tsx) so this stays the fixed static brand-violet wash,
+       * which is the intended, lower-cost mobile behaviour.
        */}
       <div id="ambient-glow" aria-hidden="true" />
 
