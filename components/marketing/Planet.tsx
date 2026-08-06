@@ -28,9 +28,30 @@ import { createBloomComposer } from "./planet/post-processing";
 const SPHERE_RADIUS = 4;
 const CAMERA_Z = 10.5;
 const FOV = 44;
-const SIZE_FRAC_WIDTH = 0.46;
-const HEIGHT_CAP_FRAC = 0.6;
-const CENTER_X_FRAC = 0.88;
+
+/* ─── Sizing/centring — one formula, continuous across every aspect ratio,
+ * no mobile/desktop branch ────────────────────────────────────────────────
+ * SIZE_FRAC_HEIGHT is the primary target: the sphere is sized to this
+ * fraction of the viewport's HEIGHT on every device. SIZE_FRAC_WIDTH_CAP is
+ * only a safety ceiling for unusually narrow/tall viewports, so the sphere
+ * can never overflow the width — it is deliberately generous (0.85, not a
+ * tight fraction), because on portrait screens frustum WIDTH is naturally
+ * much smaller than frustum HEIGHT: a tight width-based cap there was the
+ * actual bug (min(widthFrac, heightCap) let the small width term win on
+ * every portrait viewport, sizing the sphere to ~20% of viewport height
+ * instead of the intended ~60% — 3x smaller than desktop, which is why the
+ * crystal/lava/sun surface detail read as barely visible on mobile).
+ *
+ * CENTER_X_FRAC_* interpolates continuously by aspect ratio instead of a
+ * fixed value: portrait screens keep the sphere closer to centred (a fixed
+ * "88% across" position pushes most of a portrait-narrow frustum's sphere
+ * off the right edge, cropping out the very surface detail sizing was just
+ * fixed to make visible), landscape screens keep the original off-centre,
+ * "giant object partially exiting the frame" composition. */
+const SIZE_FRAC_HEIGHT = 0.6;
+const SIZE_FRAC_WIDTH_CAP = 0.85;
+const CENTER_X_FRAC_PORTRAIT  = 0.68;
+const CENTER_X_FRAC_LANDSCAPE = 0.88;
 
 const RIM_BLUE   = 0x2563eb;
 const BRAND_VIOLET = 0x7c3aed;
@@ -155,7 +176,7 @@ export function Planet() {
       scene.add(atm);
       toDispose.push(atmGeo, atmMat);
 
-      /* ─── Frustum-based world-space sizing (unchanged from Phase 2) ──── */
+      /* ─── Frustum-based world-space sizing — one formula, every aspect ── */
       const vFOV = THREE.MathUtils.degToRad(FOV);
       function layout(w: number, h: number) {
         const aspect = w / h;
@@ -164,12 +185,19 @@ export function Planet() {
         const frustumHalfWidth  = frustumHalfHeight * aspect;
         const frustumWidth      = frustumHalfWidth * 2;
 
-        const diameter = Math.min(SIZE_FRAC_WIDTH * frustumWidth, HEIGHT_CAP_FRAC * frustumHeight);
+        // Height is the primary target on every device; width is only a
+        // generous overflow cap for unusually narrow viewports.
+        const diameter = Math.min(SIZE_FRAC_HEIGHT * frustumHeight, SIZE_FRAC_WIDTH_CAP * frustumWidth);
         const scale = diameter / (SPHERE_RADIUS * 2);
         sphere.scale.setScalar(scale);
         atm.scale.setScalar(scale * (1 + coronaGrowth * 0.3));
 
-        const ndcX = CENTER_X_FRAC * 2 - 1;
+        // Continuous by aspect ratio: portrait (aspect < ~0.7) stays closer
+        // to centred, landscape (aspect > ~1.6) keeps the original
+        // off-centre composition, everything between blends smoothly.
+        const centerT = THREE.MathUtils.smoothstep(aspect, 0.7, 1.6);
+        const centerXFrac = THREE.MathUtils.lerp(CENTER_X_FRAC_PORTRAIT, CENTER_X_FRAC_LANDSCAPE, centerT);
+        const ndcX = centerXFrac * 2 - 1;
         const x = ndcX * frustumHalfWidth;
         sphere.position.x = x;
         atm.position.x = x;

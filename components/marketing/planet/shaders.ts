@@ -160,8 +160,13 @@ void main() {
   float wLava    = smoothstep(0.3, 0.6, uProgress)  * smoothstep(0.95, 0.6, uProgress);
   float wSun     = smoothstep(0.65, 1.0, uProgress);
 
-  float crystalMask = smoothstep(0.0, 0.08, crackNoise * wCrystal - (1.0 - wCrystal));
-  float lavaMask    = smoothstep(0.0, 0.08, crackNoise * wLava    - (1.0 - wLava));
+  /* Threshold band widened from an earlier 0.08 to 0.2 — narrow bands are
+   * precise on desktop (highp fragment shaders) but band/alias on mobile
+   * GPUs, which commonly fall back to mediump when highp isn't supported;
+   * a wider band reads as a slightly softer transition everywhere and is
+   * far more robust to that precision drop where it matters most. */
+  float crystalMask = smoothstep(0.0, 0.2, crackNoise * wCrystal - (1.0 - wCrystal));
+  float lavaMask    = smoothstep(0.0, 0.2, crackNoise * wLava    - (1.0 - wLava));
   float sunMask     = wSun;
 
   vec3 surfaceColor = baseColor;
