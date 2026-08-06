@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { detectQualityProfile } from "./planet/capabilities";
 import { loadKTX2Textures } from "./planet/ktx2-loader";
 import { VERTEX_SHADER, FRAGMENT_SHADER } from "./planet/shaders";
+import { createBloomComposer } from "./planet/post-processing";
 
 /*
  * ─── Planet.tsx — Phase 3: visual system ────────────────────────────────
@@ -15,10 +16,13 @@ import { VERTEX_SHADER, FRAGMENT_SHADER } from "./planet/shaders";
  * narrative as before. An additive atmosphere shell adds a soft glow
  * without needing a post-processing pass.
  *
- * Deliberately still not in this phase: bloom/post-processing (lands right
- * after this, as its own small verifiable step), the particle burst, and
- * the site-wide colour sync (--glow-violet/--glow-blue) that the old
- * system drove — those are Phase 4.
+ * Bloom (see ./planet/post-processing.ts) runs on top of this, gated by
+ * profile.postFX — mid/high device profiles only, so weaker devices never
+ * construct a composer or pay for the extra passes.
+ *
+ * Deliberately still not in this phase: the particle burst and the
+ * site-wide colour sync (--glow-violet/--glow-blue) that the old system
+ * drove — those are Phase 4.
  */
 
 const SPHERE_RADIUS = 4;
@@ -191,6 +195,23 @@ export function Planet() {
 
       layout(W, H);
 
+      /* ─── Bloom (mid/high profiles only — see post-processing.ts) ──────
+       * Low/reduced profiles never construct a composer at all: zero extra
+       * draw calls, zero extra imports, for devices that can't afford it. */
+      let bloom: Awaited<ReturnType<typeof createBloomComposer>> | null = null;
+      if (profile.postFX) {
+        bloom = await createBloomComposer(
+          THREE, renderer, scene, camera,
+          W * profile.renderScale, H * profile.renderScale,
+        );
+        if (!mounted) {
+          bloom.dispose();
+          disposeTex();
+          disposeRenderer();
+          return;
+        }
+      }
+
       /* ─── Render loop ────────────────────────────────────────────────── */
       const rimBlue   = new THREE.Color(RIM_BLUE);
       const rimViolet = new THREE.Color(BRAND_VIOLET);
@@ -233,8 +254,15 @@ export function Planet() {
 
         const exposure = 1.15 + coronaGrowth * 0.35;
         uniforms.uExposure.value = exposure;
+        if (bloom) {
+          bloom.bloomPass.strength = 0.6 * (1 + coronaGrowth * 0.6);
+        }
 
-        renderer.render(scene, camera);
+        if (bloom) {
+          bloom.composer.render();
+        } else {
+          renderer.render(scene, camera);
+        }
       }
       rafId = requestAnimationFrame(tick);
 
@@ -247,9 +275,10 @@ export function Planet() {
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
         layout(w, h);
+        bloom?.setSize(w * profile.renderScale, h * profile.renderScale);
       });
       ro.observe(canvas);
-      killResizeObserver = () => ro.disconnect();
+      killResizeObserver = () => { ro.disconnect(); bloom?.dispose(); };
     }
 
     type IdleWindow = Window & {
