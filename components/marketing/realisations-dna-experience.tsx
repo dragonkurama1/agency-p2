@@ -536,6 +536,7 @@ function DnaCanvas({
         rig.rotation.y = 0.28 + time * 0.12 + scrollProgress * Math.PI * 1.25 + projectProgress * 0.36;
         rig.rotation.x = -0.16 + Math.sin(time * 0.24) * 0.08;
         rig.rotation.z = -0.08 + Math.sin(time * 0.18 + projectProgress * Math.PI) * 0.08;
+        rig.position.y = (canvas.clientWidth < canvas.clientHeight ? -0.26 : -0.12) + (scrollProgress - 0.5) * 1.45;
         signals.rotation.y = time * 0.06;
         orbitControllers.forEach((orbit, index) => {
           orbit.object.rotation.z += orbit.speed;
@@ -864,7 +865,7 @@ export function RealisationsDnaExperience({
     return counts;
   }, [projects]);
   const shownSectors = sectors.length ? sectors : Array.from(sectorCounts.keys());
-  const stageMinHeight = Math.max(164, projects.length * 118 + 46);
+  const stageMinHeight = Math.max(226, projects.length * 118 + 108);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -919,7 +920,7 @@ export function RealisationsDnaExperience({
   return (
     <section
       ref={rootRef}
-      className="relative -mt-20 overflow-x-clip bg-[#03040a] pt-28 text-white"
+      className="relative -mt-20 bg-[#03040a] pt-28 text-white"
       style={createSceneStyle(activeTheme)}
       aria-label="Réalisations Prestigia Agency"
     >
@@ -1023,6 +1024,37 @@ export function RealisationsDnaExperience({
               <DnaCanvas activeIndex={activeIndex} activeSector={activeProject.sector} totalProjects={projects.length} />
               <div className="absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-[#03040a] to-transparent" />
               <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-[#03040a] to-transparent" />
+              {shownSectors.length > 0 && (
+                <nav
+                  aria-label="Catégories projets"
+                  className="pointer-events-auto absolute left-4 right-4 top-24 z-20 flex gap-2 overflow-x-auto pb-2 sm:left-8 sm:right-8 lg:right-auto lg:max-h-[calc(100svh-9rem)] lg:w-64 lg:flex-col lg:overflow-x-hidden lg:overflow-y-auto lg:pb-0"
+                >
+                  {shownSectors.map((sector) => {
+                    const theme = getSectorTheme(sector);
+                    const Icon = theme.icon;
+                    const selected = activeProject.sector === sector;
+
+                    return (
+                      <button
+                        key={sector}
+                        type="button"
+                        aria-pressed={selected}
+                        onClick={() => scrollToSector(sector)}
+                        className={cn(
+                          "group inline-flex min-h-11 shrink-0 items-center gap-2 rounded-lg border px-3 text-left text-sm backdrop-blur-md transition-colors lg:w-full",
+                          selected
+                            ? "border-[var(--scene-primary)] bg-black/60 text-white shadow-[0_0_22px_var(--scene-glow)]"
+                            : "border-white/[0.12] bg-black/[0.26] text-white/[0.64] hover:border-white/[0.28] hover:text-white",
+                        )}
+                      >
+                        <Icon aria-hidden="true" className="size-4 shrink-0" style={{ color: theme.cssPrimary }} />
+                        <span className="truncate">{sector}</span>
+                        <span className="ml-auto text-xs text-white/[0.44]">{sectorCounts.get(sector) ?? 0}</span>
+                      </button>
+                    );
+                  })}
+                </nav>
+              )}
               <div className="absolute inset-x-4 bottom-5 rounded-lg border border-white/[0.1] bg-black/[0.24] p-3 backdrop-blur-md sm:inset-x-auto sm:left-8 sm:w-[320px] sm:p-4">
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
