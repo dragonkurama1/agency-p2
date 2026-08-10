@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 
 /* ─── Types ─────────────────────────────────────────────────────────────── */
 interface Star {
@@ -35,12 +36,15 @@ function isTouchHandheld(): boolean {
 /* ─── Component ─────────────────────────────────────────────────────────── */
 export function SpaceBackground() {
   const starsRef = useRef<HTMLCanvasElement>(null);
+  const pathname = usePathname();
+  const hideParticles = pathname?.startsWith("/realisations") ?? false;
 
   /* ── Star particle animation — desktop/pointer:fine only ──────────────
    * Mobile/handheld never runs any of this: no canvas context, no star/
    * particle arrays, no requestAnimationFrame loop at all. Cutting it on
    * mobile removes that cost entirely rather than just capping it. */
   useEffect(() => {
+    if (hideParticles) return;
     if (isTouchHandheld()) return;
 
     const canvas = starsRef.current;
@@ -163,7 +167,7 @@ export function SpaceBackground() {
       cancelAnimationFrame(rafId);
       window.removeEventListener("resize", resize);
     };
-  }, []);
+  }, [hideParticles]);
 
   return (
     <>
@@ -179,7 +183,7 @@ export function SpaceBackground() {
       <div id="ambient-glow" aria-hidden="true" />
 
       {/* ── Star particle canvas ──────────────────────────────────────── */}
-      <canvas ref={starsRef} id="space-canvas" aria-hidden="true" />
+      {!hideParticles && <canvas ref={starsRef} id="space-canvas" aria-hidden="true" />}
     </>
   );
 }

@@ -491,6 +491,13 @@ function DnaCanvas({
       }
 
       function getScrollProgress() {
+        const stage = canvas.closest<HTMLElement>("[data-dna-stage]");
+        if (stage) {
+          const rect = stage.getBoundingClientRect();
+          const travel = Math.max(1, stage.offsetHeight - window.innerHeight);
+          return Math.max(0, Math.min(1, -rect.top / travel));
+        }
+
         const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
         return Math.max(0, Math.min(1, window.scrollY / maxScroll));
       }
@@ -673,7 +680,7 @@ function DnaCanvas({
     };
   }, [totalProjects]);
 
-  return <canvas ref={canvasRef} aria-hidden="true" className="absolute inset-0 h-full w-full" />;
+  return <canvas ref={canvasRef} aria-hidden="true" className="absolute inset-0 h-full w-full" data-dna-canvas="true" />;
 }
 
 function SectorIcon({ sector, className }: { sector: string; className?: string }) {
@@ -688,7 +695,7 @@ function ProjectVisual({ project, theme }: { project: Project; theme: SectorThem
         src={normalizeImageUrl(project.cover_image)}
         alt={project.title}
         fill
-        sizes="(max-width: 768px) 100vw, 44vw"
+        sizes="(max-width: 768px) 74vw, 280px"
         className="object-cover transition-transform duration-700 group-hover:scale-105"
       />
     );
@@ -724,6 +731,91 @@ function ProjectVisual({ project, theme }: { project: Project; theme: SectorThem
   );
 }
 
+function ProjectDnaTile({
+  alignRight,
+  index,
+  isActive,
+  isVisible,
+  project,
+  theme,
+}: {
+  alignRight: boolean;
+  index: number;
+  isActive: boolean;
+  isVisible: boolean;
+  project: Project;
+  theme: SectorTheme;
+}) {
+  return (
+    <article
+      data-dna-project-index={index}
+      className={cn(
+        "relative flex min-h-[118svh] scroll-mt-28 items-center px-2 py-24 sm:px-8",
+        alignRight ? "justify-end" : "justify-start",
+      )}
+      style={createSceneStyle(theme)}
+    >
+      <div
+        aria-hidden="true"
+        className={cn(
+          "pointer-events-none absolute top-1/2 hidden h-px w-[34vw] max-w-[420px] opacity-70 lg:block",
+          alignRight
+            ? "right-[250px] bg-gradient-to-l from-transparent via-[var(--scene-primary)] to-transparent"
+            : "left-[250px] bg-gradient-to-r from-transparent via-[var(--scene-primary)] to-transparent",
+        )}
+      />
+      <Link
+        href={`/realisations/${project.slug}`}
+        aria-label={`Voir le projet ${project.title}`}
+        className={cn(
+          "group relative block aspect-square w-[min(74vw,260px)] overflow-hidden rounded-lg border bg-black/[0.42] shadow-2xl backdrop-blur-xl transition-all duration-700 sm:w-[280px]",
+          isVisible ? "translate-y-0 scale-100 opacity-100" : "translate-y-12 scale-90 opacity-0",
+          isActive ? "border-[var(--scene-primary)]" : "border-white/[0.14] hover:border-white/[0.34]",
+        )}
+        style={{
+          boxShadow: isActive ? `0 0 42px ${theme.cssGlow}` : undefined,
+          transitionDelay: `${Math.min(index * 70, 260)}ms`,
+        }}
+      >
+        <span
+          aria-hidden="true"
+          className="absolute -inset-10 opacity-0 blur-2xl transition-opacity duration-700 group-hover:opacity-70"
+          style={{ background: `radial-gradient(circle, ${theme.cssGlow}, transparent 62%)` }}
+        />
+        <ProjectVisual project={project} theme={theme} />
+        <span className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
+        <span className="absolute inset-0 border border-white/10" />
+        <span className="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.16] bg-black/[0.42] backdrop-blur-md">
+          <SectorIcon sector={project.sector} className="size-4 text-[var(--scene-primary)]" />
+        </span>
+        {project.featured && (
+          <span className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--scene-accent)] bg-black/[0.38]">
+            <Trophy aria-hidden="true" className="size-4 text-[var(--scene-accent)]" />
+          </span>
+        )}
+        <span className="absolute inset-x-4 bottom-4">
+          <span className="block text-[10px] uppercase tracking-[0.26em] text-[var(--scene-secondary)]">
+            {project.category || project.sector || "Projet"}
+          </span>
+          <span className="mt-1 line-clamp-2 block font-serif text-3xl leading-none text-white">{project.title}</span>
+          <span className="mt-3 flex items-center justify-between text-xs text-white/60">
+            <span>{project.client_name || "Prestigia Agency"}</span>
+            <ArrowUpRight aria-hidden="true" className="size-4 text-[var(--scene-primary)]" />
+          </span>
+        </span>
+        <span className="absolute inset-x-4 bottom-0 h-px bg-[var(--scene-primary)]" />
+        <span
+          aria-hidden="true"
+          className={cn(
+            "absolute top-1/2 h-3 w-3 -translate-y-1/2 rounded-[2px] bg-[var(--scene-primary)] shadow-[0_0_18px_var(--scene-primary)]",
+            alignRight ? "-left-1.5" : "-right-1.5",
+          )}
+        />
+      </Link>
+    </article>
+  );
+}
+
 export function RealisationsDnaExperience({
   heroSubtitle,
   heroTitle,
@@ -737,7 +829,7 @@ export function RealisationsDnaExperience({
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [visibleProjects, setVisibleProjects] = useState<Set<number>>(() => new Set([0]));
+  const [visibleProjects, setVisibleProjects] = useState<Set<number>>(() => new Set());
 
   const activeProject = projects[activeIndex] ?? projects[0];
   const activeTheme = getSectorTheme(activeProject?.sector ?? "");
@@ -804,7 +896,7 @@ export function RealisationsDnaExperience({
   return (
     <section
       ref={rootRef}
-      className="relative -mt-20 overflow-clip bg-[#03040a] pt-28 text-white"
+      className="relative -mt-20 overflow-x-clip bg-[#03040a] pt-28 text-white"
       style={createSceneStyle(activeTheme)}
       aria-label="Réalisations Prestigia Agency"
     >
@@ -836,37 +928,6 @@ export function RealisationsDnaExperience({
           maskImage: "linear-gradient(180deg, transparent 0%, black 16%, black 82%, transparent 100%)",
         }}
       />
-
-      <div className="pointer-events-none fixed inset-0 z-0 h-screen overflow-hidden">
-        <div
-          aria-hidden="true"
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(circle at 50% 46%, var(--scene-glow), transparent 36%), radial-gradient(ellipse at center, transparent 0%, rgba(3, 4, 10, 0.18) 58%, rgba(3, 4, 10, 0.92) 100%)",
-          }}
-        />
-        <DnaCanvas activeIndex={activeIndex} activeSector={activeProject.sector} totalProjects={projects.length} />
-        <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-[#03040a] to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-[#03040a] to-transparent" />
-        <div className="absolute inset-x-4 bottom-5 rounded-lg border border-white/[0.1] bg-black/[0.24] p-4 backdrop-blur-md sm:inset-x-auto sm:left-8 sm:w-[360px]">
-          <div className="flex items-start justify-between gap-4">
-            <div className="min-w-0">
-              <p className="text-xs uppercase text-white/[0.48]">{activeTheme.label}</p>
-              <p className="mt-1 truncate font-serif text-2xl text-white">{activeProject.client_name || activeProject.title}</p>
-            </div>
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/[0.12] bg-white/[0.08]">
-              <SectorIcon sector={activeProject.sector} className="size-5 text-[var(--scene-primary)]" />
-            </div>
-          </div>
-          <div className="mt-4 h-1 overflow-hidden rounded-full bg-white/10">
-            <div
-              className="h-full rounded-full bg-[var(--scene-primary)] transition-all duration-500"
-              style={{ width: `${((activeIndex + 1) / projects.length) * 100}%` }}
-            />
-          </div>
-        </div>
-      </div>
 
       <div className="container-px relative z-10 mx-auto max-w-7xl">
         <div className="grid gap-10">
@@ -922,93 +983,58 @@ export function RealisationsDnaExperience({
             )}
           </div>
 
-          <div className="pb-14 lg:pb-28">
-            {projects.map((project, index) => {
-              const theme = getSectorTheme(project.sector);
-              const isActive = index === activeIndex;
-              const isVisible = visibleProjects.has(index);
-              const alignRight = index % 2 === 1;
+          <div data-dna-stage="true" className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] min-h-[148svh] w-screen pb-14 lg:pb-28">
+            <div className="pointer-events-none sticky top-20 z-0 h-[calc(100svh-5rem)] overflow-hidden">
+              <div
+                aria-hidden="true"
+                className="absolute inset-0"
+                style={{
+                  background:
+                    "radial-gradient(circle at 50% 46%, var(--scene-glow), transparent 36%), radial-gradient(ellipse at center, transparent 0%, rgba(3, 4, 10, 0.18) 58%, rgba(3, 4, 10, 0.92) 100%)",
+                }}
+              />
+              <DnaCanvas activeIndex={activeIndex} activeSector={activeProject.sector} totalProjects={projects.length} />
+              <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[#03040a] to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#03040a] to-transparent" />
+              <div className="absolute inset-x-4 bottom-5 rounded-lg border border-white/[0.1] bg-black/[0.24] p-3 backdrop-blur-md sm:inset-x-auto sm:left-8 sm:w-[320px] sm:p-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <p className="text-xs uppercase text-white/[0.48]">{activeTheme.label}</p>
+                    <p className="mt-1 truncate font-serif text-xl text-white">{activeProject.client_name || activeProject.title}</p>
+                  </div>
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/[0.12] bg-white/[0.08]">
+                    <SectorIcon sector={activeProject.sector} className="size-4 text-[var(--scene-primary)]" />
+                  </div>
+                </div>
+                <div className="mt-3 h-1 overflow-hidden rounded-full bg-white/10">
+                  <div
+                    className="h-full rounded-full bg-[var(--scene-primary)] transition-all duration-500"
+                    style={{ width: `${((activeIndex + 1) / projects.length) * 100}%` }}
+                  />
+                </div>
+              </div>
+            </div>
 
-              return (
-                <article
-                  key={project.slug}
-                  data-dna-project-index={index}
-                  className={cn(
-                    "flex min-h-[100svh] scroll-mt-28 items-center py-24",
-                    alignRight ? "justify-end" : "justify-start",
-                  )}
-                  style={createSceneStyle(theme)}
-                >
-                  <Link
-                    href={`/realisations/${project.slug}`}
-                    className={cn(
-                      "group grid w-full max-w-4xl overflow-hidden rounded-lg border bg-black/[0.42] shadow-2xl backdrop-blur-xl transition-all duration-700 md:grid-cols-[0.92fr_1.08fr]",
-                      isVisible ? "translate-y-0 opacity-100" : "translate-y-12 opacity-0",
-                      isActive ? "border-[var(--scene-primary)]" : "border-white/[0.12] hover:border-white/[0.3]",
-                    )}
-                    style={{
-                      boxShadow: isActive ? `0 0 56px ${theme.cssGlow}` : undefined,
-                    }}
-                  >
-                    <div className="relative min-h-[330px] overflow-hidden bg-black/40 md:min-h-[520px]">
-                      <ProjectVisual project={project} theme={theme} />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/[0.68] via-black/[0.08] to-transparent" />
-                      <span className="absolute left-5 top-5 inline-flex items-center gap-2 rounded-lg border border-white/[0.14] bg-black/[0.38] px-3 py-1.5 text-sm text-white backdrop-blur-md">
-                        <SectorIcon sector={project.sector} className="size-4 text-[var(--scene-primary)]" />
-                        {project.sector || project.category || "Projet"}
-                      </span>
-                    </div>
+            <div className="relative z-10 -mt-[calc(100svh-5rem)]">
+              {projects.map((project, index) => {
+                const theme = getSectorTheme(project.sector);
+                const isActive = index === activeIndex;
+                const isVisible = visibleProjects.has(index) || index === activeIndex;
+                const alignRight = index % 2 === 0;
 
-                    <div className="flex min-h-[420px] flex-col p-6 sm:p-8 lg:p-10">
-                      <div className="flex items-start justify-between gap-5">
-                        <div>
-                          <p className="text-sm uppercase tracking-[0.22em] text-[var(--scene-secondary)]">
-                            {project.category || project.sector || "Categorie"}
-                          </p>
-                          <h2 className="mt-4 font-serif text-5xl leading-none text-white sm:text-6xl">{project.title}</h2>
-                          <p className="mt-4 text-lg text-white/[0.6]">{project.client_name}</p>
-                        </div>
-                        {project.featured && (
-                          <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-[var(--scene-accent)] bg-white/[0.08]">
-                            <Trophy aria-hidden="true" className="size-5 text-[var(--scene-accent)]" />
-                          </span>
-                        )}
-                      </div>
-
-                      <p className="mt-8 line-clamp-3 max-w-xl text-base leading-8 text-white/[0.68]">
-                        {project.description || project.objective || project.solution}
-                      </p>
-
-                      {project.services.length > 0 && (
-                        <div className="mt-8 flex flex-wrap gap-2">
-                          {project.services.slice(0, 4).map((service) => (
-                            <span key={service} className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-1.5 text-sm text-white/[0.58]">
-                              {service}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-
-                      {project.results && (
-                        <p className="mt-8 border-l border-[var(--scene-primary)] pl-4 text-lg leading-7 text-white">
-                          {project.results}
-                        </p>
-                      )}
-
-                      <div className="mt-auto flex items-center justify-between pt-10">
-                        <span className="font-serif text-4xl text-white/[0.3]">
-                          {String(index + 1).padStart(2, "0")}
-                        </span>
-                        <span className="inline-flex h-12 items-center gap-2 rounded-lg border border-white/[0.12] bg-white/[0.07] px-4 text-sm text-white transition-colors group-hover:border-[var(--scene-primary)] group-hover:text-[var(--scene-primary)]">
-                          Voir le projet
-                          <ArrowUpRight aria-hidden="true" className="size-4" />
-                        </span>
-                      </div>
-                    </div>
-                  </Link>
-                </article>
-              );
-            })}
+                return (
+                  <ProjectDnaTile
+                    key={project.slug}
+                    alignRight={alignRight}
+                    index={index}
+                    isActive={isActive}
+                    isVisible={isVisible}
+                    project={project}
+                    theme={theme}
+                  />
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
