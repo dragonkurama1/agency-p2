@@ -9,6 +9,7 @@ import {
   Briefcase,
   Building2,
   Dumbbell,
+  Film,
   GraduationCap,
   Hammer,
   HeartPulse,
@@ -85,6 +86,21 @@ const THEME_MATCHERS: Array<{ test: (sector: string) => boolean; theme: SectorTh
       twist: 3.75,
       speed: 0.72,
       icon: Dumbbell,
+    },
+  },
+  {
+    test: (sector) => sector.includes("video") || sector.includes("animation") || sector.includes("contenu"),
+    theme: {
+      key: "video",
+      label: "Video",
+      cssPrimary: "#38bdf8",
+      cssSecondary: "#f0abfc",
+      cssAccent: "#ffffff",
+      cssGlow: "rgba(56, 189, 248, 0.22)",
+      radius: 1,
+      twist: 4.05,
+      speed: 0.66,
+      icon: Film,
     },
   },
   {
@@ -620,7 +636,7 @@ function DnaCanvas({
       }
 
       function handleScroll() {
-        draw();
+        if (profile.staticOnly) draw();
       }
 
       const resizeObserver = new ResizeObserver(() => {
@@ -788,7 +804,7 @@ export function RealisationsDnaExperience({
   return (
     <section
       ref={rootRef}
-      className="relative -mt-20 overflow-hidden bg-[#03040a] pt-28 text-white"
+      className="relative -mt-20 overflow-clip bg-[#03040a] pt-28 text-white"
       style={createSceneStyle(activeTheme)}
       aria-label="Réalisations Prestigia Agency"
     >
@@ -821,32 +837,63 @@ export function RealisationsDnaExperience({
         }}
       />
 
+      <div className="pointer-events-none fixed inset-0 z-0 h-screen overflow-hidden">
+        <div
+          aria-hidden="true"
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(circle at 50% 46%, var(--scene-glow), transparent 36%), radial-gradient(ellipse at center, transparent 0%, rgba(3, 4, 10, 0.18) 58%, rgba(3, 4, 10, 0.92) 100%)",
+          }}
+        />
+        <DnaCanvas activeIndex={activeIndex} activeSector={activeProject.sector} totalProjects={projects.length} />
+        <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-[#03040a] to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-[#03040a] to-transparent" />
+        <div className="absolute inset-x-4 bottom-5 rounded-lg border border-white/[0.1] bg-black/[0.24] p-4 backdrop-blur-md sm:inset-x-auto sm:left-8 sm:w-[360px]">
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <p className="text-xs uppercase text-white/[0.48]">{activeTheme.label}</p>
+              <p className="mt-1 truncate font-serif text-2xl text-white">{activeProject.client_name || activeProject.title}</p>
+            </div>
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/[0.12] bg-white/[0.08]">
+              <SectorIcon sector={activeProject.sector} className="size-5 text-[var(--scene-primary)]" />
+            </div>
+          </div>
+          <div className="mt-4 h-1 overflow-hidden rounded-full bg-white/10">
+            <div
+              className="h-full rounded-full bg-[var(--scene-primary)] transition-all duration-500"
+              style={{ width: `${((activeIndex + 1) / projects.length) * 100}%` }}
+            />
+          </div>
+        </div>
+      </div>
+
       <div className="container-px relative z-10 mx-auto max-w-7xl">
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(420px,1.1fr)] lg:gap-14">
-          <div className="py-8 lg:py-20">
+        <div className="grid gap-10">
+          <div className="flex min-h-[calc(100svh-7rem)] flex-col justify-end py-14 lg:justify-center lg:py-20">
             <p className="text-sm uppercase text-[var(--scene-secondary)]">Réalisations</p>
             <h1 className="mt-5 max-w-3xl font-serif text-5xl leading-none text-white sm:text-6xl lg:text-7xl">
               {heroTitle}
             </h1>
             <p className="mt-7 max-w-xl text-base leading-8 text-white/[0.72] sm:text-lg">{heroSubtitle}</p>
 
-            <div className="mt-10 grid max-w-xl grid-cols-2 border-y border-white/[0.12] py-6 sm:grid-cols-3">
+            <div className="mt-10 grid max-w-2xl grid-cols-3 border-y border-white/[0.12] py-6">
               <div>
                 <p className="font-serif text-4xl text-white">{projects.length}</p>
                 <p className="mt-1 text-sm text-white/[0.56]">projets</p>
               </div>
               <div>
                 <p className="font-serif text-4xl text-white">{shownSectors.length}</p>
-                <p className="mt-1 text-sm text-white/[0.56]">secteurs</p>
+                <p className="mt-1 text-sm text-white/[0.56]">categories</p>
               </div>
-              <div className="col-span-2 mt-5 sm:col-span-1 sm:mt-0">
+              <div>
                 <p className="font-serif text-4xl text-white">ADN</p>
-                <p className="mt-1 text-sm text-white/[0.56]">signature active</p>
+                <p className="mt-1 text-sm text-white/[0.56]">plein ecran</p>
               </div>
             </div>
 
             {shownSectors.length > 0 && (
-              <div className="mt-8 flex max-w-2xl flex-wrap gap-2">
+              <div className="mt-8 flex max-w-3xl flex-wrap gap-2">
                 {shownSectors.map((sector) => {
                   const theme = getSectorTheme(sector);
                   const Icon = theme.icon;
@@ -859,10 +906,10 @@ export function RealisationsDnaExperience({
                       aria-pressed={selected}
                       onClick={() => scrollToSector(sector)}
                       className={cn(
-                        "inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors",
+                        "inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm backdrop-blur-md transition-colors",
                         selected
-                          ? "border-[var(--scene-primary)] bg-white/10 text-white"
-                          : "border-white/[0.12] bg-white/[0.03] text-white/[0.62] hover:border-white/[0.28] hover:text-white",
+                          ? "border-[var(--scene-primary)] bg-white/12 text-white"
+                          : "border-white/[0.12] bg-black/[0.18] text-white/[0.62] hover:border-white/[0.28] hover:text-white",
                       )}
                     >
                       <Icon aria-hidden="true" className="size-4" style={{ color: theme.cssPrimary }} />
@@ -875,94 +922,67 @@ export function RealisationsDnaExperience({
             )}
           </div>
 
-          <div className="lg:row-span-2">
-            <div className="relative overflow-hidden rounded-lg border border-white/[0.12] bg-[#050712] lg:sticky lg:top-28 lg:h-[calc(100vh-8rem)]">
-              <div
-                aria-hidden="true"
-                className="absolute inset-0"
-                style={{
-                  background:
-                    "radial-gradient(ellipse at 70% 40%, var(--scene-glow), transparent 58%), linear-gradient(180deg, rgba(255,255,255,0.035), transparent)",
-                }}
-              />
-              <div className="relative h-[48vh] min-h-[360px] lg:h-full">
-                <DnaCanvas activeIndex={activeIndex} activeSector={activeProject.sector} totalProjects={projects.length} />
-              </div>
-              <div className="absolute inset-x-4 bottom-4 rounded-lg border border-white/[0.12] bg-black/[0.38] p-4 backdrop-blur-md sm:inset-x-6 sm:bottom-6">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="min-w-0">
-                    <p className="text-xs uppercase text-white/[0.48]">{activeTheme.label}</p>
-                    <p className="mt-1 truncate font-serif text-2xl text-white">{activeProject.client_name || activeProject.title}</p>
-                  </div>
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/[0.12] bg-white/[0.08]">
-                    <SectorIcon sector={activeProject.sector} className="size-5 text-[var(--scene-primary)]" />
-                  </div>
-                </div>
-                <div className="mt-4 h-1 overflow-hidden rounded-full bg-white/10">
-                  <div
-                    className="h-full rounded-full bg-[var(--scene-primary)] transition-all duration-500"
-                    style={{ width: `${((activeIndex + 1) / projects.length) * 100}%` }}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
           <div className="pb-14 lg:pb-28">
             {projects.map((project, index) => {
               const theme = getSectorTheme(project.sector);
               const isActive = index === activeIndex;
               const isVisible = visibleProjects.has(index);
+              const alignRight = index % 2 === 1;
 
               return (
                 <article
                   key={project.slug}
                   data-dna-project-index={index}
-                  className="flex min-h-[68svh] scroll-mt-32 items-center py-8"
+                  className={cn(
+                    "flex min-h-[100svh] scroll-mt-28 items-center py-24",
+                    alignRight ? "justify-end" : "justify-start",
+                  )}
                   style={createSceneStyle(theme)}
                 >
                   <Link
                     href={`/realisations/${project.slug}`}
                     className={cn(
-                      "group grid w-full overflow-hidden rounded-lg border bg-black/[0.36] transition-all duration-700 md:grid-cols-[0.98fr_1.02fr]",
-                      isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0",
-                      isActive ? "border-[var(--scene-primary)]" : "border-white/[0.12] hover:border-white/[0.28]",
+                      "group grid w-full max-w-4xl overflow-hidden rounded-lg border bg-black/[0.42] shadow-2xl backdrop-blur-xl transition-all duration-700 md:grid-cols-[0.92fr_1.08fr]",
+                      isVisible ? "translate-y-0 opacity-100" : "translate-y-12 opacity-0",
+                      isActive ? "border-[var(--scene-primary)]" : "border-white/[0.12] hover:border-white/[0.3]",
                     )}
                     style={{
-                      boxShadow: isActive ? `0 0 42px ${theme.cssGlow}` : undefined,
+                      boxShadow: isActive ? `0 0 56px ${theme.cssGlow}` : undefined,
                     }}
                   >
-                    <div className="relative min-h-[260px] overflow-hidden bg-black/40 md:min-h-full">
+                    <div className="relative min-h-[330px] overflow-hidden bg-black/40 md:min-h-[520px]">
                       <ProjectVisual project={project} theme={theme} />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/[0.58] via-transparent to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/[0.68] via-black/[0.08] to-transparent" />
+                      <span className="absolute left-5 top-5 inline-flex items-center gap-2 rounded-lg border border-white/[0.14] bg-black/[0.38] px-3 py-1.5 text-sm text-white backdrop-blur-md">
+                        <SectorIcon sector={project.sector} className="size-4 text-[var(--scene-primary)]" />
+                        {project.sector || project.category || "Projet"}
+                      </span>
                     </div>
 
-                    <div className="flex min-h-[360px] flex-col p-6 sm:p-8">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="inline-flex items-center gap-2 rounded-lg border border-white/[0.12] bg-white/[0.07] px-3 py-1.5 text-sm text-white/[0.78]">
-                          <SectorIcon sector={project.sector} className="size-4 text-[var(--scene-primary)]" />
-                          {project.sector || "Projet"}
-                        </span>
+                    <div className="flex min-h-[420px] flex-col p-6 sm:p-8 lg:p-10">
+                      <div className="flex items-start justify-between gap-5">
+                        <div>
+                          <p className="text-sm uppercase tracking-[0.22em] text-[var(--scene-secondary)]">
+                            {project.category || project.sector || "Categorie"}
+                          </p>
+                          <h2 className="mt-4 font-serif text-5xl leading-none text-white sm:text-6xl">{project.title}</h2>
+                          <p className="mt-4 text-lg text-white/[0.6]">{project.client_name}</p>
+                        </div>
                         {project.featured && (
-                          <span className="inline-flex items-center gap-2 rounded-lg border border-[var(--scene-accent)] bg-white/[0.07] px-3 py-1.5 text-sm text-white/[0.78]">
-                            <Trophy aria-hidden="true" className="size-4 text-[var(--scene-accent)]" />
-                            Vedette
+                          <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-[var(--scene-accent)] bg-white/[0.08]">
+                            <Trophy aria-hidden="true" className="size-5 text-[var(--scene-accent)]" />
                           </span>
                         )}
                       </div>
 
-                      <p className="mt-7 text-sm uppercase text-[var(--scene-secondary)]">{project.category}</p>
-                      <h2 className="mt-3 font-serif text-4xl leading-none text-white sm:text-5xl">{project.title}</h2>
-                      <p className="mt-3 text-base text-white/[0.58]">{project.client_name}</p>
-
-                      <p className="mt-7 line-clamp-4 text-base leading-8 text-white/[0.68]">
+                      <p className="mt-8 line-clamp-3 max-w-xl text-base leading-8 text-white/[0.68]">
                         {project.description || project.objective || project.solution}
                       </p>
 
                       {project.services.length > 0 && (
-                        <div className="mt-7 flex flex-wrap gap-2">
+                        <div className="mt-8 flex flex-wrap gap-2">
                           {project.services.slice(0, 4).map((service) => (
-                            <span key={service} className="rounded-lg border border-white/10 px-3 py-1.5 text-sm text-white/[0.58]">
+                            <span key={service} className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-1.5 text-sm text-white/[0.58]">
                               {service}
                             </span>
                           ))}
@@ -975,12 +995,13 @@ export function RealisationsDnaExperience({
                         </p>
                       )}
 
-                      <div className="mt-auto flex items-center justify-between pt-8">
-                        <span className="text-sm text-white/[0.46]">
-                          {String(index + 1).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}
+                      <div className="mt-auto flex items-center justify-between pt-10">
+                        <span className="font-serif text-4xl text-white/[0.3]">
+                          {String(index + 1).padStart(2, "0")}
                         </span>
-                        <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-white/[0.12] bg-white/[0.07] text-white transition-colors group-hover:border-[var(--scene-primary)] group-hover:text-[var(--scene-primary)]">
-                          <ArrowUpRight aria-hidden="true" className="size-5" />
+                        <span className="inline-flex h-12 items-center gap-2 rounded-lg border border-white/[0.12] bg-white/[0.07] px-4 text-sm text-white transition-colors group-hover:border-[var(--scene-primary)] group-hover:text-[var(--scene-primary)]">
+                          Voir le projet
+                          <ArrowUpRight aria-hidden="true" className="size-4" />
                         </span>
                       </div>
                     </div>

@@ -72,6 +72,14 @@ function buildRow(
     row[field.key] = typeof value === "string" ? value.trim() : null;
   }
 
+  if (entityKey === "projects") {
+    const category = typeof row.category === "string" ? row.category.trim() : "";
+    const sector = typeof row.sector === "string" ? row.sector.trim() : "";
+
+    if (category && !sector) row.sector = category;
+    if (sector && !category) row.category = sector;
+  }
+
   return { config, row };
 }
 

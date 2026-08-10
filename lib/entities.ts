@@ -99,8 +99,8 @@ export const entities: Record<string, EntityConfig> = {
       { key: "slug", label: "Slug", type: "text", required: true },
       { key: "title", label: "Titre", type: "text", required: true },
       { key: "client_name", label: "Client", type: "text" },
-      { key: "category", label: "Catégorie", type: "select", dynamicCategory: "projects" },
-      { key: "sector", label: "Secteur d'activité", type: "text" },
+      { key: "category", label: "Catégorie ADN", type: "select", dynamicCategory: "projects" },
+      { key: "sector", label: "Catégorie liée / secteur", type: "select", dynamicCategory: "projects" },
       { key: "featured", label: "Mise en avant (vedette)", type: "boolean" },
       { key: "description", label: "Description courte", type: "textarea" },
       { key: "logo_url", label: "Logo client", type: "image" },
@@ -128,7 +128,7 @@ export const entities: Record<string, EntityConfig> = {
       { key: "created_at", label: "Créé", type: "date" },
       { key: "updated_at", label: "Mis à jour", type: "date" },
     ],
-    listColumns: ["title", "client_name", "sector", "featured", "active"],
+    listColumns: ["title", "client_name", "category", "sector", "featured", "active"],
   },
   blog_posts: {
     tab: "blog_posts",
@@ -307,7 +307,7 @@ export const entities: Record<string, EntityConfig> = {
   categories: {
     tab: "categories",
     label: "Catégories",
-    description: "Gérez les catégories pour les réalisations et les articles de blog",
+    description: "Gérez les catégories pour les réalisations, l'ADN et les articles de blog",
     fields: [
       { key: "id", label: "ID", type: "text", required: true },
       {

@@ -40,8 +40,8 @@ function mapRow(row: Record<string, any>): Project {
     slug: row.slug,
     title: row.title,
     client_name: row.client_name || "",
-    category: row.category || "",
-    sector: row.sector || "",
+    category: row.category || row.sector || "",
+    sector: row.sector || row.category || "",
     description: row.description || "",
     services: Array.isArray(row.services_json) ? row.services_json : [],
     logo_url: row.logo_url || "",
@@ -71,14 +71,22 @@ async function fetchProjects(): Promise<Project[]> {
       .order("featured", { ascending: false })
       .order("created_at", { ascending: false });
     if (error) throw error;
-    const mapped = (data ?? []).map(mapRow);
+    const mapped = (data ?? []).map(mapRow).filter((project) => {
+      const hasPublishableContent =
+        Boolean(project.cover_image) ||
+        Boolean(project.category) ||
+        Boolean(project.sector) ||
+        Boolean(project.description);
+
+      return Boolean(project.slug && project.title && hasPublishableContent);
+    });
     return mapped.length ? mapped : seedProjects;
   } catch {
     return seedProjects;
   }
 }
 
-export const getProjects = unstable_cache(fetchProjects, ["projects"], {
+export const getProjects = unstable_cache(fetchProjects, ["projects", "category-linked-v2"], {
   tags: ["projects"],
   revalidate: 3600,
 });
@@ -90,7 +98,7 @@ export async function getProjectBySlug(slug: string) {
 
 export async function getProjectSectors(): Promise<string[]> {
   const all = await getProjects();
-  return Array.from(new Set(all.map((p) => p.sector))).filter(Boolean).sort();
+  return Array.from(new Set(all.map((p) => p.sector || p.category))).filter(Boolean).sort();
 }
 
 export async function getProjectCategories(): Promise<string[]> {

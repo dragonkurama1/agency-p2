@@ -1,5 +1,5 @@
 -- =====================================================
--- PRESTIGIA AGENCY — Schema complet (15 tables)
+-- PRESTIGIA AGENCY — Schema complet (16 tables)
 -- Projet : nmshvimuahdepunoeeho
 -- À coller dans : Supabase Dashboard → SQL Editor → New query
 -- =====================================================
@@ -41,7 +41,25 @@ ALTER TABLE services ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "public read services"   ON services FOR SELECT USING (true);
 CREATE POLICY "service_role all services" ON services FOR ALL USING (auth.role() = 'service_role');
 
--- ─── 2. PROJECTS ─────────────────────────────────────
+-- ─── 2. CATEGORIES ───────────────────────────────────
+CREATE TABLE IF NOT EXISTS categories (
+  id         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  entity     text NOT NULL,
+  name       text NOT NULL,
+  "order"    integer DEFAULT 0,
+  active     boolean DEFAULT true,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+CREATE TRIGGER trg_categories_updated_at
+  BEFORE UPDATE ON categories
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "public read categories" ON categories FOR SELECT TO anon, authenticated USING (active = true);
+CREATE POLICY "service_role all categories" ON categories FOR ALL TO service_role USING (true) WITH CHECK (true);
+
+-- ─── 3. PROJECTS ─────────────────────────────────────
 CREATE TABLE IF NOT EXISTS projects (
   id               uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   slug             text UNIQUE NOT NULL,
@@ -49,6 +67,7 @@ CREATE TABLE IF NOT EXISTS projects (
   client_name      text,
   category         text,
   sector           text,
+  category_id      uuid REFERENCES categories(id) ON DELETE SET NULL,
   objective        text,
   solution         text,
   results          text,
