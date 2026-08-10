@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import type * as Three from "three";
 
 type SceneProfile = {
@@ -75,8 +76,12 @@ function getSceneProfile(): SceneProfile {
 
 export function PrestigiaScene() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const pathname = usePathname();
+  const hideOnRoute = pathname?.startsWith("/realisations") ?? false;
 
   useEffect(() => {
+    if (hideOnRoute) return;
+
     let mounted = true;
     let rafId = 0;
     let timeoutHandle = 0;
@@ -365,7 +370,9 @@ export function PrestigiaScene() {
       cleanupScene?.();
       if (timeoutHandle) window.clearTimeout(timeoutHandle);
     };
-  }, []);
+  }, [hideOnRoute]);
+
+  if (hideOnRoute) return null;
 
   return (
     <canvas

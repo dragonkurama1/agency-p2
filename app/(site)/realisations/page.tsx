@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
-import { SectionHeading } from "@/components/marketing/section-heading";
-import { PortfolioGrid } from "@/components/marketing/portfolio-grid";
-import { CtaBanner } from "@/components/marketing/cta-banner";
+import { RealisationsDnaExperience } from "@/components/marketing/realisations-dna-experience";
 import { getProjects, getProjectSectors } from "@/data/projects";
 import { getSectionByKey } from "@/data/sections";
 import { getPageMeta } from "@/data/pages";
@@ -31,19 +29,15 @@ export default async function RealisationsPage() {
         path="/realisations"
         breadcrumbs={[{ name: "Réalisations", href: "/realisations" }]}
       />
-
-      <section className="container-px mx-auto max-w-7xl py-20" aria-label="Nos réalisations">
-        <SectionHeading
-          eyebrow="Nos réalisations"
-          title={hero?.title || "Des résultats concrets, pour des clients réels"}
-          subtitle={hero?.subtitle || "Découvrez comment nous accompagnons nos clients à travers des projets qui allient créativité, expertise et performance."}
-        />
-        <div className="mt-14">
-          <PortfolioGrid projects={projects} sectors={sectors} />
-        </div>
-      </section>
-
-      <CtaBanner />
+      <RealisationsDnaExperience
+        projects={projects}
+        sectors={sectors}
+        heroTitle={hero?.title || "Des résultats concrets, pour des clients réels"}
+        heroSubtitle={
+          hero?.subtitle ||
+          "Découvrez comment nous accompagnons nos clients à travers des projets qui allient créativité, expertise et performance."
+        }
+      />
     </>
   );
 }

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowUpRight, Building2, Briefcase } from "lucide-react";
+import { ArrowUpRight, Briefcase } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { normalizeImageUrl } from "@/lib/parse";
 import type { Project } from "@/data/projects";
