@@ -19,11 +19,7 @@
    * custom alpha via the CSS rgb(var(--accent-gold-rgb) / 10%) syntax —
    * Tailwind's own /opacity modifier only works on literal colours, not on
    * an arbitrary var(), so this companion token is what makes translucent
-   * accent tints (borders, hover fills) follow the same dynamic colour.
-   * On public site pages, Planet.tsx overwrites both of these every frame
-   * to track the planet's current narrative stage (blue → violet → orange)
-   * and removes the override on unmount, so every other route (dashboard,
-   * login) always sees the static brand violet below. */
+   * accent tints (borders, hover fills) follow the same static brand colour. */
   --accent-gold: #7c3aed;
   --accent-gold-rgb: 124 58 237;
   --accent-gold-hover: #8b5cf6;
@@ -154,7 +150,8 @@ body {
 #space-bg {
   position: fixed;
   inset: 0;
-  z-index: -2;
+  z-index: 0;
+  pointer-events: none;
   background-image: url('/space-background.webp');
   background-size: cover;
   background-position: center;
@@ -173,19 +170,15 @@ body {
 }
 
 /*
- * Ambient colour wash — reads --glow-violet / --glow-blue. Static fallback
- * values live in :root above; on site pages Planet.tsx overwrites both
- * every animation frame to track the planet's current stage (frozen blue
- * → crystal violet → lava/sun orange), so this single layer washes every
- * section of the page with that colour without each section needing its
- * own glow element. z-index matches #space-bg; DOM order (this div comes
- * after #space-bg) puts the wash on top of the static image, and it stays
- * below the star/planet canvases (-1) and all real content.
+ * Ambient colour wash — reads --glow-violet / --glow-blue from :root.
+ * It stays static so the site avoids per-frame CSS variable writes while
+ * keeping the same Prestigia violet/blue atmosphere. It sits above the
+ * static image, below the star/3D canvases, and below all real content.
  */
 #ambient-glow {
   position: fixed;
   inset: 0;
-  z-index: -2;
+  z-index: 1;
   pointer-events: none;
   background:
     radial-gradient(60% 50% at 82% 28%, var(--glow-violet), transparent 70%),
@@ -197,7 +190,7 @@ body {
 #space-canvas {
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: 3;
   pointer-events: none;
 }
 

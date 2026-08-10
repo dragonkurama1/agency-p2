@@ -13,7 +13,7 @@ import type { SectionContent } from "@/data/sections";
  * au navigateur contenait donc déjà opacity:0 sur l'élément LCP, qui ne
  * devenait visible qu'après hydratation + fin de l'animation (0.75s,
  * potentiellement bien plus tard si le thread principal est occupé par le
- * rendu Canvas/WebGL — voir Planet.tsx). Chrome exclut un élément de la
+ * rendu Canvas/WebGL d'arriere-plan). Chrome exclut un élément de la
  * liste des candidats LCP tant qu'il n'a pas d'opacité significative,
  * d'où un LCP mesuré à 21,9s sur mobile alors que le FCP était à 0,9s.
  *
@@ -54,8 +54,7 @@ export function Hero({ section }: { section?: SectionContent | null }) {
       className="relative -mt-20 min-h-screen overflow-hidden flex items-center"
       aria-label="Héro — Prestigia Agency"
     >
-      {/* ── Le fond spatial vient du #space-bg fixe global (space-background.webp) */}
-      {/* La planète est rendue via le canvas rotatif dans SpaceBackground        */}
+      {/* Le fond spatial vient du #space-bg fixe global; le 3D leger est rendu en arriere-plan. */}
 
       {/* ── Overlays ─────────────────────────────────────────────────────── */}
       {/* Gradient gauche pour lisibilité du texte */}

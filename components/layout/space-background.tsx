@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { isTouchHandheld } from "@/components/marketing/planet/capabilities";
 
 /* ─── Types ─────────────────────────────────────────────────────────────── */
 interface Star {
@@ -20,24 +19,27 @@ const BASE_ALPHA_MAX = 0.55;
 
 /* Uncapped requestAnimationFrame here means this loop runs at whatever
  * refresh rate the display/browser gives it (60-144Hz), forever, on every
- * single page — unlike Planet.tsx (which is frame-rate-capped per quality
- * profile), nothing throttled this. 30fps is visually identical for a
+ * single page. 30fps is visually identical for a
  * slow star drift but roughly halves (or more) the sustained main-thread
  * work Lighthouse (and real low-end devices) see on every page load. */
 const TARGET_FPS = 30;
 const FRAME_INTERVAL_MS = 1000 / TARGET_FPS;
+
+function isTouchHandheld(): boolean {
+  if (typeof window === "undefined") return false;
+  const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
+  const smallestSide = Math.min(window.innerWidth, window.innerHeight);
+  return coarsePointer && smallestSide < 700;
+}
 
 /* ─── Component ─────────────────────────────────────────────────────────── */
 export function SpaceBackground() {
   const starsRef = useRef<HTMLCanvasElement>(null);
 
   /* ── Star particle animation — desktop/pointer:fine only ──────────────
-   * Mobile/handheld (isTouchHandheld() — same signal PlanetLazy.tsx uses
-   * to skip WebGL) never runs any of this: no canvas context, no star/
-   * particle arrays, no requestAnimationFrame loop at all. Real-device
-   * testing this session showed the WebGL planet was the dominant mobile
-   * cost, but this canvas ran unconditionally on every page too — cutting
-   * it on mobile removes that cost entirely rather than just capping it. */
+   * Mobile/handheld never runs any of this: no canvas context, no star/
+   * particle arrays, no requestAnimationFrame loop at all. Cutting it on
+   * mobile removes that cost entirely rather than just capping it. */
   useEffect(() => {
     if (isTouchHandheld()) return;
 
@@ -170,12 +172,9 @@ export function SpaceBackground() {
 
       {/*
        * ── Ambient colour wash ─────────────────────────────────────────
-       * Reads --glow-violet / --glow-blue (defined in globals.css, static
-       * fallback values). On desktop, Planet.tsx overwrites both every
-       * frame to track the 3D scene's current narrative stage. On mobile,
-       * nothing overrides them (Planet renders nothing there at all — see
-       * PlanetLazy.tsx) so this stays the fixed static brand-violet wash,
-       * which is the intended, lower-cost mobile behaviour.
+       * Reads --glow-violet / --glow-blue (defined in globals.css). These
+       * stay static now; the 3D scene no longer writes CSS variables every
+       * frame, which keeps the background cheaper and more predictable.
        */}
       <div id="ambient-glow" aria-hidden="true" />
 
