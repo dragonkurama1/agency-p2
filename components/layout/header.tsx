@@ -37,7 +37,7 @@ export function Header() {
         }}
       >
         {/* Logo — extrême gauche */}
-        <Link href="/" aria-label="Prestigia Agency — Accueil" className="flex-shrink-0">
+        <Link href="/" aria-label="Prestigia Agency — Accueil" title="Prestigia Agency — Accueil" className="flex-shrink-0">
           <Image
             src="/logo-prestigia.png"
             alt="Prestigia Agency"
@@ -58,6 +58,7 @@ export function Header() {
             <Link
               key={link.href}
               href={link.href}
+              title={link.label}
               className={cn(
                 "relative text-sm font-medium tracking-wide transition-colors duration-200",
                 "after:absolute after:-bottom-0.5 after:left-0 after:h-px",
@@ -91,6 +92,7 @@ export function Header() {
               <Link
                 key={link.href}
                 href={link.href}
+                title={link.label}
                 onClick={() => setOpen(false)}
                 className={cn(
                   "text-base tracking-wide transition-colors py-1",
@@ -104,6 +106,7 @@ export function Header() {
             ))}
             <Link
               href="/devis"
+              title="Demander un devis"
               onClick={() => setOpen(false)}
               className="mt-2 inline-flex items-center justify-center rounded-full bg-[var(--accent-gold)] px-6 py-3 text-sm font-normal text-white tracking-wide"
             >

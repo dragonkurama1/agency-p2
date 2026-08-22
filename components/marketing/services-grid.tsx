@@ -13,6 +13,7 @@ export function ServicesGrid({ services, compact = false }: { services: Service[
           <Link
             key={service.slug}
             href={`/services/${service.slug}`}
+            title={`Service ${service.title}`}
             className="group relative rounded-2xl p-6 transition-all duration-400 glass-card overflow-hidden"
           >
             {/* Halo de fond au hover */}

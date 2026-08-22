@@ -279,6 +279,7 @@ export function WhatsappButtonClient({ href }: WhatsappButtonClientProps) {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Contacter Prestigia Agency sur WhatsApp"
+        title="Contacter Prestigia Agency sur WhatsApp"
         draggable={false}
         onClick={(event) => {
           if (!ignoreClickRef.current) return;

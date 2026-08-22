@@ -94,6 +94,7 @@ function PartnerCard({ partner }: { partner: Partner }) {
               href={partner.website}
               target="_blank"
               rel="noopener noreferrer"
+              title={`Voir ${partner.name}`}
               onClick={(e) => e.stopPropagation()}
               className="inline-flex items-center gap-1 text-[11px] font-normal text-[var(--accent-gold)] hover:text-[var(--accent-gold-text)] transition-colors"
             >

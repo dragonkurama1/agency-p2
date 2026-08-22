@@ -78,7 +78,7 @@ export async function Footer() {
 
           {/* Colonne marque */}
           <div>
-            <Link href="/" aria-label="Prestigia Agency — Accueil">
+            <Link href="/" aria-label="Prestigia Agency — Accueil" title="Prestigia Agency — Accueil">
               <Image src="/logo-prestigia.png" alt="Prestigia Agency" width={125} height={56} className="h-8 w-auto" />
             </Link>
             <p className="mt-4 text-sm leading-relaxed text-[var(--muted-foreground)]">
@@ -88,21 +88,21 @@ export async function Footer() {
             <ul className="mt-6 flex gap-4 list-none p-0" aria-label="Nos réseaux sociaux">
               {instagram && (
                 <li>
-                  <Link href={instagram} target="_blank" rel="noopener noreferrer" aria-label="Prestigia Agency sur Instagram" className="social-link">
+                  <Link href={instagram} target="_blank" rel="noopener noreferrer" aria-label="Prestigia Agency sur Instagram" title="Prestigia Agency sur Instagram" className="social-link">
                     <InstagramIcon className="size-5" />
                   </Link>
                 </li>
               )}
               {linkedin && (
                 <li>
-                  <Link href={linkedin} target="_blank" rel="noopener noreferrer" aria-label="Prestigia Agency sur LinkedIn" className="social-link">
+                  <Link href={linkedin} target="_blank" rel="noopener noreferrer" aria-label="Prestigia Agency sur LinkedIn" title="Prestigia Agency sur LinkedIn" className="social-link">
                     <LinkedinIcon className="size-5" />
                   </Link>
                 </li>
               )}
               {facebook && (
                 <li>
-                  <Link href={facebook} target="_blank" rel="noopener noreferrer" aria-label="Prestigia Agency sur Facebook" className="social-link">
+                  <Link href={facebook} target="_blank" rel="noopener noreferrer" aria-label="Prestigia Agency sur Facebook" title="Prestigia Agency sur Facebook" className="social-link">
                     <FacebookIcon className="size-5" />
                   </Link>
                 </li>
@@ -116,7 +116,7 @@ export async function Footer() {
             <ul className="space-y-2.5">
               {navLinks.map((l) => (
                 <li key={l.href}>
-                  <Link href={l.href} className="text-sm text-[var(--muted-foreground)] hover:text-[var(--accent-gold-text)] transition-colors duration-200">
+                  <Link href={l.href} title={l.label} className="text-sm text-[var(--muted-foreground)] hover:text-[var(--accent-gold-text)] transition-colors duration-200">
                     {l.label}
                   </Link>
                 </li>
@@ -129,12 +129,12 @@ export async function Footer() {
             <p className="text-sm font-normal text-white mb-4 tracking-wide">Contact</p>
             <ul className="space-y-2.5 text-sm text-[var(--muted-foreground)]">
               <li>
-                <Link href={`tel:${phone}`} className="hover:text-[var(--accent-gold-text)] transition-colors duration-200" aria-label={`Appeler au ${phoneDisplay}`}>
+                <Link href={`tel:${phone}`} title={`Appeler au ${phoneDisplay}`} className="hover:text-[var(--accent-gold-text)] transition-colors duration-200" aria-label={`Appeler au ${phoneDisplay}`}>
                   {phoneDisplay}
                 </Link>
               </li>
               <li>
-                <Link href={`mailto:${email}`} className="hover:text-[var(--accent-gold-text)] transition-colors duration-200" aria-label={`Email : ${email}`}>
+                <Link href={`mailto:${email}`} title={`Email : ${email}`} className="hover:text-[var(--accent-gold-text)] transition-colors duration-200" aria-label={`Email : ${email}`}>
                   {email}
                 </Link>
               </li>
@@ -147,7 +147,7 @@ export async function Footer() {
             <p className="text-sm font-normal text-white mb-4 tracking-wide">
               Prêt à transformer votre présence digitale ?
             </p>
-            <Link href="/devis" className="footer-cta-btn inline-flex items-center rounded-full font-normal text-white text-sm tracking-wide transition-all duration-300 hover:-translate-y-0.5">
+            <Link href="/devis" title="Demander un devis" className="footer-cta-btn inline-flex items-center rounded-full font-normal text-white text-sm tracking-wide transition-all duration-300 hover:-translate-y-0.5">
               Demander un devis
             </Link>
           </div>
@@ -161,8 +161,8 @@ export async function Footer() {
           <p>© {new Date().getFullYear()} Prestigia Agency. Tous droits réservés.</p>
           <nav aria-label="Liens légaux">
             <div className="flex gap-6">
-              <Link href="/mentions-legales" className="hover:text-[var(--accent-gold-text)] transition-colors">Mentions légales</Link>
-              <Link href="/confidentialite" className="hover:text-[var(--accent-gold-text)] transition-colors">Confidentialité</Link>
+              <Link href="/mentions-legales" title="Mentions légales" className="hover:text-[var(--accent-gold-text)] transition-colors">Mentions légales</Link>
+              <Link href="/confidentialite" title="Politique de confidentialité" className="hover:text-[var(--accent-gold-text)] transition-colors">Confidentialité</Link>
             </div>
           </nav>
         </div>

@@ -52,6 +52,7 @@ function HomeProofBand({
         {featuredProject && (
           <Link
             href={`/realisations/${featuredProject.slug}`}
+            title={`Voir le projet ${featuredProject.title}`}
             className="group grid gap-4 rounded-md border border-[var(--accent-gold)]/20 bg-[var(--accent-gold)]/[0.07] p-3 transition-colors hover:border-[var(--accent-gold)]/50 sm:grid-cols-[112px_1fr_auto] sm:items-center"
           >
             <div className="relative aspect-[4/3] overflow-hidden rounded-md bg-black sm:aspect-square">
@@ -142,7 +143,7 @@ export default async function HomePage() {
         </div>
         <div className="mt-10">
           <Button asChild variant="outline">
-            <Link href="/services">
+            <Link href="/services" title="Voir tous nos services">
               Voir tous nos services <ArrowUpRight className="size-4" aria-hidden="true" />
             </Link>
           </Button>
@@ -165,6 +166,7 @@ export default async function HomePage() {
             <Link
               key={project.slug}
               href={`/realisations/${project.slug}`}
+              title={`Voir le projet ${project.title}`}
               className="group glass-card rounded-2xl overflow-hidden flex flex-col"
             >
               {project.cover_image ? (
@@ -204,7 +206,7 @@ export default async function HomePage() {
         </div>
         <div className="mt-10 text-center">
           <Button asChild variant="outline">
-            <Link href="/realisations">
+            <Link href="/realisations" title="Voir toutes nos réalisations">
               Voir toutes nos réalisations <ArrowUpRight className="size-4" aria-hidden="true" />
             </Link>
           </Button>

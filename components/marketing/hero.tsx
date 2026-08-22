@@ -54,7 +54,11 @@ export function Hero({
   const contentY = useTransform(scrollYProgress, [0, 1], ["0%", "8%"]);
 
   const subtitle =
-    section?.subtitle ||
+    section?.subtitle && section.subtitle.toLowerCase().includes("prestigia agency")
+      ? section.subtitle
+      : section?.subtitle
+        ? "Prestigia Agency, agence marketing digital à Casablanca, réunit stratégie, contenu, publicité, web et data dans une approche premium qui attire, engage et convertit."
+        :
     "Stratégie, contenu, publicité, web et data réunis dans une approche orientée résultats.";
   const ctaText = section?.button_text || DEFAULTS.ctaText;
   const ctaHref = section?.button_link || DEFAULTS.ctaHref;
@@ -156,6 +160,7 @@ export function Hero({
           >
             <Link
               href={ctaHref}
+              title={ctaText}
               className="group inline-flex items-center gap-2 rounded-full bg-[var(--accent-gold)] text-white font-normal tracking-wide transition-all duration-300 hover:bg-[var(--accent-gold-hover)] hover:shadow-[0_0_44px_rgb(var(--accent-gold-rgb)/55%)] hover:-translate-y-0.5 active:translate-y-0"
               style={{ padding: "14px 32px", fontSize: "15px" }}
             >
@@ -164,6 +169,7 @@ export function Hero({
             </Link>
             <Link
               href={DEFAULTS.cta2Href}
+              title={DEFAULTS.cta2Text}
               className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/5 text-white font-normal tracking-wide backdrop-blur-sm transition-all duration-300 hover:border-[rgb(var(--accent-gold-rgb)/60%)] hover:bg-[rgb(var(--accent-gold-rgb)/10%)] hover:-translate-y-0.5 active:translate-y-0"
               style={{ padding: "14px 32px", fontSize: "15px" }}
             >
