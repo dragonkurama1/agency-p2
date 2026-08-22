@@ -236,14 +236,15 @@ function getCanvasProfile() {
   const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
   const smallestSide = Math.min(window.innerWidth, window.innerHeight);
   const isMobile = coarsePointer || smallestSide < 720;
+  const highDensityMobile = isMobile && (window.devicePixelRatio || 1) > 2;
 
   return {
-    helixHeight: isMobile ? 7.4 : 9.8,
-    markerCount: isMobile ? 7 : 12,
-    nodeCount: isMobile ? 58 : 96,
-    pixelRatioCap: isMobile ? 1.1 : 1.35,
-    renderScale: isMobile ? 0.5 : 0.62,
-    targetFPS: reducedMotion ? 0 : isMobile ? 20 : 26,
+    helixHeight: isMobile ? 7.8 : 9.8,
+    markerCount: isMobile ? 8 : 12,
+    nodeCount: isMobile ? 72 : 96,
+    pixelRatioCap: isMobile ? (highDensityMobile ? 2.2 : 1.85) : 1.35,
+    renderScale: isMobile ? 1 : 0.62,
+    targetFPS: reducedMotion ? 0 : highDensityMobile ? 18 : isMobile ? 20 : 26,
     staticOnly: reducedMotion,
   };
 }
@@ -311,7 +312,7 @@ function DnaCanvas({
       try {
         renderer = new THREE.WebGLRenderer({
           alpha: true,
-          antialias: false,
+          antialias: true,
           canvas,
           powerPreference: "low-power",
         });
@@ -696,7 +697,7 @@ function ProjectVisual({ project, theme }: { project: Project; theme: SectorThem
         src={normalizeImageUrl(project.cover_image)}
         alt={project.title}
         fill
-        sizes="(max-width: 768px) 74vw, 280px"
+        sizes="(max-width: 640px) 40vw, (max-width: 1024px) 220px, 250px"
         className="object-cover transition-transform duration-700 group-hover:scale-105"
       />
     );
@@ -748,14 +749,14 @@ function ProjectDnaTile({
   theme: SectorTheme;
 }) {
   const hiddenMotion = alignRight
-    ? "-translate-x-[42vw] translate-y-8 scale-[0.34]"
-    : "translate-x-[42vw] translate-y-8 scale-[0.34]";
+    ? "-translate-x-[18vw] translate-y-7 scale-[0.34] sm:-translate-x-[42vw]"
+    : "translate-x-[18vw] translate-y-7 scale-[0.34] sm:translate-x-[42vw]";
 
   return (
     <article
       data-dna-project-index={index}
       className={cn(
-        "relative flex min-h-[118svh] scroll-mt-28 items-center px-4 py-24 sm:px-10 lg:px-8",
+        "pointer-events-none relative flex min-h-[68svh] scroll-mt-24 items-center px-4 py-8 sm:min-h-[76svh] sm:px-10 sm:py-14 lg:min-h-[78svh] lg:px-8",
         alignRight ? "justify-end" : "justify-start",
       )}
       style={createSceneStyle(theme)}
@@ -763,7 +764,7 @@ function ProjectDnaTile({
       <span
         aria-hidden="true"
         className={cn(
-          "pointer-events-none absolute left-1/2 top-1/2 hidden h-5 w-5 -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-[2px] border bg-black/60 transition-all duration-500 lg:block",
+          "pointer-events-none absolute left-1/2 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-[2px] border bg-black/60 transition-all duration-500 sm:h-5 sm:w-5",
           isVisible
             ? "scale-100 border-[var(--scene-primary)] opacity-100 shadow-[0_0_22px_var(--scene-primary)]"
             : "scale-50 border-white/10 opacity-0",
@@ -772,17 +773,17 @@ function ProjectDnaTile({
       <span
         aria-hidden="true"
         className={cn(
-          "pointer-events-none absolute left-1/2 top-1/2 hidden h-5 w-5 -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-[2px] bg-[var(--scene-primary)] opacity-0 lg:block",
+          "pointer-events-none absolute left-1/2 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-[2px] bg-[var(--scene-primary)] opacity-0 sm:h-5 sm:w-5",
           isVisible && isActive && "motion-safe:animate-ping",
         )}
       />
       <div
         aria-hidden="true"
         className={cn(
-          "pointer-events-none absolute top-1/2 hidden h-px w-[34vw] max-w-[430px] transition-all duration-700 lg:block",
+          "pointer-events-none absolute top-1/2 h-px w-[34vw] max-w-[430px] transition-all duration-700",
           alignRight
-            ? "right-[250px] origin-left bg-gradient-to-r from-[var(--scene-primary)] via-[var(--scene-primary)] to-transparent"
-            : "left-[250px] origin-right bg-gradient-to-l from-[var(--scene-primary)] via-[var(--scene-primary)] to-transparent",
+            ? "left-1/2 origin-left bg-gradient-to-r from-[var(--scene-primary)] via-[var(--scene-primary)] to-transparent"
+            : "right-1/2 origin-right bg-gradient-to-l from-[var(--scene-primary)] via-[var(--scene-primary)] to-transparent",
           isVisible ? "scale-x-100 opacity-80" : "scale-x-0 opacity-0",
         )}
       />
@@ -791,7 +792,7 @@ function ProjectDnaTile({
         aria-label={`Voir le projet ${project.title}`}
         data-dna-tile="true"
         className={cn(
-          "group relative block aspect-square w-[min(72vw,252px)] transform-gpu overflow-hidden rounded-lg border bg-black/[0.42] shadow-2xl backdrop-blur-xl transition-all duration-[900ms] ease-out sm:w-[280px]",
+          "pointer-events-auto group relative block aspect-square w-[min(40vw,156px)] transform-gpu overflow-hidden rounded-lg border bg-black/[0.42] shadow-2xl backdrop-blur-xl transition-all duration-[900ms] ease-out sm:w-[220px] lg:w-[250px]",
           isVisible ? "translate-x-0 translate-y-0 scale-100 opacity-100 blur-0" : `${hiddenMotion} opacity-0 blur-sm`,
           isActive ? "border-[var(--scene-primary)]" : "border-white/[0.14] hover:border-white/[0.34]",
         )}
@@ -807,22 +808,22 @@ function ProjectDnaTile({
         <ProjectVisual project={project} theme={theme} />
         <span className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
         <span className="absolute inset-0 border border-white/10" />
-        <span className="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.16] bg-black/[0.42] backdrop-blur-md">
-          <SectorIcon sector={project.sector} className="size-4 text-[var(--scene-primary)]" />
+        <span className="absolute left-2 top-2 flex h-6 w-6 items-center justify-center rounded-lg border border-white/[0.16] bg-black/[0.42] backdrop-blur-md sm:left-3 sm:top-3 sm:h-8 sm:w-8">
+          <SectorIcon sector={project.sector} className="size-3 text-[var(--scene-primary)] sm:size-4" />
         </span>
         {project.featured && (
-          <span className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--scene-accent)] bg-black/[0.38]">
-            <Trophy aria-hidden="true" className="size-4 text-[var(--scene-accent)]" />
+          <span className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-lg border border-[var(--scene-accent)] bg-black/[0.38] sm:right-3 sm:top-3 sm:h-8 sm:w-8">
+            <Trophy aria-hidden="true" className="size-3 text-[var(--scene-accent)] sm:size-4" />
           </span>
         )}
-        <span className="absolute inset-x-4 bottom-4">
-          <span className="block text-[10px] uppercase tracking-[0.26em] text-[var(--scene-secondary)]">
+        <span className="absolute inset-x-2.5 bottom-2.5 sm:inset-x-4 sm:bottom-4">
+          <span className="block text-[8px] uppercase tracking-[0.18em] text-[var(--scene-secondary)] sm:text-[10px] sm:tracking-[0.26em]">
             {project.category || project.sector || "Projet"}
           </span>
-          <span className="mt-1 line-clamp-2 block font-serif text-3xl leading-none text-white">{project.title}</span>
-          <span className="mt-3 flex items-center justify-between text-xs text-white/60">
-            <span>{project.client_name || "Prestigia Agency"}</span>
-            <ArrowUpRight aria-hidden="true" className="size-4 text-[var(--scene-primary)]" />
+          <span className="mt-1 line-clamp-2 block font-serif text-xl leading-none text-white sm:text-3xl">{project.title}</span>
+          <span className="mt-1.5 flex items-center justify-between text-[10px] text-white/60 sm:mt-3 sm:text-xs">
+            <span className="truncate pr-2">{project.client_name || "Prestigia Agency"}</span>
+            <ArrowUpRight aria-hidden="true" className="size-3 shrink-0 text-[var(--scene-primary)] sm:size-4" />
           </span>
         </span>
         <span className="absolute inset-x-4 bottom-0 h-px bg-[var(--scene-primary)]" />
@@ -865,7 +866,7 @@ export function RealisationsDnaExperience({
     return counts;
   }, [projects]);
   const shownSectors = sectors.length ? sectors : Array.from(sectorCounts.keys());
-  const stageMinHeight = Math.max(226, projects.length * 118 + 108);
+  const stageMinHeight = Math.max(132, projects.length * 68 + 24);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -1074,7 +1075,7 @@ export function RealisationsDnaExperience({
               </div>
             </div>
 
-            <div className="relative z-10 -mt-[100svh]">
+            <div className="pointer-events-none relative z-10 -mt-[100svh]">
               {projects.map((project, index) => {
                 const theme = getSectorTheme(project.sector);
                 const isActive = index === activeIndex;
