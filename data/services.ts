@@ -42,7 +42,7 @@ async function fetchServices(): Promise<Service[]> {
   }
 }
 
-export const getServices = unstable_cache(fetchServices, ["services"], {
+export const getServices = unstable_cache(fetchServices, ["services", "content-v2"], {
   tags: ["services"],
   revalidate: 3600,
 });

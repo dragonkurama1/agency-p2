@@ -44,7 +44,7 @@ async function fetchPages(): Promise<PageContent[]> {
   }
 }
 
-export const getPages = unstable_cache(fetchPages, ["pages"], { tags: ["pages"], revalidate: 3600 });
+export const getPages = unstable_cache(fetchPages, ["pages", "content-v2"], { tags: ["pages"], revalidate: 3600 });
 
 export async function getPageBySlug(slug: string) {
   const all = await getPages();

@@ -52,7 +52,7 @@ async function fetchSectionsByPage(pageSlug: string): Promise<SectionContent[]> 
 export function getSectionsByPage(pageSlug: string) {
   return unstable_cache(
     () => fetchSectionsByPage(pageSlug),
-    [`sections-${pageSlug}`],
+    [`sections-${pageSlug}`, "content-v2"],
     { tags: ["sections", `sections-${pageSlug}`], revalidate: 3600 }
   )();
 }

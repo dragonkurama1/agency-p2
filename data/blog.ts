@@ -56,7 +56,7 @@ async function fetchPosts(): Promise<BlogPost[]> {
   }
 }
 
-export const getBlogPosts = unstable_cache(fetchPosts, ["blog_posts"], {
+export const getBlogPosts = unstable_cache(fetchPosts, ["blog_posts", "service-cta-v1"], {
   tags: ["blog_posts"],
   revalidate: 60,
 });

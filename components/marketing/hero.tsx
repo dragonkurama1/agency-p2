@@ -62,10 +62,11 @@ export function Hero({
   return (
     <section
       ref={ref}
-      className="relative -mt-20 flex min-h-[92svh] items-center overflow-hidden"
+      className="relative isolate -mt-20 flex min-h-[92svh] items-center overflow-hidden"
       aria-label="Héro — Prestigia Agency"
     >
-      {/* Le fond spatial vient du #space-bg fixe global; le 3D leger est rendu en arriere-plan. */}
+      {/* Signature visuelle hero : asset statique WebP, léger et lisible sous le texte. */}
+      <div className="hero-signature-bg" aria-hidden="true" />
 
       {/* ── Overlays ─────────────────────────────────────────────────────── */}
       {/* Gradient gauche pour lisibilité du texte */}

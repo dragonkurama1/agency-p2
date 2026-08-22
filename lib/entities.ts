@@ -83,7 +83,22 @@ export const entities: Record<string, EntityConfig> = {
       { key: "meta_title", label: "Meta title", type: "text" },
       { key: "meta_description", label: "Meta description", type: "textarea" },
       { key: "keywords", label: "Mots-clés", type: "text" },
+      {
+        key: "advantages_json",
+        label: 'Avantages (JSON array ex: ["Audit clair","Reporting mensuel"])',
+        type: "json",
+      },
+      {
+        key: "process_json",
+        label: 'Processus (JSON array ex: ["Audit","Plan d’action","Suivi"])',
+        type: "json",
+      },
       { key: "faq_json", label: "FAQ (JSON)", type: "json" },
+      {
+        key: "related_json",
+        label: 'Services liés (JSON array de slugs ex: ["seo-referencement-naturel-maroc"])',
+        type: "json",
+      },
       { key: "order", label: "Ordre", type: "number" },
       { key: "active", label: "Actif", type: "boolean" },
       { key: "updated_at", label: "Mis à jour", type: "date" },

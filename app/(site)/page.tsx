@@ -21,33 +21,32 @@ import { normalizeImageUrl, shouldBypassImageOptimization } from "@/lib/parse";
 import { WebPageJsonLd, FaqJsonLd } from "@/components/seo/json-ld";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Camera, LineChart, Target } from "lucide-react";
 
 function HomeProofBand({
   featuredProject,
-  projectCount,
-  sectorCount,
-  serviceCount,
 }: {
   featuredProject?: Project;
-  projectCount: number;
-  sectorCount: number;
-  serviceCount: number;
 }) {
   return (
     <section className="container-px relative z-20 mx-auto -mt-10 max-w-7xl pb-10 sm:-mt-12 sm:pb-12" aria-label="Preuves Prestigia Agency">
       <div className="grid gap-3 rounded-lg border border-white/[0.1] bg-black/[0.42] p-3 shadow-[0_24px_80px_rgba(0,0,0,0.34)] backdrop-blur-xl lg:grid-cols-[1fr_1.05fr]">
-        <div className="grid grid-cols-3 divide-x divide-white/[0.08] rounded-md border border-white/[0.08] bg-white/[0.035]">
+        <div className="grid gap-px overflow-hidden rounded-md border border-white/[0.08] bg-white/[0.08] sm:grid-cols-3">
           {[
-            { value: projectCount.toString(), label: "projets visibles" },
-            { value: sectorCount.toString(), label: "secteurs" },
-            { value: serviceCount.toString(), label: "services" },
-          ].map((item) => (
-            <div key={item.label} className="px-3 py-4 sm:px-5">
-              <p className="font-serif text-3xl leading-none text-white sm:text-4xl">{item.value}</p>
-              <p className="mt-1 text-[11px] leading-5 text-white/48 sm:text-xs">{item.label}</p>
-            </div>
-          ))}
+            { icon: Target, title: "Vision", text: "Objectif, cible et angle clair" },
+            { icon: Camera, title: "Production", text: "Photo, vidéo, web et contenu" },
+            { icon: LineChart, title: "Mesure", text: "Publication, suivi, amélioration" },
+          ].map((item) => {
+            const Icon = item.icon;
+
+            return (
+              <div key={item.title} className="bg-black/[0.38] px-4 py-4 sm:px-5">
+                <Icon aria-hidden="true" className="size-4 text-[var(--accent-gold-text)]" />
+                <p className="mt-3 font-serif text-2xl leading-none text-white">{item.title}</p>
+                <p className="mt-1 text-[11px] leading-5 text-white/52 sm:text-xs">{item.text}</p>
+              </div>
+            );
+          })}
         </div>
 
         {featuredProject && (
@@ -129,9 +128,6 @@ export default async function HomePage() {
       />
       <HomeProofBand
         featuredProject={featuredProject}
-        projectCount={projects.length}
-        sectorCount={sectorCount}
-        serviceCount={services.length}
       />
       <PartnersMarquee />
 

@@ -59,10 +59,27 @@ function buildToc(content: string) {
     });
 }
 
-/** Rendu inline : **gras**, *italique*, `code` */
+/** Rendu inline : liens, **gras**, *italique*, `code` */
 function renderInline(text: string) {
-  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/);
+  const parts = text.split(/(\[[^\]]+\]\((?:https?:\/\/|\/)[^)]+\)|\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/);
   return parts.map((part, i) => {
+    const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+    if (linkMatch) {
+      const [, label, href] = linkMatch;
+      const className = "text-[var(--accent-gold-text)] underline decoration-[rgb(var(--accent-gold-rgb)/40%)] underline-offset-4 transition-colors hover:text-white";
+      if (href.startsWith("/")) {
+        return (
+          <Link key={i} href={href} className={className}>
+            {label}
+          </Link>
+        );
+      }
+      return (
+        <a key={i} href={href} className={className} target="_blank" rel="noopener noreferrer nofollow">
+          {label}
+        </a>
+      );
+    }
     if (part.startsWith("**") && part.endsWith("**"))
       return <strong key={i}>{part.slice(2, -2)}</strong>;
     if (part.startsWith("*") && part.endsWith("*"))
