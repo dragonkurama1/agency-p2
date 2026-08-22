@@ -1,14 +1,6 @@
 import { unstable_cache } from "next/cache";
 import { getSupabaseClient } from "@/lib/supabase";
 
-export interface Category {
-  id: string;
-  entity: string;
-  name: string;
-  order: number;
-  active: boolean;
-}
-
 async function fetchCategoriesByEntity(entity: string): Promise<string[]> {
   try {
     const supabase = getSupabaseClient();
@@ -25,7 +17,7 @@ async function fetchCategoriesByEntity(entity: string): Promise<string[]> {
   }
 }
 
-export const getCategoriesByEntity = unstable_cache(
+const getCategoriesByEntity = unstable_cache(
   fetchCategoriesByEntity,
   ["categories"],
   { tags: ["categories"], revalidate: 3600 }

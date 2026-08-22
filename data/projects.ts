@@ -2,24 +2,24 @@ import { unstable_cache } from "next/cache";
 import { getSupabaseClient } from "@/lib/supabase";
 import { catalogueProjects, projects as seedProjects } from "@/lib/seed-data";
 
-export interface ProjectSection {
+interface ProjectSection {
   title: string;
   text: string;
   media: string[];
 }
 
-export interface ProjectCatalogueMetric {
+interface ProjectCatalogueMetric {
   label: string;
   value: string;
   detail?: string;
 }
 
-export interface ProjectCatalogueStep {
+interface ProjectCatalogueStep {
   title: string;
   text: string;
 }
 
-export interface ProjectCatalogueExample {
+interface ProjectCatalogueExample {
   title: string;
   format: string;
   description: string;
@@ -221,9 +221,4 @@ export async function getProjectBySlug(slug: string) {
 export async function getProjectSectors(): Promise<string[]> {
   const all = await getProjects();
   return Array.from(new Set(all.map((p) => p.sector || p.category))).filter(Boolean).sort();
-}
-
-export async function getProjectCategories(): Promise<string[]> {
-  const all = await getProjects();
-  return Array.from(new Set(all.map((p) => p.category))).filter(Boolean).sort();
 }

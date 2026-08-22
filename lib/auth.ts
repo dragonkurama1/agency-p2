@@ -26,7 +26,7 @@ export async function createSessionToken(email: string) {
     .sign(getSecretKey());
 }
 
-export async function verifySessionToken(token: string): Promise<{ email: string } | null> {
+async function verifySessionToken(token: string): Promise<{ email: string } | null> {
   try {
     const { payload } = await jwtVerify(token, getSecretKey());
     if (typeof payload.email !== "string") return null;

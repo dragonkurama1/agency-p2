@@ -1,13 +1,13 @@
 /**
- * Configuration centrale des 15 onglets Google Sheets.
+ * Configuration centrale des tables Supabase administrables.
  * Sert à la fois aux fetchers publics (data/*.ts) et au dashboard admin
  * générique (app/(protected)/dashboard/[entity]) : une seule source de vérité
  * pour les colonnes, évite de dupliquer la définition à 15 endroits.
  */
 
-export type FieldType = "text" | "textarea" | "richtext" | "number" | "boolean" | "select" | "json" | "date" | "image" | "video" | "media";
+type FieldType = "text" | "textarea" | "richtext" | "number" | "boolean" | "select" | "json" | "date" | "image" | "video" | "media";
 
-export interface EntityField {
+interface EntityField {
   key: string;
   label: string;
   type: FieldType;
@@ -26,8 +26,8 @@ export interface EntityConfig {
   listColumns: string[]; // colonnes affichées dans le tableau du dashboard
 }
 
-export const STATUTS_CONTACT = ["Nouveau", "Contacté", "Traité"];
-export const STATUTS_DEVIS = ["Nouveau", "Contacté", "Devis envoyé", "Gagné", "Perdu"];
+const STATUTS_CONTACT = ["Nouveau", "Contacté", "Traité"];
+const STATUTS_DEVIS = ["Nouveau", "Contacté", "Devis envoyé", "Gagné", "Perdu"];
 
 export const entities: Record<string, EntityConfig> = {
   pages: {

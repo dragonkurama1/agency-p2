@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { getSupabaseClient } from "@/lib/supabase";
 import { cleanMetaTitle } from "@/lib/seo";
 
-export interface PageContent {
+interface PageContent {
   id: string;
   slug: string;
   title: string;
@@ -44,9 +44,9 @@ async function fetchPages(): Promise<PageContent[]> {
   }
 }
 
-export const getPages = unstable_cache(fetchPages, ["pages", "content-v2"], { tags: ["pages"], revalidate: 3600 });
+const getPages = unstable_cache(fetchPages, ["pages", "content-v2"], { tags: ["pages"], revalidate: 3600 });
 
-export async function getPageBySlug(slug: string) {
+async function getPageBySlug(slug: string) {
   const all = await getPages();
   return all.find((p) => p.slug === slug);
 }

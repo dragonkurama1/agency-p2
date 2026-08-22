@@ -127,14 +127,3 @@ export function PartnersGrid({ partners }: { partners: Partner[] }) {
     </div>
   );
 }
-
-/* ── Ancien marquee conservé pour compatibilité (non utilisé) ─────────────── */
-export function PartnersMarqueeInner({
-  partners,
-  duration,
-}: {
-  partners: Partner[];
-  duration: number;
-}) {
-  return <PartnersGrid partners={partners} />;
-}

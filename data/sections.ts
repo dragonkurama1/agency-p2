@@ -49,7 +49,7 @@ async function fetchSectionsByPage(pageSlug: string): Promise<SectionContent[]> 
 }
 
 /** Toutes les sections actives d'une page, triées par ordre. */
-export function getSectionsByPage(pageSlug: string) {
+function getSectionsByPage(pageSlug: string) {
   return unstable_cache(
     () => fetchSectionsByPage(pageSlug),
     [`sections-${pageSlug}`, "content-v2"],

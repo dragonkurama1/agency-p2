@@ -1,9 +1,8 @@
 /**
- * Données de démonstration utilisées quand Google Sheets n'est pas encore
- * configuré (voir lib/google/sheets.ts -> isGoogleSheetsConfigured()).
+ * Données de démonstration utilisées quand Supabase n'est pas encore
+ * disponible ou quand une table ne retourne pas de contenu.
  * Permet de lancer `npm run dev` immédiatement et de visualiser le site fini.
- * Une fois le Google Sheet créé (mêmes colonnes que lib/entities.ts), ces
- * données peuvent y être copiées comme point de départ.
+ * Une fois les tables Supabase créées, ces données peuvent servir de point de départ.
  */
 
 export interface Service {

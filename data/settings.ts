@@ -21,7 +21,7 @@ async function fetchSettings(): Promise<Record<string, string>> {
   }
 }
 
-export const getSettings = unstable_cache(fetchSettings, ["settings"], {
+const getSettings = unstable_cache(fetchSettings, ["settings"], {
   tags: ["settings"],
   revalidate: 3600,
 });

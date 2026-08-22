@@ -44,7 +44,7 @@ async function fetchFaq(): Promise<FaqItem[]> {
   }
 }
 
-export const getFaq = unstable_cache(fetchFaq, ["faq"], { tags: ["faq"], revalidate: 3600 });
+const getFaq = unstable_cache(fetchFaq, ["faq"], { tags: ["faq"], revalidate: 3600 });
 
 export async function getFaqByPage(pageSlug: string) {
   const all = await getFaq();
