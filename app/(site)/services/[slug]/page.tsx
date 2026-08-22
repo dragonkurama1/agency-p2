@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { FaqSection } from "@/components/marketing/faq-section";
 import { CtaBanner } from "@/components/marketing/cta-banner";
 import { ServiceJsonLd, FaqJsonLd, WebPageJsonLd } from "@/components/seo/json-ld";
-import { cleanMetaTitle } from "@/lib/seo";
+import { absoluteSeoTitle, cleanMetaTitle, formatHeading, formatMetaDescription } from "@/lib/seo";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -22,13 +22,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const service = await getServiceBySlug(slug);
   if (!service) return {};
   const title = cleanMetaTitle(service.meta_title || service.title);
+  const description = formatMetaDescription(service.meta_description || service.short_description);
   return {
-    title,
-    description: service.meta_description || service.short_description,
+    title: absoluteSeoTitle(title),
+    description,
     alternates: { canonical: `/services/${slug}` },
     openGraph: {
       title,
-      description: service.meta_description || service.short_description,
+      description,
       images: [{ url: "/og-image.png", width: 1200, height: 630 }],
     },
   };
@@ -41,6 +42,7 @@ export default async function ServiceDetailPage({ params }: Props) {
 
   const Icon = getIcon(service.icon);
   const related = allServices.filter((s) => service.related.includes(s.slug));
+  const heading = formatHeading(service.title);
 
   return (
     <>
@@ -62,19 +64,41 @@ export default async function ServiceDetailPage({ params }: Props) {
 
       <section className="container-px mx-auto max-w-4xl py-20">
         <nav aria-label="Fil d'Ariane">
-          <Link href="/services" className="text-sm text-muted-foreground hover:text-[var(--accent-gold)]">
+          <Link href="/services" title="Tous les services Prestigia Agency" className="text-sm text-muted-foreground hover:text-[var(--accent-gold)]">
             ← Tous les services
           </Link>
         </nav>
         {/* eslint-disable-next-line react-hooks/static-components */}
         <Icon className="mt-6 size-10 text-[var(--accent-gold)]" aria-hidden="true" />
-        <h1 className="mt-4 font-serif text-4xl sm:text-5xl leading-tight">{service.title}</h1>
+        <h1 className="mt-4 font-serif text-4xl sm:text-5xl leading-tight">{heading}</h1>
+        {heading !== service.title && (
+          <p className="mt-3 text-base text-muted-foreground">{service.title}</p>
+        )}
         <p className="mt-5 text-lg text-muted-foreground">{service.full_description}</p>
         <Button asChild size="lg" className="mt-8">
-          <Link href="/devis">
+          <Link href="/devis" title={`Demander un devis pour ${service.title}`}>
             Demander un devis <ArrowRight className="size-4" aria-hidden="true" />
           </Link>
         </Button>
+      </section>
+
+      <section className="container-px mx-auto max-w-4xl pb-16" aria-label="Accompagnement Prestigia Agency">
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--muted)] p-6 sm:p-8">
+          <h2 className="font-serif text-2xl">Un service relié à vos objectifs commerciaux</h2>
+          <div className="mt-5 grid gap-5 text-sm leading-7 text-muted-foreground sm:grid-cols-2">
+            <p>
+              Pour {service.title.toLowerCase()}, Prestigia Agency commence par comprendre votre marché, votre cible,
+              votre cycle de vente et les preuves dont vos prospects ont besoin avant de vous contacter. Cette étape
+              permet de choisir les bons messages, les bons formats et les bons indicateurs au lieu d&apos;empiler des actions
+              digitales sans direction.
+            </p>
+            <p>
+              L&apos;accompagnement combine stratégie, production, optimisation et reporting. Vous gardez une vision claire
+              des livrables, des priorités et des résultats attendus : visibilité qualifiée, demandes de devis, appels,
+              trafic utile, contenus réutilisables ou amélioration de la confiance autour de votre marque.
+            </p>
+          </div>
+        </div>
       </section>
 
       {service.advantages.length > 0 && (
@@ -126,6 +150,7 @@ export default async function ServiceDetailPage({ params }: Props) {
               <Link
                 key={r.slug}
                 href={`/services/${r.slug}`}
+                title={`Découvrir le service ${r.title}`}
                 className="rounded-xl border border-[var(--border)] bg-[var(--muted)] p-5 hover:border-[var(--accent-gold)]"
               >
                 <p className="font-medium">{r.title}</p>

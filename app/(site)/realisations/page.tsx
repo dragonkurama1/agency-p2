@@ -4,6 +4,7 @@ import { getProjects, getProjectSectors } from "@/data/projects";
 import { getSectionByKey } from "@/data/sections";
 import { getPageMeta } from "@/data/pages";
 import { WebPageJsonLd } from "@/components/seo/json-ld";
+import { formatHeading } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   return getPageMeta("realisations", {
@@ -32,7 +33,7 @@ export default async function RealisationsPage() {
       <RealisationsDnaExperience
         projects={projects}
         sectors={sectors}
-        heroTitle={hero?.title || "Des résultats concrets, pour des clients réels"}
+        heroTitle={formatHeading(hero?.title || "Nos réalisations digitales")}
         heroSubtitle={
           hero?.subtitle ||
           "Découvrez comment nous accompagnons nos clients à travers des projets qui allient créativité, expertise et performance."

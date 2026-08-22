@@ -125,9 +125,9 @@ export function Hero({
               letterSpacing: 0,
             }}
           >
-            Agence marketing digital premium à Casablanca pour une{" "}
-            <span style={{ color: "var(--accent-gold-text)" }}>présence digitale</span>{" "}
-            qui attire, engage et convertit.
+            Agence marketing digital{" "}
+            <span style={{ color: "var(--accent-gold-text)" }}>premium</span>{" "}
+            à Casablanca
           </h1>
 
           {/* Sous-titre */}

@@ -1249,6 +1249,55 @@ export function RealisationsDnaExperience({
       </div>
 
       <div className="container-px relative z-10 mx-auto max-w-7xl pb-24">
+        <section className="mb-12 border-y border-white/[0.12] py-10 text-sm leading-7 text-white/66" aria-label="Lecture des réalisations">
+          <div className="grid gap-6 lg:grid-cols-3">
+            <div>
+              <p className="text-sm uppercase text-[var(--scene-secondary)]">Méthode projet</p>
+              <h2 className="mt-3 font-serif text-3xl leading-none text-white">
+                Des réalisations reliées à un objectif concret.
+              </h2>
+            </div>
+            <p>
+              Chaque réalisation Prestigia Agency est présentée comme une étape de l&apos;ADN digital d&apos;un client : son secteur,
+              son contexte, ses contenus, ses canaux et ses résultats. La catégorie permet de filtrer rapidement les projets
+              proches de votre marché, qu&apos;il s&apos;agisse d&apos;immobilier, d&apos;éducation, de sport, de restauration ou de santé.
+            </p>
+            <p>
+              En faisant défiler la page, les projets apparaissent comme des preuves visuelles de la méthode : image,
+              identité, nom du client et service principal. L&apos;objectif est de montrer comment une idée devient un support
+              exploitable pour vendre, rassurer, publier, mesurer et améliorer la présence digitale dans le temps.
+            </p>
+          </div>
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              {
+                title: "Contexte",
+                text: "Nous commençons par comprendre la marque, son offre, son audience et les freins qui empêchent le prospect de passer à l'action.",
+              },
+              {
+                title: "Création",
+                text: "Les visuels, vidéos, pages et campagnes sont pensés pour rester cohérents avec l'image du client et faciles à réutiliser.",
+              },
+              {
+                title: "Diffusion",
+                text: "Chaque support est relié à un canal : site, réseaux sociaux, Google, publicité, WhatsApp Business ou présentation commerciale.",
+              },
+              {
+                title: "Mesure",
+                text: "Les résultats observés guident les améliorations : message, format, ciblage, rythme de publication et priorités du mois suivant.",
+              },
+            ].map((item) => (
+              <article key={item.title} className="rounded-lg border border-white/[0.12] bg-black/[0.22] p-5 backdrop-blur-sm">
+                <h3 className="font-serif text-xl text-white">{item.title}</h3>
+                <p className="mt-2">{item.text}</p>
+              </article>
+            ))}
+          </div>
+          <p className="mt-8 max-w-3xl text-white/58">
+            Cette page sert aussi de repère pour choisir le type de projet à lancer : refonte de présence digitale,
+            contenu photo et vidéo, campagne publicitaire, page de vente, identité de marque ou accompagnement complet.
+          </p>
+        </section>
         <div className="grid gap-8 border-y border-white/[0.12] py-12 lg:grid-cols-[1fr_auto] lg:items-center">
           <div>
             <p className="text-sm uppercase text-[var(--scene-secondary)]">Projet suivant</p>
@@ -1258,6 +1307,7 @@ export function RealisationsDnaExperience({
           </div>
           <Link
             href="/devis"
+            title="Demander un devis pour un projet digital"
             className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-white px-5 text-sm font-medium text-[#03040a] transition-transform hover:-translate-y-0.5"
           >
             Demander un devis

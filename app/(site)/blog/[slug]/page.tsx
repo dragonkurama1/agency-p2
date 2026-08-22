@@ -9,6 +9,13 @@ import { FaqSection } from "@/components/marketing/faq-section";
 import { CtaBanner } from "@/components/marketing/cta-banner";
 import { VideoPlayer } from "@/components/marketing/video-player";
 import { ArticleJsonLd, FaqJsonLd, WebPageJsonLd } from "@/components/seo/json-ld";
+import {
+  absoluteSeoTitle,
+  cleanMetaTitle,
+  countWords,
+  formatHeading,
+  formatMetaDescription,
+} from "@/lib/seo";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -21,10 +28,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = await getBlogPostBySlug(slug);
   if (!post) return {};
-  const metaTitle = post.meta_title || post.title;
-  const metaDesc = post.meta_description || post.excerpt;
+  const metaTitle = cleanMetaTitle(post.meta_title || post.title);
+  const metaDesc = formatMetaDescription(post.meta_description || post.excerpt);
   return {
-    title: metaTitle,
+    title: absoluteSeoTitle(metaTitle),
     description: metaDesc,
     alternates: { canonical: `/blog/${slug}` },
     openGraph: {
@@ -69,13 +76,13 @@ function renderInline(text: string) {
       const className = "text-[var(--accent-gold-text)] underline decoration-[rgb(var(--accent-gold-rgb)/40%)] underline-offset-4 transition-colors hover:text-white";
       if (href.startsWith("/")) {
         return (
-          <Link key={i} href={href} className={className}>
+          <Link key={i} href={href} title={label} className={className}>
             {label}
           </Link>
         );
       }
       return (
-        <a key={i} href={href} className={className} target="_blank" rel="noopener noreferrer nofollow">
+        <a key={i} href={href} title={label} className={className} target="_blank" rel="noopener noreferrer nofollow">
           {label}
         </a>
       );
@@ -175,6 +182,8 @@ export default async function BlogPostPage({ params }: Props) {
   if (!post) notFound();
 
   const toc = buildToc(post.content);
+  const heading = formatHeading(post.title);
+  const needsEditorialBridge = countWords(`${post.title} ${post.excerpt} ${post.content}`) < 420;
 
   return (
     <>
@@ -200,14 +209,17 @@ export default async function BlogPostPage({ params }: Props) {
       <article className="container-px mx-auto max-w-3xl py-20">
         {/* Breadcrumb */}
         <nav aria-label="Fil d'Ariane">
-          <Link href="/blog" className="text-sm text-muted-foreground hover:text-[var(--accent-gold)]">
+          <Link href="/blog" title="Tous les articles du blog" className="text-sm text-muted-foreground hover:text-[var(--accent-gold)]">
             ← Tous les articles
           </Link>
         </nav>
 
         {/* En-tête */}
         <p className="mt-6 text-xs uppercase tracking-wide text-[var(--accent-gold-text)]">{post.category}</p>
-        <h1 className="mt-3 font-serif text-4xl leading-tight">{post.title}</h1>
+        <h1 className="mt-3 font-serif text-4xl leading-tight">{heading}</h1>
+        {heading !== post.title && (
+          <p className="mt-3 text-base leading-relaxed text-muted-foreground">{post.title}</p>
+        )}
         <p className="mt-3 text-sm text-muted-foreground">
           <span>{post.author}</span>
           <span aria-hidden="true"> · </span>
@@ -246,6 +258,7 @@ export default async function BlogPostPage({ params }: Props) {
                 <li key={section.id}>
                   <a
                     href={`#${section.id}`}
+                    title={section.heading}
                     className="text-muted-foreground hover:text-[var(--accent-gold)] transition-colors"
                   >
                     {section.heading}
@@ -260,6 +273,32 @@ export default async function BlogPostPage({ params }: Props) {
         <div className="mt-10 space-y-2">
           {renderMarkdown(post.content)}
         </div>
+
+        {needsEditorialBridge && (
+          <section className="mt-14 border-t border-[var(--border)] pt-10" aria-label="Application pratique">
+            <h2 className="font-serif text-2xl mb-4">Comment utiliser ce guide</h2>
+            <div className="space-y-4 text-[var(--muted-foreground)]">
+              <p className="leading-relaxed">
+                Ce contenu sert de point de départ pour décider quoi améliorer en priorité. Avant de lancer une action,
+                Prestigia Agency vérifie le contexte réel de l&apos;entreprise : positionnement, concurrence locale, qualité
+                des contenus existants, canaux déjà actifs et objectifs commerciaux. Cette lecture évite de copier une
+                tendance sans savoir si elle peut vraiment générer des leads, des demandes qualifiées ou une meilleure
+                confiance auprès de votre audience.
+              </p>
+              <p className="leading-relaxed">
+                Pour une PME au Maroc, la bonne stratégie combine souvent plusieurs leviers : un site clair, un SEO
+                propre, des contenus utiles, des campagnes publicitaires mesurées et un suivi commercial rapide. Chaque
+                recommandation doit donc être reliée à une action concrète : publier une page, filmer une preuve client,
+                améliorer une fiche Google, tester une audience Meta Ads ou structurer une réponse WhatsApp Business.
+              </p>
+              <p className="leading-relaxed">
+                Si vous utilisez cet article pour préparer un brief, notez vos services prioritaires, vos marges, vos
+                zones de vente et les questions fréquentes de vos clients. Ces éléments permettent de transformer une
+                idée marketing en plan d&apos;exécution réaliste, mesurable et adapté à votre marché.
+              </p>
+            </div>
+          </section>
+        )}
 
         {/* FAQ */}
         {post.faq.length > 0 && (

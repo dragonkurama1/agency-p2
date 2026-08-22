@@ -1,7 +1,7 @@
 import { unstable_cache } from "next/cache";
 import type { Metadata } from "next";
 import { getSupabaseClient } from "@/lib/supabase";
-import { cleanMetaTitle } from "@/lib/seo";
+import { absoluteSeoTitle, cleanMetaTitle, formatMetaDescription } from "@/lib/seo";
 import { siteConfig } from "@/lib/site-config";
 
 interface PageContent {
@@ -68,14 +68,14 @@ export async function getPageMeta(
   const page = await getPageBySlug(slug);
   const canonical = defaults.canonical ?? (slug === "home" ? "/" : `/${slug}`);
   const title = cleanMetaTitle(page?.meta_title || defaults.title);
-  const description = page?.meta_description || defaults.description;
+  const description = formatMetaDescription(page?.meta_description || defaults.description);
   const ogTitle = cleanMetaTitle(page?.meta_title || defaults.ogTitle || defaults.title);
   const ogImages = page?.og_image
     ? [{ url: page.og_image, width: 1200, height: 630, alt: ogTitle }]
     : [{ url: "/og-image.png", width: 1200, height: 630, alt: ogTitle }];
 
   return {
-    title,
+    title: absoluteSeoTitle(title),
     description,
     alternates: { canonical },
     openGraph: { title: ogTitle, description, url: canonical, siteName: siteConfig.name, type: "website", images: ogImages },

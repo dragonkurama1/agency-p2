@@ -23,6 +23,11 @@ export default async function ServicesPage() {
     getServices(),
     getSectionByKey("services", "hero"),
   ]);
+  const heroTitle =
+    hero?.title && hero.title.length <= 70
+      ? hero.title
+      : "Services marketing digital à Casablanca";
+
   return (
     <>
       <WebPageJsonLd
@@ -35,7 +40,7 @@ export default async function ServicesPage() {
         <SectionHeading
           as="h1"
           eyebrow="Nos services"
-          title={hero?.title || "Services marketing digital premium à Casablanca"}
+          title={heroTitle}
           subtitle={
             hero?.subtitle ||
             "Stratégie, création de contenu, publicité, SEO, sites web et automatisation : nous relions chaque levier à un objectif clair de visibilité, de leads et de conversion."
@@ -59,12 +64,35 @@ export default async function ServicesPage() {
           })}
         </div>
 
+        <div className="mt-10 grid gap-6 border-y border-white/[0.1] py-8 text-sm leading-7 text-white/66 lg:grid-cols-3">
+          <div>
+            <h2 className="font-serif text-2xl text-white">Une stratégie avant les outils</h2>
+            <p className="mt-3">
+              Chaque service commence par une lecture simple : votre marché, vos concurrents, vos offres, votre marge et
+              les objections de vos clients. Cette base nous permet de construire une présence digitale cohérente, utile
+              et mesurable.
+            </p>
+          </div>
+          <p>
+            Pour une entreprise à Casablanca ou au Maroc, le bon mix peut associer création de site web, référencement
+            naturel, publicité Google Ads, Meta Ads, branding, contenu photo et vidéo, automatisation WhatsApp ou CRM.
+            Le choix dépend de votre priorité : notoriété, demandes qualifiées, ventes, recrutement ou lancement d&apos;une
+            nouvelle offre.
+          </p>
+          <p>
+            Prestigia Agency relie ces leviers dans un plan clair : quoi produire, pourquoi le publier, comment le
+            promouvoir et quels indicateurs suivre. Vous avancez avec des actions concrètes, un calendrier réaliste et
+            une meilleure visibilité sur le retour attendu.
+          </p>
+        </div>
+
         <div className="mt-10">
           <ServicesGrid services={services} />
         </div>
         <div className="mt-10">
           <Link
             href="/realisations"
+            title="Voir les réalisations liées à nos services"
             className="inline-flex items-center gap-2 text-sm text-[var(--accent-gold-text)] transition-colors hover:text-white"
           >
             Voir les réalisations liées à nos services

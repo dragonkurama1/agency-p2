@@ -23,7 +23,7 @@ import { CtaBanner } from "@/components/marketing/cta-banner";
 import { VideoPlayer } from "@/components/marketing/video-player";
 import { normalizeImageUrl, isVideoUrl, shouldBypassImageOptimization } from "@/lib/parse";
 import { WebPageJsonLd } from "@/components/seo/json-ld";
-import { cleanMetaTitle } from "@/lib/seo";
+import { absoluteSeoTitle, cleanMetaTitle, formatHeading, formatMetaDescription } from "@/lib/seo";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -302,10 +302,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const project = await getProjectBySlug(slug);
   if (!project) return {};
   const title = cleanMetaTitle(project.meta_title || project.title);
-  const description =
-    project.meta_description || project.description || project.objective;
+  const description = formatMetaDescription(
+    project.meta_description || project.description || project.objective,
+  );
   return {
-    title,
+    title: absoluteSeoTitle(title),
     description,
     alternates: { canonical: `/realisations/${slug}` },
     openGraph: {
@@ -341,6 +342,10 @@ export default async function ProjectDetailPage({ params }: Props) {
     : allProjects.filter((p) => p.slug !== slug).slice(0, 3);
   const catalogue = project.catalogue;
   const showHero = !catalogue || Boolean(project.cover_image);
+  const heading = formatHeading(project.title);
+  const projectServices = project.services.length
+    ? project.services.join(", ")
+    : "stratégie digitale, contenu, visibilité et suivi de performance";
 
   return (
     <>
@@ -392,6 +397,7 @@ export default async function ProjectDetailPage({ params }: Props) {
         <nav aria-label="Fil d'Ariane" className="mb-8">
           <Link
             href="/realisations"
+            title="Toutes les réalisations Prestigia Agency"
             className="inline-flex items-center gap-2 text-sm text-[var(--muted-foreground)] hover:text-[var(--accent-gold)] transition-colors"
           >
             <ArrowLeft className="size-4" /> Toutes les réalisations
@@ -406,8 +412,11 @@ export default async function ProjectDetailPage({ params }: Props) {
               {project.sector}
             </span>
             <h1 className="mt-3 font-serif text-4xl sm:text-5xl leading-tight">
-              {project.title}
+              {heading}
             </h1>
+            {heading !== project.title && (
+              <p className="mt-3 text-base text-[var(--muted-foreground)]">{project.title}</p>
+            )}
             {project.description && (
               <p className="mt-6 text-lg text-[var(--muted-foreground)] leading-relaxed max-w-2xl">
                 {project.description}
@@ -435,9 +444,26 @@ export default async function ProjectDetailPage({ params }: Props) {
                       </p>
                       <p className="text-sm leading-relaxed">{card.content}</p>
                     </div>
-                  ))}
+                ))}
               </div>
             )}
+
+            <section className="mt-12 rounded-2xl border border-[var(--border)] bg-[var(--muted)] p-6 sm:p-8" aria-label="Lecture stratégique du projet">
+              <h2 className="font-serif text-2xl">Lecture stratégique du projet</h2>
+              <div className="mt-5 grid gap-5 text-sm leading-7 text-muted-foreground sm:grid-cols-2">
+                <p>
+                  Cette réalisation montre comment Prestigia Agency transforme un besoin client en plan d&apos;action clair.
+                  Pour {project.client_name || project.title}, l&apos;analyse a porté sur le secteur {project.sector}, la
+                  perception de marque, les contenus nécessaires et les points de contact capables de créer plus de
+                  confiance avant la prise de décision.
+                </p>
+                <p>
+                  Les leviers mobilisés couvrent {projectServices}. L&apos;objectif n&apos;est pas seulement de produire un rendu
+                  esthétique, mais de créer une base exploitable : supports de communication, messages compréhensibles,
+                  preuves visuelles, suivi des résultats et amélioration continue selon les réactions du marché.
+                </p>
+              </div>
+            </section>
 
             {/* ── Sections richtext ────────────────────────────────────── */}
             {project.sections.map((section, idx) => (
@@ -591,6 +617,7 @@ export default async function ProjectDetailPage({ params }: Props) {
             {/* CTA contact */}
             <Link
               href="/contact"
+              title={`Contacter Prestigia Agency pour un projet similaire à ${project.title}`}
               className="block w-full text-center rounded-2xl bg-[var(--accent-gold)] text-white font-normal py-4 px-6 transition-all duration-200 hover:bg-[var(--accent-gold-hover)] hover:shadow-[0_0_24px_var(--accent-gold)/40]"
             >
               Un projet similaire ?
@@ -613,6 +640,7 @@ export default async function ProjectDetailPage({ params }: Props) {
                 <Link
                   key={p.slug}
                   href={`/realisations/${p.slug}`}
+                  title={`Voir la réalisation ${p.title}`}
                   className="group rounded-2xl border border-[var(--border)] bg-[var(--muted)] overflow-hidden transition-all duration-300 hover:border-[var(--accent-gold)]/40"
                 >
                   <div className="relative aspect-[4/3] overflow-hidden">

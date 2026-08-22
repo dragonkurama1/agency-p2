@@ -114,6 +114,7 @@ export default async function FondateursPage() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={`LinkedIn de ${member.name}`}
+                    title={`LinkedIn de ${member.name}`}
                     className="text-muted-foreground hover:text-[var(--accent-gold)]"
                   >
                     <Linkedin className="size-5" />
@@ -125,6 +126,7 @@ export default async function FondateursPage() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={`Instagram de ${member.name}`}
+                    title={`Instagram de ${member.name}`}
                     className="text-muted-foreground hover:text-[var(--accent-gold)]"
                   >
                     <Instagram className="size-5" />
@@ -134,6 +136,56 @@ export default async function FondateursPage() {
             </article>
           ))}
         </div>
+
+        <section className="mt-16 border-t border-[var(--border)] pt-10" aria-label="Direction et méthode de travail">
+          <h2 className="font-serif text-3xl">Une direction proche du terrain</h2>
+          <div className="mt-6 grid gap-6 text-sm leading-7 text-muted-foreground sm:grid-cols-3">
+            <p>
+              Les fondateurs de Prestigia Agency interviennent dans les décisions importantes du projet : positionnement,
+              priorités marketing, qualité visuelle, ton de communication et lecture des résultats. Cette présence garde
+              une ligne claire entre la stratégie promise et les actions réellement exécutées.
+            </p>
+            <p>
+              Pour chaque client, l&apos;équipe cherche à comprendre le contexte avant de produire : qui achète, pourquoi il
+              hésite, quels contenus peuvent rassurer, quels canaux méritent un budget et quelles preuves doivent être
+              mises en avant. Cette méthode évite les campagnes jolies mais déconnectées du besoin commercial.
+            </p>
+            <p>
+              L&apos;objectif est de construire une relation durable avec les marques accompagnées à Casablanca et au Maroc :
+              des échanges simples, des décisions argumentées, des contenus cohérents et une progression mesurable dans
+              le temps. Le digital devient alors un outil de croissance, pas seulement une vitrine.
+            </p>
+          </div>
+          <div className="mt-10 grid gap-4 sm:grid-cols-2">
+            {[
+              {
+                title: "Vision business",
+                text: "Chaque recommandation est reliée à une question concrète : comment attirer une meilleure audience, comment rassurer plus vite et comment transformer l'attention en contact qualifié.",
+              },
+              {
+                title: "Qualité créative",
+                text: "La direction artistique reste cohérente avec le positionnement de la marque : choix des images, rythme des vidéos, ton des publications, lisibilité du site et perception premium.",
+              },
+              {
+                title: "Suivi opérationnel",
+                text: "Les projets sont suivis avec des priorités claires, des retours réguliers et des livrables compréhensibles. Le client sait ce qui est produit, pourquoi et comment l'utiliser.",
+              },
+              {
+                title: "Amélioration continue",
+                text: "Après la mise en ligne, les données orientent les ajustements : contenus à renforcer, pages à optimiser, campagnes à tester, messages à clarifier et opportunités à saisir.",
+              },
+            ].map((item) => (
+              <article key={item.title} className="rounded-xl border border-[var(--border)] bg-[var(--muted)] p-5">
+                <h3 className="font-serif text-xl">{item.title}</h3>
+                <p className="mt-2 text-sm leading-7 text-muted-foreground">{item.text}</p>
+              </article>
+            ))}
+          </div>
+          <p className="mt-8 max-w-3xl text-sm leading-7 text-muted-foreground">
+            Cette implication permet de garder une agence à taille humaine : les décisions restent rapides, les échanges
+            sont directs et les ajustements se font selon les retours réels du client, du marché et des données observées.
+          </p>
+        </section>
       </section>
       <CtaBanner />
     </>
