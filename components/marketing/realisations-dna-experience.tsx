@@ -240,13 +240,105 @@ function getCanvasProfile() {
 
   return {
     helixHeight: isMobile ? 8.2 : 9.8,
-    markerCount: isMobile ? 10 : 12,
-    nodeCount: isMobile ? 92 : 104,
+    markerCount: isMobile ? 8 : 10,
+    nodeCount: isMobile ? 76 : 88,
     pixelRatioCap: isMobile ? (highDensityMobile ? 2.35 : 2) : 1.4,
     renderScale: isMobile ? 1.06 : 0.68,
-    targetFPS: reducedMotion ? 0 : highDensityMobile ? 20 : isMobile ? 24 : 28,
+    targetFPS: reducedMotion ? 0 : highDensityMobile ? 18 : isMobile ? 22 : 24,
     staticOnly: reducedMotion,
   };
+}
+
+const STATIC_DNA_POINTS = Array.from({ length: 26 }, (_, index) => {
+  const progress = index / 25;
+  const y = 6 + progress * 88;
+  const angle = progress * Math.PI * 7.5;
+  const spread = 18 + Math.sin(progress * Math.PI * 2) * 3;
+
+  return {
+    leftX: 50 - Math.cos(angle) * spread,
+    rightX: 50 + Math.cos(angle) * spread,
+    y,
+  };
+});
+
+function DnaStaticPreview({ activeSector, hidden }: { activeSector: string; hidden: boolean }) {
+  const theme = getSectorTheme(activeSector);
+
+  return (
+    <div
+      aria-hidden="true"
+      className={cn(
+        "absolute inset-0 flex items-center justify-center transition-opacity duration-500",
+        hidden ? "opacity-0" : "opacity-90",
+      )}
+      style={createSceneStyle(theme)}
+    >
+      <svg
+        viewBox="0 0 100 100"
+        className="h-[76svh] max-h-[760px] w-[min(74vw,620px)] overflow-visible"
+        role="img"
+      >
+        <defs>
+          <filter id="dna-static-glow" x="-60%" y="-60%" width="220%" height="220%">
+            <feGaussianBlur stdDeviation="1.2" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+        <polyline
+          fill="none"
+          points={STATIC_DNA_POINTS.map((point) => `${point.leftX},${point.y}`).join(" ")}
+          stroke="var(--scene-primary)"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="0.65"
+          filter="url(#dna-static-glow)"
+        />
+        <polyline
+          fill="none"
+          points={STATIC_DNA_POINTS.map((point) => `${point.rightX},${point.y}`).join(" ")}
+          stroke="var(--scene-secondary)"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="0.65"
+          filter="url(#dna-static-glow)"
+        />
+        {STATIC_DNA_POINTS.map((point, index) => (
+          <g key={index} opacity={index % 2 === 0 ? 0.88 : 0.64}>
+            <line
+              x1={point.leftX}
+              x2={point.rightX}
+              y1={point.y}
+              y2={point.y}
+              stroke="rgba(255,255,255,0.24)"
+              strokeWidth="0.22"
+            />
+            <rect
+              x={point.leftX - 0.72}
+              y={point.y - 0.72}
+              width="1.44"
+              height="1.44"
+              rx="0.2"
+              fill="var(--scene-primary)"
+              transform={`rotate(45 ${point.leftX} ${point.y})`}
+            />
+            <rect
+              x={point.rightX - 0.72}
+              y={point.y - 0.72}
+              width="1.44"
+              height="1.44"
+              rx="0.2"
+              fill="var(--scene-secondary)"
+              transform={`rotate(45 ${point.rightX} ${point.y})`}
+            />
+          </g>
+        ))}
+      </svg>
+    </div>
+  );
 }
 
 function DnaCanvas({
@@ -262,6 +354,8 @@ function DnaCanvas({
   const themeRef = useRef(getSectorTheme(activeSector));
   const activeIndexRef = useRef(activeIndex);
   const renderStaticRef = useRef<(() => void) | null>(null);
+  const [canvasReady, setCanvasReady] = useState(false);
+  const [shouldInit, setShouldInit] = useState(false);
 
   useEffect(() => {
     activeIndexRef.current = activeIndex;
@@ -277,10 +371,37 @@ function DnaCanvas({
   }, [activeSector]);
 
   useEffect(() => {
+    const start = () => setShouldInit(true);
+    const idleTimer = window.setTimeout(start, 6500);
+
+    window.addEventListener("scroll", start, { passive: true, once: true });
+    window.addEventListener("wheel", start, { passive: true, once: true });
+    window.addEventListener("touchstart", start, { passive: true, once: true });
+    window.addEventListener("pointerdown", start, { passive: true, once: true });
+    window.addEventListener("keydown", start, { once: true });
+
+    return () => {
+      window.clearTimeout(idleTimer);
+      window.removeEventListener("scroll", start);
+      window.removeEventListener("wheel", start);
+      window.removeEventListener("touchstart", start);
+      window.removeEventListener("pointerdown", start);
+      window.removeEventListener("keydown", start);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!shouldInit) return;
+
     let mounted = true;
     let rafId = 0;
     let timeoutHandle = 0;
+    let scrollRafId = 0;
     let lastFrame = 0;
+    let scrollProgress = 0;
+    let stageTravel = 1;
+    let portrait = false;
+    let reportedReady = false;
     let cleanupScene: (() => void) | null = null;
 
     async function init() {
@@ -473,6 +594,27 @@ function DnaCanvas({
       );
 
       const dummy = new THREE.Object3D();
+      const stage = canvas.closest<HTMLElement>("[data-dna-stage]");
+
+      function refreshScrollProgress() {
+        if (stage) {
+          const rect = stage.getBoundingClientRect();
+          scrollProgress = Math.max(0, Math.min(1, -rect.top / stageTravel));
+          return;
+        }
+
+        const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+        scrollProgress = Math.max(0, Math.min(1, window.scrollY / maxScroll));
+      }
+
+      function scheduleScrollRefresh() {
+        if (scrollRafId) return;
+        scrollRafId = requestAnimationFrame(() => {
+          scrollRafId = 0;
+          refreshScrollProgress();
+          if (profile.staticOnly) draw();
+        });
+      }
 
       function resize() {
         const width = canvas.clientWidth || window.innerWidth;
@@ -486,21 +628,11 @@ function DnaCanvas({
         );
         camera.aspect = width / height;
         camera.updateProjectionMatrix();
-        const portrait = width < height;
+        stageTravel = Math.max(1, (stage?.offsetHeight ?? document.documentElement.scrollHeight) - window.innerHeight);
+        portrait = width < height;
         rig.scale.setScalar(portrait ? 0.78 : 1.04);
         rig.position.set(portrait ? 0 : 0.16, portrait ? -0.08 : 0, 0);
-      }
-
-      function getScrollProgress() {
-        const stage = canvas.closest<HTMLElement>("[data-dna-stage]");
-        if (stage) {
-          const rect = stage.getBoundingClientRect();
-          const travel = Math.max(1, stage.offsetHeight - window.innerHeight);
-          return Math.max(0, Math.min(1, -rect.top / travel));
-        }
-
-        const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-        return Math.max(0, Math.min(1, window.scrollY / maxScroll));
+        refreshScrollProgress();
       }
 
       function lerpNumber(value: number, target: number, amount: number) {
@@ -509,7 +641,6 @@ function DnaCanvas({
 
       function updateGeometry(time: number) {
         const theme = themeRef.current;
-        const scrollProgress = getScrollProgress();
         const projectProgress = totalProjects > 1 ? activeIndexRef.current / (totalProjects - 1) : scrollProgress;
 
         targetPrimary.set(theme.cssPrimary);
@@ -537,7 +668,7 @@ function DnaCanvas({
         rig.rotation.y = 0.28 + time * 0.12 + scrollProgress * Math.PI * 1.25 + projectProgress * 0.36;
         rig.rotation.x = -0.16 + Math.sin(time * 0.24) * 0.08;
         rig.rotation.z = -0.08 + Math.sin(time * 0.18 + projectProgress * Math.PI) * 0.08;
-        rig.position.y = (canvas.clientWidth < canvas.clientHeight ? -0.26 : -0.12) + (scrollProgress - 0.5) * 1.45;
+        rig.position.y = (portrait ? -0.26 : -0.12) + (scrollProgress - 0.5) * 1.45;
         signals.rotation.y = time * 0.06;
         orbitControllers.forEach((orbit, index) => {
           orbit.object.rotation.z += orbit.speed;
@@ -608,6 +739,10 @@ function DnaCanvas({
         updateGeometry(now * 0.001);
         renderer.render(scene, camera);
         canvas.dataset.dnaScene = "rendered";
+        if (!reportedReady && mounted) {
+          reportedReady = true;
+          setCanvasReady(true);
+        }
       }
 
       function startLoop() {
@@ -645,14 +780,23 @@ function DnaCanvas({
       }
 
       function handleScroll() {
-        if (profile.staticOnly) draw();
+        scheduleScrollRefresh();
       }
 
       const resizeObserver = new ResizeObserver(() => {
         resize();
         draw();
       });
+      const sceneObserver = new IntersectionObserver(
+        (entries) => {
+          const inView = entries.some((entry) => entry.isIntersecting);
+          if (inView && !document.hidden) startLoop();
+          else stopLoop();
+        },
+        { rootMargin: "160px 0px" },
+      );
       resizeObserver.observe(canvas);
+      sceneObserver.observe(stage ?? canvas);
       resize();
       draw();
       document.addEventListener("visibilitychange", handleVisibility);
@@ -662,7 +806,9 @@ function DnaCanvas({
       cleanupScene = () => {
         renderStaticRef.current = null;
         stopLoop();
+        if (scrollRafId) cancelAnimationFrame(scrollRafId);
         resizeObserver.disconnect();
+        sceneObserver.disconnect();
         document.removeEventListener("visibilitychange", handleVisibility);
         window.removeEventListener("scroll", handleScroll);
         disposables.forEach((item) => item.dispose());
@@ -673,16 +819,26 @@ function DnaCanvas({
 
     timeoutHandle = window.setTimeout(() => {
       void init();
-    }, 160);
+    }, 80);
 
     return () => {
       mounted = false;
       if (timeoutHandle) window.clearTimeout(timeoutHandle);
       cleanupScene?.();
     };
-  }, [totalProjects]);
+  }, [shouldInit, totalProjects]);
 
-  return <canvas ref={canvasRef} aria-hidden="true" className="absolute inset-0 h-full w-full" data-dna-canvas="true" />;
+  return (
+    <>
+      <DnaStaticPreview activeSector={activeSector} hidden={canvasReady} />
+      <canvas
+        ref={canvasRef}
+        aria-hidden="true"
+        className={cn("absolute inset-0 h-full w-full transition-opacity duration-500", canvasReady ? "opacity-100" : "opacity-0")}
+        data-dna-canvas="true"
+      />
+    </>
+  );
 }
 
 function SectorIcon({ sector, className }: { sector: string; className?: string }) {
@@ -698,6 +854,7 @@ function ProjectVisual({ project, theme }: { project: Project; theme: SectorThem
         alt={project.title}
         fill
         sizes="(max-width: 640px) 40vw, (max-width: 1024px) 220px, 250px"
+        quality={62}
         unoptimized={shouldBypassImageOptimization(project.cover_image)}
         className="object-cover transition-transform duration-700 group-hover:scale-105"
       />
@@ -760,7 +917,11 @@ function ProjectDnaTile({
         "pointer-events-none relative flex min-h-[52svh] scroll-mt-24 items-center px-4 py-6 sm:min-h-[56svh] sm:px-10 sm:py-10 lg:min-h-[58svh] lg:px-8",
         alignRight ? "justify-end" : "justify-start",
       )}
-      style={createSceneStyle(theme)}
+      style={{
+        ...createSceneStyle(theme),
+        contentVisibility: "auto",
+        containIntrinsicSize: "56svh",
+      }}
     >
       <span
         aria-hidden="true"
@@ -857,7 +1018,8 @@ export function RealisationsDnaExperience({
   const [visibleProjects, setVisibleProjects] = useState<Set<number>>(() => new Set());
 
   const activeProject = projects[activeIndex] ?? projects[0];
-  const activeTheme = getSectorTheme(activeProject?.sector ?? "");
+  const projectThemes = useMemo(() => projects.map((project) => getSectorTheme(project.sector)), [projects]);
+  const activeTheme = projectThemes[activeIndex] ?? getSectorTheme(activeProject?.sector ?? "");
   const sectorCounts = useMemo(() => {
     const counts = new Map<string, number>();
     projects.forEach((project) => {
@@ -866,7 +1028,19 @@ export function RealisationsDnaExperience({
     });
     return counts;
   }, [projects]);
-  const shownSectors = sectors.length ? sectors : Array.from(sectorCounts.keys());
+  const shownSectors = useMemo(
+    () => (sectors.length ? sectors : Array.from(sectorCounts.keys())),
+    [sectorCounts, sectors],
+  );
+  const sectorItems = useMemo(
+    () =>
+      shownSectors.map((sector) => ({
+        count: sectorCounts.get(sector) ?? 0,
+        sector,
+        theme: getSectorTheme(sector),
+      })),
+    [sectorCounts, shownSectors],
+  );
   const stageMinHeight = Math.max(156, projects.length * 54 + 86);
 
   useEffect(() => {
@@ -1004,10 +1178,9 @@ export function RealisationsDnaExperience({
               {shownSectors.length > 0 && (
                 <nav
                   aria-label="Catégories projets"
-                  className="no-scrollbar pointer-events-auto absolute left-4 right-4 top-20 z-30 flex gap-2 overflow-x-auto pb-2 sm:left-8 sm:right-8 lg:right-auto lg:max-h-[calc(100svh-8rem)] lg:w-64 lg:flex-col lg:overflow-x-hidden lg:overflow-y-auto lg:pb-0"
+                  className="no-scrollbar pointer-events-auto absolute left-4 right-4 top-20 z-30 flex gap-2 overflow-x-auto pb-2 pr-24 sm:left-8 sm:right-8 sm:pr-0 lg:right-auto lg:max-h-[calc(100svh-8rem)] lg:w-64 lg:flex-col lg:overflow-x-hidden lg:overflow-y-auto lg:pb-0"
                 >
-                  {shownSectors.map((sector) => {
-                    const theme = getSectorTheme(sector);
+                  {sectorItems.map(({ count, sector, theme }) => {
                     const Icon = theme.icon;
                     const selected = activeProject.sector === sector;
 
@@ -1026,7 +1199,7 @@ export function RealisationsDnaExperience({
                       >
                         <Icon aria-hidden="true" className="size-4 shrink-0" style={{ color: theme.cssPrimary }} />
                         <span className="truncate">{sector}</span>
-                        <span className="ml-auto text-xs text-white/[0.44]">{sectorCounts.get(sector) ?? 0}</span>
+                        <span className="ml-auto text-xs text-white/[0.44]">{count}</span>
                       </button>
                     );
                   })}
@@ -1053,7 +1226,7 @@ export function RealisationsDnaExperience({
 
             <div className="pointer-events-none relative z-10 -mt-[100svh]">
               {projects.map((project, index) => {
-                const theme = getSectorTheme(project.sector);
+                const theme = projectThemes[index] ?? DEFAULT_THEME;
                 const isActive = index === activeIndex;
                 const isVisible = visibleProjects.has(index);
                 const alignRight = index % 2 === 0;
