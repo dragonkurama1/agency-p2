@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MessageCircle } from "lucide-react";
+import Image from "next/image";
 import { siteConfig } from "@/lib/site-config";
 import { getSetting } from "@/data/settings";
 
@@ -12,9 +12,16 @@ export async function WhatsappButton() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Contacter Prestigia Agency sur WhatsApp"
-      className="fixed bottom-6 right-6 z-50 flex size-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition-transform hover:scale-105"
+      className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] right-5 z-50 block size-16 overflow-hidden rounded-[22%] bg-white shadow-[0_12px_34px_rgba(37,211,102,0.38)] transition-transform hover:scale-105 sm:bottom-6 sm:right-6"
     >
-      <MessageCircle className="size-7" />
+      <Image
+        src="/whatsapp-icon.webp"
+        alt=""
+        fill
+        sizes="64px"
+        className="object-cover"
+        priority={false}
+      />
     </Link>
   );
 }

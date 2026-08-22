@@ -112,11 +112,11 @@ export function Hero({
               HTML servi, aucune dépendance à l'hydratation JS (voir note
               en tête de fichier). */}
           <h1
-            className="uppercase text-white"
+            className="hero-title uppercase text-white"
             style={{
               fontFamily: "var(--font-bebas)",
               fontWeight: 400,
-              fontSize: "clamp(46px, 5.6vw, 96px)",
+              fontSize: "clamp(40px, 5.6vw, 96px)",
               lineHeight: 0.95,
               letterSpacing: 0,
             }}
@@ -128,7 +128,7 @@ export function Hero({
 
           {/* Sous-titre */}
           <p
-            className="text-white/65 hero-fade-up"
+            className="hero-subtitle text-white/65 hero-fade-up"
             style={{
               fontFamily: "var(--font-montserrat)",
               fontWeight: 400,

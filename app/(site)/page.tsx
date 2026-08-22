@@ -29,7 +29,7 @@ function HomeProofBand({
   featuredProject?: Project;
 }) {
   return (
-    <section className="container-px relative z-20 mx-auto -mt-10 max-w-7xl pb-10 sm:-mt-12 sm:pb-12" aria-label="Preuves Prestigia Agency">
+    <section className="container-px relative z-20 mx-auto mt-8 max-w-7xl pb-10 sm:mt-10 lg:-mt-12 lg:pb-12" aria-label="Preuves Prestigia Agency">
       <div className="grid gap-3 rounded-lg border border-white/[0.1] bg-black/[0.42] p-3 shadow-[0_24px_80px_rgba(0,0,0,0.34)] backdrop-blur-xl lg:grid-cols-[1fr_1.05fr]">
         <div className="grid gap-px overflow-hidden rounded-md border border-white/[0.08] bg-white/[0.08] sm:grid-cols-3">
           {[
