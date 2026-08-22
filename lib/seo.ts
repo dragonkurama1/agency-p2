@@ -2,6 +2,7 @@ const TITLE_BRAND = "Prestigia Agency";
 const TITLE_SUFFIX = ` | ${TITLE_BRAND}`;
 const DEFAULT_TITLE_LIMIT = 70;
 const DEFAULT_DESCRIPTION_LIMIT = 158;
+export const TWITTER_SITE_HANDLE = "@prestigia_agency";
 
 function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -67,4 +68,15 @@ export function countWords(value: string) {
   const normalized = normalizeSpaces(value);
   if (!normalized) return 0;
   return normalized.split(" ").length;
+}
+
+export function seoAlternates(canonical: string) {
+  return {
+    canonical,
+    languages: {
+      "fr-MA": canonical,
+      fr: canonical,
+      "x-default": canonical,
+    },
+  };
 }

@@ -43,6 +43,7 @@ export default async function BlogPage() {
             "Guides pratiques pour mieux comprendre la visibilité locale, la création de contenu, la publicité et la conversion digitale au Maroc."
           }
         />
+        <h2 className="mt-12 font-serif text-2xl text-white">Tous les articles</h2>
         <BlogList posts={posts} categories={categories} />
       </section>
     </>

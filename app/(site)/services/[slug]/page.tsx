@@ -8,7 +8,15 @@ import { Button } from "@/components/ui/button";
 import { FaqSection } from "@/components/marketing/faq-section";
 import { CtaBanner } from "@/components/marketing/cta-banner";
 import { ServiceJsonLd, FaqJsonLd, WebPageJsonLd } from "@/components/seo/json-ld";
-import { absoluteSeoTitle, cleanMetaTitle, formatHeading, formatMetaDescription } from "@/lib/seo";
+import {
+  TWITTER_SITE_HANDLE,
+  absoluteSeoTitle,
+  cleanMetaTitle,
+  formatHeading,
+  formatMetaDescription,
+  seoAlternates,
+} from "@/lib/seo";
+import { siteConfig } from "@/lib/site-config";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -26,11 +34,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: absoluteSeoTitle(title),
     description,
-    alternates: { canonical: `/services/${slug}` },
+    alternates: seoAlternates(`/services/${slug}`),
     openGraph: {
       title,
       description,
+      url: `/services/${slug}`,
+      siteName: siteConfig.name,
+      type: "website",
       images: [{ url: "/og-image.png", width: 1200, height: 630 }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["/og-image.png"],
+      site: TWITTER_SITE_HANDLE,
     },
   };
 }

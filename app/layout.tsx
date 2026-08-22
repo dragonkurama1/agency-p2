@@ -4,6 +4,7 @@ import "./globals.css";
 import { OrganizationJsonLd } from "@/components/seo/json-ld";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
 import { siteConfig } from "@/lib/site-config";
+import { TWITTER_SITE_HANDLE, seoAlternates } from "@/lib/seo";
 
 // ── Polices ───────────────────────────────────────────────────────────────────
 // Bebas Neue = équivalent libre de Coolvetica (condensé, impactant, display)
@@ -63,10 +64,7 @@ export const metadata: Metadata = {
   creator: "Prestigia Agency",
   publisher: "Prestigia Agency",
 
-  alternates: {
-    canonical: "/",
-    languages: { "fr-FR": "/" },
-  },
+  alternates: seoAlternates("/"),
 
   openGraph: {
     type: "website",
@@ -91,6 +89,7 @@ export const metadata: Metadata = {
     title: "Prestigia Agency — Agence Marketing Digital à Casablanca",
     description: siteConfig.description,
     images: ["/og-image.png"],
+    site: TWITTER_SITE_HANDLE,
     creator: "@prestigia_agency",
   },
 

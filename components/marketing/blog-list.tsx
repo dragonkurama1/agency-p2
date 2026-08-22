@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { formatDate } from "@/lib/utils";
 import { normalizeImageUrl } from "@/lib/parse";
+import { formatHeading } from "@/lib/seo";
 import type { BlogPost } from "@/data/blog";
 
 export function BlogList({
@@ -54,6 +55,7 @@ export function BlogList({
           <li key={post.slug}>
             <Link
               href={`/blog/${post.slug}`}
+              title={`Lire l'article ${post.title}`}
               className="group flex flex-col h-full rounded-2xl border border-[var(--border)] bg-[var(--muted)] overflow-hidden hover:border-[var(--accent-gold)] transition-colors duration-200"
             >
               {/* Image de couverture */}
@@ -75,9 +77,9 @@ export function BlogList({
                 <p className="text-xs uppercase tracking-wide text-[var(--accent-gold-text)]">
                   {post.category}
                 </p>
-                <h2 className="mt-2 font-serif text-xl leading-snug flex-1">
-                  {post.title}
-                </h2>
+                <h3 className="mt-2 font-serif text-xl leading-snug flex-1">
+                  {formatHeading(post.title)}
+                </h3>
                 <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
                   {post.excerpt}
                 </p>

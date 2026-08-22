@@ -1,7 +1,13 @@
 import { unstable_cache } from "next/cache";
 import type { Metadata } from "next";
 import { getSupabaseClient } from "@/lib/supabase";
-import { absoluteSeoTitle, cleanMetaTitle, formatMetaDescription } from "@/lib/seo";
+import {
+  TWITTER_SITE_HANDLE,
+  absoluteSeoTitle,
+  cleanMetaTitle,
+  formatMetaDescription,
+  seoAlternates,
+} from "@/lib/seo";
 import { siteConfig } from "@/lib/site-config";
 
 interface PageContent {
@@ -77,8 +83,8 @@ export async function getPageMeta(
   return {
     title: absoluteSeoTitle(title),
     description,
-    alternates: { canonical },
+    alternates: seoAlternates(canonical),
     openGraph: { title: ogTitle, description, url: canonical, siteName: siteConfig.name, type: "website", images: ogImages },
-    twitter: { card: "summary_large_image", title: ogTitle, description, images: [ogImages[0].url] },
+    twitter: { card: "summary_large_image", title: ogTitle, description, images: [ogImages[0].url], site: TWITTER_SITE_HANDLE },
   };
 }

@@ -135,7 +135,7 @@ export default async function HomePage() {
       <section className="container-px mx-auto max-w-7xl py-16" aria-label="Nos services">
         <SectionHeading
           eyebrow="Nos services"
-          title="Une agence digitale à Casablanca pensée pour les marques qui veulent grandir"
+          title="Une agence digitale à Casablanca pour grandir"
           subtitle="Du SEO à la publicité, du branding au développement web — chaque service est conçu pour attirer vos prospects, engager votre audience et convertir vos visiteurs en clients."
         />
         <div className="mt-12">

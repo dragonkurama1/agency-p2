@@ -10,12 +10,15 @@ import { CtaBanner } from "@/components/marketing/cta-banner";
 import { VideoPlayer } from "@/components/marketing/video-player";
 import { ArticleJsonLd, FaqJsonLd, WebPageJsonLd } from "@/components/seo/json-ld";
 import {
+  TWITTER_SITE_HANDLE,
   absoluteSeoTitle,
   cleanMetaTitle,
   countWords,
   formatHeading,
   formatMetaDescription,
+  seoAlternates,
 } from "@/lib/seo";
+import { siteConfig } from "@/lib/site-config";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -33,11 +36,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: absoluteSeoTitle(metaTitle),
     description: metaDesc,
-    alternates: { canonical: `/blog/${slug}` },
+    alternates: seoAlternates(`/blog/${slug}`),
     openGraph: {
       title: metaTitle,
       description: metaDesc,
       type: "article",
+      url: `/blog/${slug}`,
+      siteName: siteConfig.name,
       publishedTime: post.published_at,
       authors: [post.author],
       images: post.cover_image
@@ -49,6 +54,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: metaTitle,
       description: metaDesc,
       images: post.cover_image ? [normalizeImageUrl(post.cover_image)] : ["/og-image.png"],
+      site: TWITTER_SITE_HANDLE,
     },
   };
 }

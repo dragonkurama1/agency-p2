@@ -23,7 +23,15 @@ import { CtaBanner } from "@/components/marketing/cta-banner";
 import { VideoPlayer } from "@/components/marketing/video-player";
 import { normalizeImageUrl, isVideoUrl, shouldBypassImageOptimization } from "@/lib/parse";
 import { WebPageJsonLd } from "@/components/seo/json-ld";
-import { absoluteSeoTitle, cleanMetaTitle, formatHeading, formatMetaDescription } from "@/lib/seo";
+import {
+  TWITTER_SITE_HANDLE,
+  absoluteSeoTitle,
+  cleanMetaTitle,
+  formatHeading,
+  formatMetaDescription,
+  seoAlternates,
+} from "@/lib/seo";
+import { siteConfig } from "@/lib/site-config";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -308,10 +316,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: absoluteSeoTitle(title),
     description,
-    alternates: { canonical: `/realisations/${slug}` },
+    alternates: seoAlternates(`/realisations/${slug}`),
     openGraph: {
       title,
       description,
+      url: `/realisations/${slug}`,
+      siteName: siteConfig.name,
+      type: "article",
       images: project.cover_image
         ? [{ url: normalizeImageUrl(project.cover_image), width: 1200, height: 630, alt: project.title }]
         : [{ url: "/og-image.png", width: 1200, height: 630 }],
@@ -321,6 +332,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title,
       description,
       images: project.cover_image ? [normalizeImageUrl(project.cover_image)] : ["/og-image.png"],
+      site: TWITTER_SITE_HANDLE,
     },
   };
 }
