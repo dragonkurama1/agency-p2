@@ -33,7 +33,18 @@ const DEFAULTS = {
   cta2Href: "/realisations",
 };
 
-export function Hero({ section }: { section?: SectionContent | null }) {
+type HeroProofItem = {
+  label: string;
+  value: string;
+};
+
+export function Hero({
+  proofItems = [],
+  section,
+}: {
+  proofItems?: HeroProofItem[];
+  section?: SectionContent | null;
+}) {
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -51,7 +62,7 @@ export function Hero({ section }: { section?: SectionContent | null }) {
   return (
     <section
       ref={ref}
-      className="relative -mt-20 min-h-screen overflow-hidden flex items-center"
+      className="relative -mt-20 flex min-h-[92svh] items-center overflow-hidden"
       aria-label="Héro — Prestigia Agency"
     >
       {/* Le fond spatial vient du #space-bg fixe global; le 3D leger est rendu en arriere-plan. */}
@@ -75,11 +86,11 @@ export function Hero({ section }: { section?: SectionContent | null }) {
           y: contentY,
           maxWidth: "1600px",
           margin: "0 auto",
-          paddingTop: "140px",
-          paddingBottom: "80px",
+          paddingTop: "118px",
+          paddingBottom: "56px",
         }}
       >
-        <div style={{ maxWidth: "760px" }}>
+        <div style={{ maxWidth: "860px" }}>
 
           {/* Eyebrow — statique + animation CSS pure (jamais gatée par l'hydratation) */}
           <p
@@ -104,12 +115,12 @@ export function Hero({ section }: { section?: SectionContent | null }) {
             style={{
               fontFamily: "var(--font-bebas)",
               fontWeight: 400,
-              fontSize: "clamp(58px, 5vw, 88px)",
+              fontSize: "clamp(46px, 5.6vw, 96px)",
               lineHeight: 0.95,
-              letterSpacing: "-2px",
+              letterSpacing: 0,
             }}
           >
-            Nous construisons une{" "}
+            Agence marketing digital premium à Casablanca pour une{" "}
             <span style={{ color: "var(--accent-gold-text)" }}>présence digitale</span>{" "}
             qui attire, engage et convertit.
           </h1>
@@ -121,9 +132,9 @@ export function Hero({ section }: { section?: SectionContent | null }) {
               fontFamily: "var(--font-montserrat)",
               fontWeight: 400,
               fontSize: "17px",
-              lineHeight: 1.4,
+              lineHeight: 1.58,
               marginTop: "28px",
-              maxWidth: "560px",
+              maxWidth: "640px",
               animationDelay: "0.12s",
             }}
           >
@@ -158,6 +169,17 @@ export function Hero({ section }: { section?: SectionContent | null }) {
               {DEFAULTS.cta2Text}
             </Link>
           </div>
+
+          {proofItems.length > 0 && (
+            <dl className="hero-fade-up mt-9 grid max-w-[270px] grid-cols-2 gap-3 sm:max-w-3xl sm:grid-cols-4" style={{ animationDelay: "0.3s" }}>
+              {proofItems.map((item) => (
+                <div key={item.label} className="rounded-lg border border-white/[0.1] bg-black/[0.2] px-4 py-3 backdrop-blur-md">
+                  <dt className="text-[10px] uppercase tracking-[0.22em] text-white/42">{item.label}</dt>
+                  <dd className="mt-1 font-serif text-2xl leading-none text-white">{item.value}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
         </div>
       </motion.div>
     </section>

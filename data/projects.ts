@@ -208,7 +208,7 @@ async function fetchProjects(): Promise<Project[]> {
   }
 }
 
-export const getProjects = unstable_cache(fetchProjects, ["projects", "category-linked-v3"], {
+export const getProjects = unstable_cache(fetchProjects, ["projects", "catalogue-filled-v4"], {
   tags: ["projects"],
   revalidate: 3600,
 });

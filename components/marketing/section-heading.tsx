@@ -1,18 +1,22 @@
 import { cn } from "@/lib/utils";
 
 export function SectionHeading({
+  as = "h2",
   eyebrow,
   title,
   subtitle,
   align = "left",
   className,
 }: {
+  as?: "h1" | "h2" | "h3";
   eyebrow?: string;
   title: string;
   subtitle?: string;
   align?: "left" | "center";
   className?: string;
 }) {
+  const HeadingTag = as;
+
   return (
     <div className={cn("max-w-2xl", align === "center" && "mx-auto text-center", className)}>
       {eyebrow && (
@@ -20,12 +24,16 @@ export function SectionHeading({
           {eyebrow}
         </p>
       )}
-      <h2
-        className="font-serif leading-tight text-white text-glow"
-        style={{ fontSize: "clamp(2rem, 4vw, 3rem)" }}
+      <HeadingTag
+        className={cn(
+          "font-serif leading-tight text-white text-glow",
+          as === "h1"
+            ? "text-[clamp(2.7rem,5.2vw,4.6rem)] leading-none"
+            : "text-[clamp(2rem,4vw,3rem)]",
+        )}
       >
         {title}
-      </h2>
+      </HeadingTag>
       {subtitle && (
         <p className="mt-4 text-[var(--muted-foreground)] text-base sm:text-[17px] leading-relaxed">
           {subtitle}

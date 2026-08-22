@@ -80,8 +80,9 @@ export default async function FondateursPage() {
         />
       ))}
 
-      <section className="container-px mx-auto max-w-5xl py-20">
+      <section className="container-px mx-auto max-w-5xl py-16 sm:py-20">
         <SectionHeading
+          as="h1"
           eyebrow="L'équipe"
           title={hero?.title || "Les fondateurs de Prestigia Agency"}
           subtitle={hero?.subtitle || "Deux profils complémentaires, une même conviction : le digital doit produire des résultats mesurables."}

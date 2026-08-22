@@ -36,8 +36,13 @@ export default async function ContactPage() {
         path="/contact"
         breadcrumbs={[{ name: "Contact", href: "/contact" }]}
       />
-      <section className="container-px mx-auto max-w-6xl py-20" aria-label="Coordonnées et formulaire de contact">
-        <SectionHeading eyebrow="Contact" title={hero?.title || "Discutons de votre projet"} subtitle={hero?.subtitle || undefined} />
+      <section className="container-px mx-auto max-w-6xl py-16 sm:py-20" aria-label="Coordonnées et formulaire de contact">
+        <SectionHeading
+          as="h1"
+          eyebrow="Contact"
+          title={hero?.title || "Discutons de votre projet digital à Casablanca"}
+          subtitle={hero?.subtitle || "Expliquez-nous votre objectif, votre marché et vos priorités. Nous vous répondons avec une première orientation claire."}
+        />
         <div className="mt-12 grid lg:grid-cols-[1fr_1.2fr] gap-12">
           <address className="not-italic space-y-8">
             <div className="flex items-start gap-3">
@@ -104,7 +109,7 @@ export default async function ContactPage() {
             </a>
           </address>
 
-          <div className="rounded-2xl border border-[var(--border)] bg-[var(--muted)] p-6 sm:p-8">
+          <div className="rounded-lg border border-[var(--border)] bg-[var(--muted)] p-6 sm:p-8">
             <h2 className="font-serif text-xl mb-6">Envoyez-nous un message</h2>
             <ContactForm />
           </div>

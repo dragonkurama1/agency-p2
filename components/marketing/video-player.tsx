@@ -10,7 +10,15 @@ function formatTime(s: number): string {
   return `${m}:${sec.toString().padStart(2, "0")}`;
 }
 
-export function VideoPlayer({ src, className = "" }: { src: string; className?: string }) {
+export function VideoPlayer({
+  src,
+  className = "",
+  videoClassName = "",
+}: {
+  src: string;
+  className?: string;
+  videoClassName?: string;
+}) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -69,11 +77,12 @@ export function VideoPlayer({ src, className = "" }: { src: string; className?: 
       <video
         ref={videoRef}
         src={src}
-        className="w-full cursor-pointer"
+        className={`h-full w-full cursor-pointer object-contain ${videoClassName}`}
         onTimeUpdate={onTimeUpdate}
         onLoadedMetadata={onLoadedMetadata}
         onEnded={() => setPlaying(false)}
         onClick={toggle}
+        preload="metadata"
         playsInline
       />
 

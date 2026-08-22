@@ -31,13 +31,17 @@ export default async function BlogPage() {
         breadcrumbs={[{ name: "Blog", href: "/blog" }]}
       />
       <section
-        className="container-px mx-auto max-w-5xl py-20"
+        className="container-px mx-auto max-w-5xl py-16 sm:py-20"
         aria-label="Articles du blog"
       >
         <SectionHeading
+          as="h1"
           eyebrow="Blog"
-          title={hero?.title || "Conseils & guides marketing digital"}
-          subtitle={hero?.subtitle || undefined}
+          title={hero?.title || "Conseils marketing digital, SEO et contenu"}
+          subtitle={
+            hero?.subtitle ||
+            "Guides pratiques pour mieux comprendre la visibilité locale, la création de contenu, la publicité et la conversion digitale au Maroc."
+          }
         />
         <BlogList posts={posts} categories={categories} />
       </section>

@@ -239,12 +239,12 @@ function getCanvasProfile() {
   const highDensityMobile = isMobile && (window.devicePixelRatio || 1) > 2;
 
   return {
-    helixHeight: isMobile ? 7.8 : 9.8,
-    markerCount: isMobile ? 8 : 12,
-    nodeCount: isMobile ? 72 : 96,
-    pixelRatioCap: isMobile ? (highDensityMobile ? 2.2 : 1.85) : 1.35,
-    renderScale: isMobile ? 1 : 0.62,
-    targetFPS: reducedMotion ? 0 : highDensityMobile ? 18 : isMobile ? 20 : 26,
+    helixHeight: isMobile ? 8.2 : 9.8,
+    markerCount: isMobile ? 10 : 12,
+    nodeCount: isMobile ? 92 : 104,
+    pixelRatioCap: isMobile ? (highDensityMobile ? 2.35 : 2) : 1.4,
+    renderScale: isMobile ? 1.06 : 0.68,
+    targetFPS: reducedMotion ? 0 : highDensityMobile ? 20 : isMobile ? 24 : 28,
     staticOnly: reducedMotion,
   };
 }
@@ -757,7 +757,7 @@ function ProjectDnaTile({
     <article
       data-dna-project-index={index}
       className={cn(
-        "pointer-events-none relative flex min-h-[68svh] scroll-mt-24 items-center px-4 py-8 sm:min-h-[76svh] sm:px-10 sm:py-14 lg:min-h-[78svh] lg:px-8",
+        "pointer-events-none relative flex min-h-[52svh] scroll-mt-24 items-center px-4 py-6 sm:min-h-[56svh] sm:px-10 sm:py-10 lg:min-h-[58svh] lg:px-8",
         alignRight ? "justify-end" : "justify-start",
       )}
       style={createSceneStyle(theme)}
@@ -793,7 +793,7 @@ function ProjectDnaTile({
         aria-label={`Voir le projet ${project.title}`}
         data-dna-tile="true"
         className={cn(
-          "pointer-events-auto group relative block aspect-square w-[min(40vw,156px)] transform-gpu overflow-hidden rounded-lg border bg-black/[0.42] shadow-2xl backdrop-blur-xl transition-all duration-[900ms] ease-out sm:w-[220px] lg:w-[250px]",
+          "pointer-events-auto group relative block aspect-square w-[min(34vw,132px)] transform-gpu overflow-hidden rounded-lg border bg-black/[0.42] shadow-2xl backdrop-blur-xl transition-all duration-[850ms] ease-out sm:w-[184px] lg:w-[216px]",
           isVisible ? "translate-x-0 translate-y-0 scale-100 opacity-100 blur-0" : `${hiddenMotion} opacity-0 blur-sm`,
           isActive ? "border-[var(--scene-primary)]" : "border-white/[0.14] hover:border-white/[0.34]",
         )}
@@ -821,7 +821,7 @@ function ProjectDnaTile({
           <span className="block text-[8px] uppercase tracking-[0.18em] text-[var(--scene-secondary)] sm:text-[10px] sm:tracking-[0.26em]">
             {project.category || project.sector || "Projet"}
           </span>
-          <span className="mt-1 line-clamp-2 block font-serif text-xl leading-none text-white sm:text-3xl">{project.title}</span>
+          <span className="mt-1 line-clamp-2 block font-serif text-lg leading-none text-white sm:text-2xl">{project.title}</span>
           <span className="mt-1.5 flex items-center justify-between text-[10px] text-white/60 sm:mt-3 sm:text-xs">
             <span className="truncate pr-2">{project.client_name || "Prestigia Agency"}</span>
             <ArrowUpRight aria-hidden="true" className="size-3 shrink-0 text-[var(--scene-primary)] sm:size-4" />
@@ -867,7 +867,7 @@ export function RealisationsDnaExperience({
     return counts;
   }, [projects]);
   const shownSectors = sectors.length ? sectors : Array.from(sectorCounts.keys());
-  const stageMinHeight = Math.max(132, projects.length * 68 + 24);
+  const stageMinHeight = Math.max(156, projects.length * 54 + 86);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -956,15 +956,15 @@ export function RealisationsDnaExperience({
       />
 
       <div className="container-px relative z-10 mx-auto max-w-7xl">
-        <div className="grid gap-10">
-          <div className="flex min-h-[calc(100svh-7rem)] flex-col justify-end py-14 lg:justify-center lg:py-20">
+        <div className="grid gap-6">
+          <div className="flex min-h-[calc(78svh-5rem)] flex-col justify-end py-10 lg:min-h-[calc(72svh-5rem)] lg:justify-center lg:py-14">
             <p className="text-sm uppercase text-[var(--scene-secondary)]">Réalisations</p>
             <h1 className="mt-5 max-w-3xl font-serif text-5xl leading-none text-white sm:text-6xl lg:text-7xl">
               {heroTitle}
             </h1>
-            <p className="mt-7 max-w-xl text-base leading-8 text-white/[0.72] sm:text-lg">{heroSubtitle}</p>
+            <p className="mt-6 max-w-xl text-base leading-8 text-white/[0.72] sm:text-lg">{heroSubtitle}</p>
 
-            <div className="mt-10 grid max-w-2xl grid-cols-3 border-y border-white/[0.12] py-6">
+            <div className="mt-8 grid max-w-2xl grid-cols-3 border-y border-white/[0.12] py-5">
               <div>
                 <p className="font-serif text-4xl text-white">{projects.length}</p>
                 <p className="mt-1 text-sm text-white/[0.56]">projets</p>
@@ -979,34 +979,9 @@ export function RealisationsDnaExperience({
               </div>
             </div>
 
-            {shownSectors.length > 0 && (
-              <div className="mt-8 flex max-w-3xl flex-wrap gap-2">
-                {shownSectors.map((sector) => {
-                  const theme = getSectorTheme(sector);
-                  const Icon = theme.icon;
-                  const selected = activeProject.sector === sector;
-
-                  return (
-                    <button
-                      key={sector}
-                      type="button"
-                      aria-pressed={selected}
-                      onClick={() => scrollToSector(sector)}
-                      className={cn(
-                        "inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm backdrop-blur-md transition-colors",
-                        selected
-                          ? "border-[var(--scene-primary)] bg-white/12 text-white"
-                          : "border-white/[0.12] bg-black/[0.18] text-white/[0.62] hover:border-white/[0.28] hover:text-white",
-                      )}
-                    >
-                      <Icon aria-hidden="true" className="size-4" style={{ color: theme.cssPrimary }} />
-                      <span>{sector}</span>
-                      <span className="text-xs text-white/[0.42]">{sectorCounts.get(sector) ?? 0}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
+            <p className="mt-6 max-w-lg text-sm leading-6 text-white/[0.48]">
+              Faites défiler : chaque projet s&apos;active depuis l&apos;ADN et la navigation par catégorie reste disponible pendant l&apos;expérience.
+            </p>
           </div>
 
           <div
@@ -1029,7 +1004,7 @@ export function RealisationsDnaExperience({
               {shownSectors.length > 0 && (
                 <nav
                   aria-label="Catégories projets"
-                  className="pointer-events-auto absolute left-4 right-4 top-24 z-20 flex gap-2 overflow-x-auto pb-2 sm:left-8 sm:right-8 lg:right-auto lg:max-h-[calc(100svh-9rem)] lg:w-64 lg:flex-col lg:overflow-x-hidden lg:overflow-y-auto lg:pb-0"
+                  className="no-scrollbar pointer-events-auto absolute left-4 right-4 top-20 z-30 flex gap-2 overflow-x-auto pb-2 sm:left-8 sm:right-8 lg:right-auto lg:max-h-[calc(100svh-8rem)] lg:w-64 lg:flex-col lg:overflow-x-hidden lg:overflow-y-auto lg:pb-0"
                 >
                   {shownSectors.map((sector) => {
                     const theme = getSectorTheme(sector);
@@ -1043,7 +1018,7 @@ export function RealisationsDnaExperience({
                         aria-pressed={selected}
                         onClick={() => scrollToSector(sector)}
                         className={cn(
-                          "group inline-flex min-h-11 shrink-0 items-center gap-2 rounded-lg border px-3 text-left text-sm backdrop-blur-md transition-colors lg:w-full",
+                          "group inline-flex min-h-10 shrink-0 items-center gap-2 rounded-lg border px-3 text-left text-sm backdrop-blur-md transition-colors lg:w-full",
                           selected
                             ? "border-[var(--scene-primary)] bg-black/60 text-white shadow-[0_0_22px_var(--scene-glow)]"
                             : "border-white/[0.12] bg-black/[0.26] text-white/[0.64] hover:border-white/[0.28] hover:text-white",

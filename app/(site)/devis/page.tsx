@@ -14,11 +14,12 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function DevisPage() {
   const services = await getServices();
   return (
-    <section className="container-px mx-auto max-w-3xl py-20">
+    <section className="container-px mx-auto max-w-3xl py-16 sm:py-20">
       <SectionHeading
+        as="h1"
         eyebrow="Devis gratuit"
-        title="Parlons de votre projet"
-        subtitle="Quatre étapes, deux minutes. Nous vous répondons sous 24h ouvrées."
+        title="Parlons de votre projet digital"
+        subtitle="Quatre étapes, deux minutes. Nous vous répondons sous 24h ouvrées avec une première direction claire."
       />
       <div className="mt-12">
         <DevisForm services={services} />

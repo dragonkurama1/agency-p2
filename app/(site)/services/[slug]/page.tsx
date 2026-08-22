@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { FaqSection } from "@/components/marketing/faq-section";
 import { CtaBanner } from "@/components/marketing/cta-banner";
 import { ServiceJsonLd, FaqJsonLd, WebPageJsonLd } from "@/components/seo/json-ld";
+import { cleanMetaTitle } from "@/lib/seo";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -20,12 +21,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const service = await getServiceBySlug(slug);
   if (!service) return {};
+  const title = cleanMetaTitle(service.meta_title || service.title);
   return {
-    title: service.meta_title || service.title,
+    title,
     description: service.meta_description || service.short_description,
     alternates: { canonical: `/services/${slug}` },
     openGraph: {
-      title: service.meta_title || service.title,
+      title,
       description: service.meta_description || service.short_description,
       images: [{ url: "/og-image.png", width: 1200, height: 630 }],
     },

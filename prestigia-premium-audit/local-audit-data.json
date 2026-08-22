@@ -1,0 +1,1185 @@
+[
+  {
+    "key": "home",
+    "url": "http://localhost:3002/",
+    "desktopScreenshot": "C:\\Users\\Prestigia Agency\\Documents\\GitHub\\prestigia-agency\\prestigia-premium-audit\\screenshots\\desktop-home.png",
+    "desktop": {
+      "canonical": "https://www.prestigia-agency.com",
+      "ctas": [
+        "Contact",
+        "Demander un devis",
+        "Voir nos réalisations",
+        "Voir le projet",
+        "Création de site web à CasablancaSites vitrines et e-commerce rapides, modernes, pensés pour convertir.En savoir plus",
+        "Community management à CasablancaUne présence sociale cohérente qui engage votre audience.En savoir plus",
+        "Création de contenu photo & vidéoDu contenu qui capte l'attention et raconte votre marque.En savoir plus",
+        "Branding & identité visuelleUne identité de marque forte, cohérente sur tous les points de contact.En savoir plus",
+        "Automatisation WhatsApp, CRM & leadsNe perdez plus aucun lead : réponse instantanée et suivi automatisé.En savoir plus",
+        "Stratégie digitale pour PME marocainesUn plan d'action clair, priorisé selon vos objectifs et votre budget.En savoir plus",
+        "Voir tous nos services",
+        "ÉducationCatalogue étude projet - Prof AmouzCatalogue Education prêt à travailler depuis l'admin : publications prévues, exemples de formats, qualité vidéo et indicateurs de vues à suivre.",
+        "ImmobilierYahya HoldingCatalogue immobilier prêt à piloter : formats premium, indicateurs de visibilité, contenus de preuve et parcours de demande de devis.",
+        "Voir toutes nos réalisations",
+        "Combien de temps avant de voir des résultats ?",
+        "Demander un devis gratuit",
+        "Contact",
+        "contact@prestigia-agency.com",
+        "Demander un devis"
+      ],
+      "description": "Agence marketing digital à Casablanca : SEO, publicité, branding, création de contenu, développement web et stratégie pour PME marocaines.",
+      "externalLinkCount": 5,
+      "h1Count": 1,
+      "headings": [
+        {
+          "level": "H1",
+          "text": "Nous construisons une présence digitale qui attire, engage et convertit."
+        },
+        {
+          "level": "H2",
+          "text": "Une agence digitale à Casablanca pensée pour les marques qui veulent grandir"
+        },
+        {
+          "level": "H3",
+          "text": "Création de site web à Casablanca"
+        },
+        {
+          "level": "H3",
+          "text": "Community management à Casablanca"
+        },
+        {
+          "level": "H3",
+          "text": "Création de contenu photo & vidéo"
+        },
+        {
+          "level": "H3",
+          "text": "Branding & identité visuelle"
+        },
+        {
+          "level": "H3",
+          "text": "Automatisation WhatsApp, CRM & leads"
+        },
+        {
+          "level": "H3",
+          "text": "Stratégie digitale pour PME marocaines"
+        },
+        {
+          "level": "H2",
+          "text": "Une équipe, tous les leviers de croissance"
+        },
+        {
+          "level": "H3",
+          "text": "Transparence totale"
+        },
+        {
+          "level": "H3",
+          "text": "Exécution rapide"
+        },
+        {
+          "level": "H3",
+          "text": "Orienté résultats"
+        },
+        {
+          "level": "H3",
+          "text": "Une équipe, tous les leviers"
+        },
+        {
+          "level": "H2",
+          "text": "Des résultats concrets pour nos clients"
+        },
+        {
+          "level": "H3",
+          "text": "Catalogue étude projet - Prof Amouz"
+        },
+        {
+          "level": "H3",
+          "text": "Yahya Holding"
+        },
+        {
+          "level": "H3",
+          "text": "Résidence Atlas Garden"
+        },
+        {
+          "level": "H2",
+          "text": "Un processus clair, en 4 étapes"
+        },
+        {
+          "level": "H3",
+          "text": "Audit"
+        },
+        {
+          "level": "H3",
+          "text": "Stratégie"
+        },
+        {
+          "level": "H3",
+          "text": "Création"
+        },
+        {
+          "level": "H3",
+          "text": "Croissance"
+        },
+        {
+          "level": "H2",
+          "text": "Ce que nos clients disent de nous"
+        },
+        {
+          "level": "H2",
+          "text": "Questions fréquentes"
+        },
+        {
+          "level": "H2",
+          "text": "Prêt à transformer votre présence digitale ?"
+        }
+      ],
+      "imageCount": 9,
+      "imagesMissingAlt": 0,
+      "internalLinkCount": 31,
+      "jsonLdCount": 3,
+      "textLength": 5010,
+      "title": "Agence Marketing Digital à Casablanca | Prestigia Agency",
+      "url": "http://localhost:3002/"
+    },
+    "mobileScreenshot": "C:\\Users\\Prestigia Agency\\Documents\\GitHub\\prestigia-agency\\prestigia-premium-audit\\screenshots\\mobile-home.png",
+    "mobile": {
+      "canonical": "https://www.prestigia-agency.com",
+      "ctas": [
+        "Contact",
+        "Demander un devis",
+        "Voir nos réalisations",
+        "Voir le projet",
+        "Création de site web à CasablancaSites vitrines et e-commerce rapides, modernes, pensés pour convertir.En savoir plus",
+        "Community management à CasablancaUne présence sociale cohérente qui engage votre audience.En savoir plus",
+        "Création de contenu photo & vidéoDu contenu qui capte l'attention et raconte votre marque.En savoir plus",
+        "Branding & identité visuelleUne identité de marque forte, cohérente sur tous les points de contact.En savoir plus",
+        "Automatisation WhatsApp, CRM & leadsNe perdez plus aucun lead : réponse instantanée et suivi automatisé.En savoir plus",
+        "Stratégie digitale pour PME marocainesUn plan d'action clair, priorisé selon vos objectifs et votre budget.En savoir plus",
+        "Voir tous nos services",
+        "ÉducationCatalogue étude projet - Prof AmouzCatalogue Education prêt à travailler depuis l'admin : publications prévues, exemples de formats, qualité vidéo et indicateurs de vues à suivre.",
+        "ImmobilierYahya HoldingCatalogue immobilier prêt à piloter : formats premium, indicateurs de visibilité, contenus de preuve et parcours de demande de devis.",
+        "Voir toutes nos réalisations",
+        "Combien de temps avant de voir des résultats ?",
+        "Demander un devis gratuit",
+        "Contact",
+        "contact@prestigia-agency.com",
+        "Demander un devis"
+      ],
+      "description": "Agence marketing digital à Casablanca : SEO, publicité, branding, création de contenu, développement web et stratégie pour PME marocaines.",
+      "externalLinkCount": 5,
+      "h1Count": 1,
+      "headings": [
+        {
+          "level": "H1",
+          "text": "Nous construisons une présence digitale qui attire, engage et convertit."
+        },
+        {
+          "level": "H2",
+          "text": "Une agence digitale à Casablanca pensée pour les marques qui veulent grandir"
+        },
+        {
+          "level": "H3",
+          "text": "Création de site web à Casablanca"
+        },
+        {
+          "level": "H3",
+          "text": "Community management à Casablanca"
+        },
+        {
+          "level": "H3",
+          "text": "Création de contenu photo & vidéo"
+        },
+        {
+          "level": "H3",
+          "text": "Branding & identité visuelle"
+        },
+        {
+          "level": "H3",
+          "text": "Automatisation WhatsApp, CRM & leads"
+        },
+        {
+          "level": "H3",
+          "text": "Stratégie digitale pour PME marocaines"
+        },
+        {
+          "level": "H2",
+          "text": "Une équipe, tous les leviers de croissance"
+        },
+        {
+          "level": "H3",
+          "text": "Transparence totale"
+        },
+        {
+          "level": "H3",
+          "text": "Exécution rapide"
+        },
+        {
+          "level": "H3",
+          "text": "Orienté résultats"
+        },
+        {
+          "level": "H3",
+          "text": "Une équipe, tous les leviers"
+        },
+        {
+          "level": "H2",
+          "text": "Des résultats concrets pour nos clients"
+        },
+        {
+          "level": "H3",
+          "text": "Catalogue étude projet - Prof Amouz"
+        },
+        {
+          "level": "H3",
+          "text": "Yahya Holding"
+        },
+        {
+          "level": "H3",
+          "text": "Résidence Atlas Garden"
+        },
+        {
+          "level": "H2",
+          "text": "Un processus clair, en 4 étapes"
+        },
+        {
+          "level": "H3",
+          "text": "Audit"
+        },
+        {
+          "level": "H3",
+          "text": "Stratégie"
+        },
+        {
+          "level": "H3",
+          "text": "Création"
+        },
+        {
+          "level": "H3",
+          "text": "Croissance"
+        },
+        {
+          "level": "H2",
+          "text": "Ce que nos clients disent de nous"
+        },
+        {
+          "level": "H2",
+          "text": "Questions fréquentes"
+        },
+        {
+          "level": "H2",
+          "text": "Prêt à transformer votre présence digitale ?"
+        }
+      ],
+      "imageCount": 9,
+      "imagesMissingAlt": 0,
+      "internalLinkCount": 31,
+      "jsonLdCount": 3,
+      "textLength": 4955,
+      "title": "Agence Marketing Digital à Casablanca | Prestigia Agency",
+      "url": "http://localhost:3002/"
+    }
+  },
+  {
+    "key": "services",
+    "url": "http://localhost:3002/services",
+    "desktopScreenshot": "C:\\Users\\Prestigia Agency\\Documents\\GitHub\\prestigia-agency\\prestigia-premium-audit\\screenshots\\desktop-services.png",
+    "desktop": {
+      "canonical": "https://www.prestigia-agency.com/services",
+      "ctas": [
+        "Contact",
+        "Création de site web à CasablancaSites vitrines et e-commerce rapides, modernes, pensés pour convertir.En savoir plus",
+        "Community management à CasablancaUne présence sociale cohérente qui engage votre audience.En savoir plus",
+        "Création de contenu photo & vidéoDu contenu qui capte l'attention et raconte votre marque.En savoir plus",
+        "Branding & identité visuelleUne identité de marque forte, cohérente sur tous les points de contact.En savoir plus",
+        "Automatisation WhatsApp, CRM & leadsNe perdez plus aucun lead : réponse instantanée et suivi automatisé.En savoir plus",
+        "Stratégie digitale pour PME marocainesUn plan d'action clair, priorisé selon vos objectifs et votre budget.En savoir plus",
+        "Gestion campagne publicitaireGoogle Ads, Meta Ads et campagnes digitales pilotés pour maximiser votre retour sur investissement.En savoir plus",
+        "Vidéo 3D & AnimationMotion design, animation 3D et vidéos immersives pour donner vie à votre marque.En savoir plus",
+        "Gestion d'ÉvénementOrganisation, communication et couverture digitale de vos événements professionnels au Maroc.En savoir plus",
+        "Demander un devis gratuit",
+        "Contact",
+        "contact@prestigia-agency.com",
+        "Demander un devis"
+      ],
+      "description": "Découvrez tous nos services : SEO, Google Ads, Meta Ads, community management, création de contenu, branding, développement web et stratégie digitale.",
+      "externalLinkCount": 4,
+      "h1Count": 0,
+      "headings": [
+        {
+          "level": "H2",
+          "text": "Tout ce qu'il faut pour développer votre présence digitale"
+        },
+        {
+          "level": "H3",
+          "text": "Création de site web à Casablanca"
+        },
+        {
+          "level": "H3",
+          "text": "Community management à Casablanca"
+        },
+        {
+          "level": "H3",
+          "text": "Création de contenu photo & vidéo"
+        },
+        {
+          "level": "H3",
+          "text": "Branding & identité visuelle"
+        },
+        {
+          "level": "H3",
+          "text": "Automatisation WhatsApp, CRM & leads"
+        },
+        {
+          "level": "H3",
+          "text": "Stratégie digitale pour PME marocaines"
+        },
+        {
+          "level": "H3",
+          "text": "Gestion campagne publicitaire"
+        },
+        {
+          "level": "H3",
+          "text": "Vidéo 3D & Animation"
+        },
+        {
+          "level": "H3",
+          "text": "Gestion d'Événement"
+        },
+        {
+          "level": "H2",
+          "text": "Prêt à transformer votre présence digitale ?"
+        }
+      ],
+      "imageCount": 2,
+      "imagesMissingAlt": 0,
+      "internalLinkCount": 27,
+      "jsonLdCount": 3,
+      "textLength": 1927,
+      "title": "Services Marketing Digital — Prestigia Agency Casablanca | Prestigia Agency",
+      "url": "http://localhost:3002/services"
+    },
+    "mobileScreenshot": "C:\\Users\\Prestigia Agency\\Documents\\GitHub\\prestigia-agency\\prestigia-premium-audit\\screenshots\\mobile-services.png",
+    "mobile": {
+      "canonical": "https://www.prestigia-agency.com/services",
+      "ctas": [
+        "Contact",
+        "Création de site web à CasablancaSites vitrines et e-commerce rapides, modernes, pensés pour convertir.En savoir plus",
+        "Community management à CasablancaUne présence sociale cohérente qui engage votre audience.En savoir plus",
+        "Création de contenu photo & vidéoDu contenu qui capte l'attention et raconte votre marque.En savoir plus",
+        "Branding & identité visuelleUne identité de marque forte, cohérente sur tous les points de contact.En savoir plus",
+        "Automatisation WhatsApp, CRM & leadsNe perdez plus aucun lead : réponse instantanée et suivi automatisé.En savoir plus",
+        "Stratégie digitale pour PME marocainesUn plan d'action clair, priorisé selon vos objectifs et votre budget.En savoir plus",
+        "Gestion campagne publicitaireGoogle Ads, Meta Ads et campagnes digitales pilotés pour maximiser votre retour sur investissement.En savoir plus",
+        "Vidéo 3D & AnimationMotion design, animation 3D et vidéos immersives pour donner vie à votre marque.En savoir plus",
+        "Gestion d'ÉvénementOrganisation, communication et couverture digitale de vos événements professionnels au Maroc.En savoir plus",
+        "Demander un devis gratuit",
+        "Contact",
+        "contact@prestigia-agency.com",
+        "Demander un devis"
+      ],
+      "description": "Découvrez tous nos services : SEO, Google Ads, Meta Ads, community management, création de contenu, branding, développement web et stratégie digitale.",
+      "externalLinkCount": 4,
+      "h1Count": 0,
+      "headings": [
+        {
+          "level": "H2",
+          "text": "Tout ce qu'il faut pour développer votre présence digitale"
+        },
+        {
+          "level": "H3",
+          "text": "Création de site web à Casablanca"
+        },
+        {
+          "level": "H3",
+          "text": "Community management à Casablanca"
+        },
+        {
+          "level": "H3",
+          "text": "Création de contenu photo & vidéo"
+        },
+        {
+          "level": "H3",
+          "text": "Branding & identité visuelle"
+        },
+        {
+          "level": "H3",
+          "text": "Automatisation WhatsApp, CRM & leads"
+        },
+        {
+          "level": "H3",
+          "text": "Stratégie digitale pour PME marocaines"
+        },
+        {
+          "level": "H3",
+          "text": "Gestion campagne publicitaire"
+        },
+        {
+          "level": "H3",
+          "text": "Vidéo 3D & Animation"
+        },
+        {
+          "level": "H3",
+          "text": "Gestion d'Événement"
+        },
+        {
+          "level": "H2",
+          "text": "Prêt à transformer votre présence digitale ?"
+        }
+      ],
+      "imageCount": 2,
+      "imagesMissingAlt": 0,
+      "internalLinkCount": 27,
+      "jsonLdCount": 3,
+      "textLength": 1872,
+      "title": "Services Marketing Digital — Prestigia Agency Casablanca | Prestigia Agency",
+      "url": "http://localhost:3002/services"
+    }
+  },
+  {
+    "key": "service-web",
+    "url": "http://localhost:3002/services/creation-site-web-casablanca",
+    "desktopScreenshot": "C:\\Users\\Prestigia Agency\\Documents\\GitHub\\prestigia-agency\\prestigia-premium-audit\\screenshots\\desktop-service-web.png",
+    "desktop": {
+      "canonical": "https://www.prestigia-agency.com/services/creation-site-web-casablanca",
+      "ctas": [
+        "Contact",
+        "Demander un devis",
+        "Branding & identité visuelleUne identité de marque forte, cohérente sur tous les points de contact.",
+        "Demander un devis gratuit",
+        "Contact",
+        "contact@prestigia-agency.com",
+        "Demander un devis"
+      ],
+      "description": "Agence de création de site web à Casablanca : sites vitrines et e-commerce rapides, modernes et optimisés pour la conversion et le référencement.",
+      "externalLinkCount": 4,
+      "h1Count": 1,
+      "headings": [
+        {
+          "level": "H1",
+          "text": "Création de site web à Casablanca"
+        },
+        {
+          "level": "H2",
+          "text": "Les avantages"
+        },
+        {
+          "level": "H2",
+          "text": "Notre processus"
+        },
+        {
+          "level": "H2",
+          "text": "Questions fréquentes"
+        },
+        {
+          "level": "H2",
+          "text": "Services complémentaires"
+        },
+        {
+          "level": "H2",
+          "text": "Prêt à transformer votre présence digitale ?"
+        }
+      ],
+      "imageCount": 2,
+      "imagesMissingAlt": 0,
+      "internalLinkCount": 21,
+      "jsonLdCount": 5,
+      "textLength": 1632,
+      "title": "Création de site web à Casablanca | Prestigia Agency | Prestigia Agency",
+      "url": "http://localhost:3002/services/creation-site-web-casablanca"
+    },
+    "mobileScreenshot": "C:\\Users\\Prestigia Agency\\Documents\\GitHub\\prestigia-agency\\prestigia-premium-audit\\screenshots\\mobile-service-web.png",
+    "mobile": {
+      "canonical": "https://www.prestigia-agency.com/services/creation-site-web-casablanca",
+      "ctas": [
+        "Contact",
+        "Demander un devis",
+        "Branding & identité visuelleUne identité de marque forte, cohérente sur tous les points de contact.",
+        "Demander un devis gratuit",
+        "Contact",
+        "contact@prestigia-agency.com",
+        "Demander un devis"
+      ],
+      "description": "Agence de création de site web à Casablanca : sites vitrines et e-commerce rapides, modernes et optimisés pour la conversion et le référencement.",
+      "externalLinkCount": 4,
+      "h1Count": 1,
+      "headings": [
+        {
+          "level": "H1",
+          "text": "Création de site web à Casablanca"
+        },
+        {
+          "level": "H2",
+          "text": "Les avantages"
+        },
+        {
+          "level": "H2",
+          "text": "Notre processus"
+        },
+        {
+          "level": "H2",
+          "text": "Questions fréquentes"
+        },
+        {
+          "level": "H2",
+          "text": "Services complémentaires"
+        },
+        {
+          "level": "H2",
+          "text": "Prêt à transformer votre présence digitale ?"
+        }
+      ],
+      "imageCount": 2,
+      "imagesMissingAlt": 0,
+      "internalLinkCount": 21,
+      "jsonLdCount": 5,
+      "textLength": 1578,
+      "title": "Création de site web à Casablanca | Prestigia Agency | Prestigia Agency",
+      "url": "http://localhost:3002/services/creation-site-web-casablanca"
+    }
+  },
+  {
+    "key": "realisations",
+    "url": "http://localhost:3002/realisations",
+    "desktopScreenshot": "C:\\Users\\Prestigia Agency\\Documents\\GitHub\\prestigia-agency\\prestigia-premium-audit\\screenshots\\desktop-realisations.png",
+    "desktop": {
+      "canonical": "https://www.prestigia-agency.com/realisations",
+      "ctas": [
+        "Contact",
+        "ÉducationCatalogue étude projet - Prof AmouzProf Amouz",
+        "Demander un devis",
+        "Contact",
+        "contact@prestigia-agency.com",
+        "Demander un devis"
+      ],
+      "description": "Découvrez nos projets clients : refonte digitale, SEO, branding, création de contenu et publicité pour des entreprises marocaines.",
+      "externalLinkCount": 4,
+      "h1Count": 1,
+      "headings": [
+        {
+          "level": "H1",
+          "text": "Nos réalisations"
+        },
+        {
+          "level": "H2",
+          "text": "Construisons une signature digitale qui évolue avec votre marché."
+        }
+      ],
+      "imageCount": 10,
+      "imagesMissingAlt": 0,
+      "internalLinkCount": 26,
+      "jsonLdCount": 3,
+      "textLength": 1245,
+      "title": "Réalisations & Portfolio — Prestigia Agency | Prestigia Agency",
+      "url": "http://localhost:3002/realisations"
+    },
+    "mobileScreenshot": "C:\\Users\\Prestigia Agency\\Documents\\GitHub\\prestigia-agency\\prestigia-premium-audit\\screenshots\\mobile-realisations.png",
+    "mobile": {
+      "canonical": "https://www.prestigia-agency.com/realisations",
+      "ctas": [
+        "Contact",
+        "ÉducationCatalogue étude projet - Prof AmouzProf Amouz",
+        "Demander un devis",
+        "Contact",
+        "contact@prestigia-agency.com",
+        "Demander un devis"
+      ],
+      "description": "Découvrez nos projets clients : refonte digitale, SEO, branding, création de contenu et publicité pour des entreprises marocaines.",
+      "externalLinkCount": 4,
+      "h1Count": 1,
+      "headings": [
+        {
+          "level": "H1",
+          "text": "Nos réalisations"
+        },
+        {
+          "level": "H2",
+          "text": "Construisons une signature digitale qui évolue avec votre marché."
+        }
+      ],
+      "imageCount": 10,
+      "imagesMissingAlt": 0,
+      "internalLinkCount": 26,
+      "jsonLdCount": 3,
+      "textLength": 1190,
+      "title": "Réalisations & Portfolio — Prestigia Agency | Prestigia Agency",
+      "url": "http://localhost:3002/realisations"
+    }
+  },
+  {
+    "key": "project-education",
+    "url": "http://localhost:3002/realisations/prof-amouz-catalogue-etude-projet",
+    "desktopScreenshot": "C:\\Users\\Prestigia Agency\\Documents\\GitHub\\prestigia-agency\\prestigia-premium-audit\\screenshots\\desktop-project-education.png",
+    "desktop": {
+      "canonical": "https://www.prestigia-agency.com/realisations/prof-amouz-catalogue-etude-projet",
+      "ctas": [
+        "Contact",
+        "Un projet similaire ?",
+        "ImmobilierYahya HoldingYahya HoldingVoir",
+        "ImmobilierRésidence Atlas GardenAtlas GardenVoir",
+        "RestaurationMaison LinaMaison LinaVoir",
+        "Demander un devis gratuit",
+        "Contact",
+        "contact@prestigia-agency.com",
+        "Demander un devis"
+      ],
+      "description": "Catalogue Education Prof Amouz : gestion complète, prise vidéo et photo, suivi éditorial, vision pédagogique et besoins étudiants.",
+      "externalLinkCount": 4,
+      "h1Count": 1,
+      "headings": [
+        {
+          "level": "H1",
+          "text": "Catalogue étude projet - Prof Amouz"
+        },
+        {
+          "level": "H2",
+          "text": "Prof Amouz - de la vision pédagogique au contenu publié"
+        },
+        {
+          "level": "H3",
+          "text": "Vidéo, images et rendu final"
+        },
+        {
+          "level": "H3",
+          "text": "Gestion complète"
+        },
+        {
+          "level": "H3",
+          "text": "Exemples de travaux"
+        },
+        {
+          "level": "H3",
+          "text": "Critères de validation"
+        },
+        {
+          "level": "H2",
+          "text": "Compréhension de la vision pédagogique"
+        },
+        {
+          "level": "H2",
+          "text": "Production photo et vidéo"
+        },
+        {
+          "level": "H2",
+          "text": "Suivi et amélioration continue"
+        },
+        {
+          "level": "H2",
+          "text": "Galerie"
+        },
+        {
+          "level": "H2",
+          "text": "Autres réalisations"
+        },
+        {
+          "level": "H3",
+          "text": "Yahya Holding"
+        },
+        {
+          "level": "H3",
+          "text": "Résidence Atlas Garden"
+        },
+        {
+          "level": "H3",
+          "text": "Maison Lina"
+        },
+        {
+          "level": "H2",
+          "text": "Prêt à transformer votre présence digitale ?"
+        }
+      ],
+      "imageCount": 15,
+      "imagesMissingAlt": 0,
+      "internalLinkCount": 23,
+      "jsonLdCount": 3,
+      "textLength": 4501,
+      "title": "Catalogue Education Prof Amouz | Prestigia Agency | Prestigia Agency",
+      "url": "http://localhost:3002/realisations/prof-amouz-catalogue-etude-projet"
+    },
+    "mobileScreenshot": "C:\\Users\\Prestigia Agency\\Documents\\GitHub\\prestigia-agency\\prestigia-premium-audit\\screenshots\\mobile-project-education.png",
+    "mobile": {
+      "canonical": "https://www.prestigia-agency.com/realisations/prof-amouz-catalogue-etude-projet",
+      "ctas": [
+        "Contact",
+        "Un projet similaire ?",
+        "ImmobilierYahya HoldingYahya HoldingVoir",
+        "ImmobilierRésidence Atlas GardenAtlas GardenVoir",
+        "RestaurationMaison LinaMaison LinaVoir",
+        "Demander un devis gratuit",
+        "Contact",
+        "contact@prestigia-agency.com",
+        "Demander un devis"
+      ],
+      "description": "Catalogue Education Prof Amouz : gestion complète, prise vidéo et photo, suivi éditorial, vision pédagogique et besoins étudiants.",
+      "externalLinkCount": 4,
+      "h1Count": 1,
+      "headings": [
+        {
+          "level": "H1",
+          "text": "Catalogue étude projet - Prof Amouz"
+        },
+        {
+          "level": "H2",
+          "text": "Prof Amouz - de la vision pédagogique au contenu publié"
+        },
+        {
+          "level": "H3",
+          "text": "Vidéo, images et rendu final"
+        },
+        {
+          "level": "H3",
+          "text": "Gestion complète"
+        },
+        {
+          "level": "H3",
+          "text": "Exemples de travaux"
+        },
+        {
+          "level": "H3",
+          "text": "Critères de validation"
+        },
+        {
+          "level": "H2",
+          "text": "Compréhension de la vision pédagogique"
+        },
+        {
+          "level": "H2",
+          "text": "Production photo et vidéo"
+        },
+        {
+          "level": "H2",
+          "text": "Suivi et amélioration continue"
+        },
+        {
+          "level": "H2",
+          "text": "Galerie"
+        },
+        {
+          "level": "H2",
+          "text": "Autres réalisations"
+        },
+        {
+          "level": "H3",
+          "text": "Yahya Holding"
+        },
+        {
+          "level": "H3",
+          "text": "Résidence Atlas Garden"
+        },
+        {
+          "level": "H3",
+          "text": "Maison Lina"
+        },
+        {
+          "level": "H2",
+          "text": "Prêt à transformer votre présence digitale ?"
+        }
+      ],
+      "imageCount": 15,
+      "imagesMissingAlt": 0,
+      "internalLinkCount": 23,
+      "jsonLdCount": 3,
+      "textLength": 4447,
+      "title": "Catalogue Education Prof Amouz | Prestigia Agency | Prestigia Agency",
+      "url": "http://localhost:3002/realisations/prof-amouz-catalogue-etude-projet"
+    }
+  },
+  {
+    "key": "project-immobilier",
+    "url": "http://localhost:3002/realisations/yahya-holding",
+    "desktopScreenshot": "C:\\Users\\Prestigia Agency\\Documents\\GitHub\\prestigia-agency\\prestigia-premium-audit\\screenshots\\desktop-project-immobilier.png",
+    "desktop": {
+      "canonical": "https://www.prestigia-agency.com/realisations/yahya-holding",
+      "ctas": [
+        "Contact",
+        "Un projet similaire ?",
+        "ImmobilierRésidence Atlas GardenAtlas GardenVoir",
+        "ImmobilierVilla MajorelleVilla MajorelleVoir",
+        "ImmobilierOrion RésidencesOrion RésidencesVoir",
+        "Demander un devis gratuit",
+        "Contact",
+        "contact@prestigia-agency.com",
+        "Demander un devis"
+      ],
+      "description": "Catalogue digital Yahya Holding : stratégie immobilière, contenus premium, photo, vidéo, site web et suivi des demandes qualifiées.",
+      "externalLinkCount": 4,
+      "h1Count": 1,
+      "headings": [
+        {
+          "level": "H1",
+          "text": "Yahya Holding"
+        },
+        {
+          "level": "H2",
+          "text": "Yahya Holding - signature digitale immobilière"
+        },
+        {
+          "level": "H3",
+          "text": "Vidéo, images et rendu final"
+        },
+        {
+          "level": "H3",
+          "text": "Gestion complète"
+        },
+        {
+          "level": "H3",
+          "text": "Exemples de travaux"
+        },
+        {
+          "level": "H3",
+          "text": "Critères de validation"
+        },
+        {
+          "level": "H2",
+          "text": "Architecture de marque"
+        },
+        {
+          "level": "H2",
+          "text": "Production terrain"
+        },
+        {
+          "level": "H2",
+          "text": "Conversion digitale"
+        },
+        {
+          "level": "H2",
+          "text": "Galerie"
+        },
+        {
+          "level": "H2",
+          "text": "Autres réalisations"
+        },
+        {
+          "level": "H3",
+          "text": "Résidence Atlas Garden"
+        },
+        {
+          "level": "H3",
+          "text": "Villa Majorelle"
+        },
+        {
+          "level": "H3",
+          "text": "Orion Résidences"
+        },
+        {
+          "level": "H2",
+          "text": "Prêt à transformer votre présence digitale ?"
+        }
+      ],
+      "imageCount": 18,
+      "imagesMissingAlt": 0,
+      "internalLinkCount": 23,
+      "jsonLdCount": 3,
+      "textLength": 3998,
+      "title": "Yahya Holding | Catalogue immobilier digital | Prestigia Agency",
+      "url": "http://localhost:3002/realisations/yahya-holding"
+    },
+    "mobileScreenshot": "C:\\Users\\Prestigia Agency\\Documents\\GitHub\\prestigia-agency\\prestigia-premium-audit\\screenshots\\mobile-project-immobilier.png",
+    "mobile": {
+      "canonical": "https://www.prestigia-agency.com/realisations/yahya-holding",
+      "ctas": [
+        "Contact",
+        "Un projet similaire ?",
+        "ImmobilierRésidence Atlas GardenAtlas GardenVoir",
+        "ImmobilierVilla MajorelleVilla MajorelleVoir",
+        "ImmobilierOrion RésidencesOrion RésidencesVoir",
+        "Demander un devis gratuit",
+        "Contact",
+        "contact@prestigia-agency.com",
+        "Demander un devis"
+      ],
+      "description": "Catalogue digital Yahya Holding : stratégie immobilière, contenus premium, photo, vidéo, site web et suivi des demandes qualifiées.",
+      "externalLinkCount": 4,
+      "h1Count": 1,
+      "headings": [
+        {
+          "level": "H1",
+          "text": "Yahya Holding"
+        },
+        {
+          "level": "H2",
+          "text": "Yahya Holding - signature digitale immobilière"
+        },
+        {
+          "level": "H3",
+          "text": "Vidéo, images et rendu final"
+        },
+        {
+          "level": "H3",
+          "text": "Gestion complète"
+        },
+        {
+          "level": "H3",
+          "text": "Exemples de travaux"
+        },
+        {
+          "level": "H3",
+          "text": "Critères de validation"
+        },
+        {
+          "level": "H2",
+          "text": "Architecture de marque"
+        },
+        {
+          "level": "H2",
+          "text": "Production terrain"
+        },
+        {
+          "level": "H2",
+          "text": "Conversion digitale"
+        },
+        {
+          "level": "H2",
+          "text": "Galerie"
+        },
+        {
+          "level": "H2",
+          "text": "Autres réalisations"
+        },
+        {
+          "level": "H3",
+          "text": "Résidence Atlas Garden"
+        },
+        {
+          "level": "H3",
+          "text": "Villa Majorelle"
+        },
+        {
+          "level": "H3",
+          "text": "Orion Résidences"
+        },
+        {
+          "level": "H2",
+          "text": "Prêt à transformer votre présence digitale ?"
+        }
+      ],
+      "imageCount": 18,
+      "imagesMissingAlt": 0,
+      "internalLinkCount": 23,
+      "jsonLdCount": 3,
+      "textLength": 3944,
+      "title": "Yahya Holding | Catalogue immobilier digital | Prestigia Agency",
+      "url": "http://localhost:3002/realisations/yahya-holding"
+    }
+  },
+  {
+    "key": "founders",
+    "url": "http://localhost:3002/fondateurs",
+    "desktopScreenshot": "C:\\Users\\Prestigia Agency\\Documents\\GitHub\\prestigia-agency\\prestigia-premium-audit\\screenshots\\desktop-founders.png",
+    "desktop": {
+      "canonical": "https://www.prestigia-agency.com/fondateurs",
+      "ctas": [
+        "Contact",
+        "Demander un devis gratuit",
+        "Contact",
+        "contact@prestigia-agency.com",
+        "Demander un devis"
+      ],
+      "description": "Rencontrez Abdelkader Naim et Ahmed Ghiwane, co-fondateurs de Prestigia Agency, votre agence digitale à Casablanca.",
+      "externalLinkCount": 4,
+      "h1Count": 0,
+      "headings": [
+        {
+          "level": "H2",
+          "text": "Les fondateurs de Prestigia Agency"
+        },
+        {
+          "level": "H2",
+          "text": "Abdelkader Naim"
+        },
+        {
+          "level": "H2",
+          "text": "Ahmed Ghiwane"
+        },
+        {
+          "level": "H2",
+          "text": "Prêt à transformer votre présence digitale ?"
+        }
+      ],
+      "imageCount": 2,
+      "imagesMissingAlt": 0,
+      "internalLinkCount": 18,
+      "jsonLdCount": 5,
+      "textLength": 1030,
+      "title": "Équipe Fondateurs — Prestigia Agency | Prestigia Agency",
+      "url": "http://localhost:3002/fondateurs"
+    }
+  },
+  {
+    "key": "blog",
+    "url": "http://localhost:3002/blog",
+    "desktopScreenshot": "C:\\Users\\Prestigia Agency\\Documents\\GitHub\\prestigia-agency\\prestigia-premium-audit\\screenshots\\desktop-blog.png",
+    "desktop": {
+      "canonical": "https://www.prestigia-agency.com/blog",
+      "ctas": [
+        "Contact",
+        "Contact",
+        "contact@prestigia-agency.com",
+        "Demander un devis"
+      ],
+      "description": "Articles et guides sur le marketing digital au Maroc : SEO, publicité, branding, réseaux sociaux et création de contenu par les experts de Prestigia Agency.",
+      "externalLinkCount": 4,
+      "h1Count": 0,
+      "headings": [
+        {
+          "level": "H2",
+          "text": "Conseils & guides marketing digital"
+        },
+        {
+          "level": "H2",
+          "text": "Comment Répartir son Budget Marketing Digital entre SEO, Ads et Réseaux Sociaux"
+        },
+        {
+          "level": "H2",
+          "text": "GA4 et Marketing Mix Modeling : Mesurer le ROI de vos Campagnes en 2026"
+        },
+        {
+          "level": "H2",
+          "text": "Email Marketing Automatisé : Fidéliser vos Clients E-commerce au Maroc"
+        },
+        {
+          "level": "H2",
+          "text": "Structurer son Contenu pour les IA Génératives : Guide GEO Pratique 2026"
+        },
+        {
+          "level": "H2",
+          "text": "Site Web Mobile-First : l'Indispensable pour les Entreprises Marocaines en 2026"
+        },
+        {
+          "level": "H2",
+          "text": "Branding Local : Construire une Marque Forte pour le Marché Marocain"
+        },
+        {
+          "level": "H2",
+          "text": "WhatsApp Business : Transformer vos Conversations en Ventes à Casablanca"
+        },
+        {
+          "level": "H2",
+          "text": "Reels Ads : Pourquoi les Vidéos Courtes Dominent Meta Ads en 2026"
+        },
+        {
+          "level": "H2",
+          "text": "Ask Advisor : l'Agent IA Gemini qui Transforme la Gestion de Google Ads en 2026"
+        },
+        {
+          "level": "H2",
+          "text": "Netlinking Local au Maroc : Comment Obtenir des Backlinks de Qualité en 2026"
+        },
+        {
+          "level": "H2",
+          "text": "Community Management au Maroc en 2026 : Construire une Communauté qui Convertit"
+        },
+        {
+          "level": "H2",
+          "text": "Google Ads Performance Max en 2026 : Guide Complet pour les Entreprises Marocaines"
+        },
+        {
+          "level": "H2",
+          "text": "Personal Branding sur LinkedIn en 2026 : Construire votre Autorité Digitale au Maroc"
+        },
+        {
+          "level": "H2",
+          "text": "E-E-A-T en 2026 : Comment Google Évalue l'Expertise et la Crédibilité de votre Site"
+        },
+        {
+          "level": "H2",
+          "text": "Vidéo Courte en 2026 : La Stratégie Gagnante pour les Marques Marocaines"
+        },
+        {
+          "level": "H2",
+          "text": "IA et Automatisation Marketing en 2026 : Les Outils qui Transforment les Agences"
+        },
+        {
+          "level": "H2",
+          "text": "SEO Local à Casablanca en 2026 : Guide Complet pour Dominer Google Maps"
+        },
+        {
+          "level": "H2",
+          "text": "Meta Ads Advantage+ en 2026 : Boostez votre ROAS grâce à l'IA de Facebook"
+        },
+        {
+          "level": "H2",
+          "text": "Marketing Digital au Maroc en 2026 : Les 10 Tendances Incontournables"
+        },
+        {
+          "level": "H2",
+          "text": "GEO en 2026 : Comment être cité par ChatGPT, Perplexity et Google AI"
+        },
+        {
+          "level": "H2",
+          "text": "Comment choisir une agence marketing digital — checklist complète"
+        }
+      ],
+      "imageCount": 23,
+      "imagesMissingAlt": 0,
+      "internalLinkCount": 38,
+      "jsonLdCount": 3,
+      "textLength": 7633,
+      "title": "Blog Marketing Digital — Prestigia Agency | Prestigia Agency",
+      "url": "http://localhost:3002/blog"
+    }
+  },
+  {
+    "key": "contact",
+    "url": "http://localhost:3002/contact",
+    "desktopScreenshot": "C:\\Users\\Prestigia Agency\\Documents\\GitHub\\prestigia-agency\\prestigia-premium-audit\\screenshots\\desktop-contact.png",
+    "desktop": {
+      "canonical": "https://www.prestigia-agency.com/contact",
+      "ctas": [
+        "Contact",
+        "contact@prestigia-agency.com",
+        "Voir sur Google Maps",
+        "Contact",
+        "contact@prestigia-agency.com",
+        "Demander un devis"
+      ],
+      "description": "Contactez Prestigia Agency à Casablanca : téléphone, email, WhatsApp ou formulaire. Réponse sous 24h.",
+      "externalLinkCount": 5,
+      "h1Count": 0,
+      "headings": [
+        {
+          "level": "H2",
+          "text": "Parlons de votre projet"
+        },
+        {
+          "level": "H2",
+          "text": "Envoyez-nous un message"
+        }
+      ],
+      "imageCount": 2,
+      "imagesMissingAlt": 0,
+      "internalLinkCount": 17,
+      "jsonLdCount": 3,
+      "textLength": 943,
+      "title": "Contact — Prestigia Agency Casablanca | Prestigia Agency",
+      "url": "http://localhost:3002/contact"
+    }
+  },
+  {
+    "key": "devis",
+    "url": "http://localhost:3002/devis",
+    "desktopScreenshot": "C:\\Users\\Prestigia Agency\\Documents\\GitHub\\prestigia-agency\\prestigia-premium-audit\\screenshots\\desktop-devis.png",
+    "desktop": {
+      "canonical": "https://www.prestigia-agency.com/devis",
+      "ctas": [
+        "Contact",
+        "Contact",
+        "contact@prestigia-agency.com",
+        "Demander un devis"
+      ],
+      "description": "Demandez un devis gratuit pour votre projet digital : site web, SEO, publicité, branding ou stratégie digitale au Maroc.",
+      "externalLinkCount": 4,
+      "h1Count": 0,
+      "headings": [
+        {
+          "level": "H2",
+          "text": "Parlons de votre projet"
+        }
+      ],
+      "imageCount": 2,
+      "imagesMissingAlt": 0,
+      "internalLinkCount": 17,
+      "jsonLdCount": 1,
+      "textLength": 748,
+      "title": "Demande de Devis — Prestigia Agency | Prestigia Agency",
+      "url": "http://localhost:3002/devis"
+    }
+  }
+]

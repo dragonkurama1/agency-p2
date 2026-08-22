@@ -23,6 +23,7 @@ import { CtaBanner } from "@/components/marketing/cta-banner";
 import { VideoPlayer } from "@/components/marketing/video-player";
 import { normalizeImageUrl, isVideoUrl, shouldBypassImageOptimization } from "@/lib/parse";
 import { WebPageJsonLd } from "@/components/seo/json-ld";
+import { cleanMetaTitle } from "@/lib/seo";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -33,9 +34,12 @@ function ProjectCatalogueFrame({
   catalogue: ProjectCatalogue;
   project: Project;
 }) {
+  const isEducationProject = [project.category, project.sector]
+    .filter(Boolean)
+    .some((value) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().includes("education"));
   const pillars = [
-    { label: "Vision du professeur", text: catalogue.vision, icon: Target },
-    { label: "Besoin des étudiants", text: catalogue.audience, icon: Users },
+    { label: isEducationProject ? "Vision pédagogique" : "Vision du projet", text: catalogue.vision, icon: Target },
+    { label: isEducationProject ? "Besoin des étudiants" : "Public cible", text: catalogue.audience, icon: Users },
   ].filter((item) => item.text);
   const metricIcons = [LineChart, Eye, Film, ClipboardCheck];
   const serviceIcons = [Camera, Video, BookOpen];
@@ -132,15 +136,22 @@ function ProjectCatalogueFrame({
             </span>
           </div>
 
-          <div className="grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
+          <div className="grid gap-5 lg:grid-cols-[minmax(240px,360px)_minmax(0,1fr)] lg:items-start">
             {project.video_url ? (
               <div>
-                <VideoPlayer
-                  src={normalizeImageUrl(project.video_url)}
-                  className="aspect-video rounded-xl border border-[var(--accent-gold)]/20"
-                />
-                <p className="mt-3 text-sm leading-6 text-white/58">
-                  Extrait vidéo lié au projet pour montrer la prise de vue, l&apos;habillage et le rendu de production.
+                <div className="flex justify-center lg:justify-start">
+                  <VideoPlayer
+                    src={normalizeImageUrl(project.video_url)}
+                    className="aspect-[9/16] w-full max-w-[320px] rounded-[1.25rem] border border-[var(--accent-gold)]/25 shadow-[0_0_44px_rgb(var(--accent-gold-rgb)/0.12)]"
+                    videoClassName="object-cover"
+                  />
+                </div>
+                <div className="mx-auto mt-3 flex max-w-[320px] items-center justify-between gap-3 text-xs uppercase tracking-[0.18em] text-white/42 lg:mx-0">
+                  <span>Format Reel</span>
+                  <span>9:16</span>
+                </div>
+                <p className="mx-auto mt-3 max-w-[320px] text-sm leading-6 text-white/58 lg:mx-0">
+                  Vidéo verticale liée au projet, affichée dans un cadre type téléphone pour respecter le format Reel.
                 </p>
               </div>
             ) : (
@@ -271,7 +282,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const project = await getProjectBySlug(slug);
   if (!project) return {};
-  const title = project.meta_title || `${project.title} — Prestigia Agency`;
+  const title = cleanMetaTitle(project.meta_title || project.title);
   const description =
     project.meta_description || project.description || project.objective;
   return {

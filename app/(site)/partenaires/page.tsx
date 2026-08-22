@@ -28,8 +28,8 @@ export default async function PartenairesPage() {
         path="/partenaires"
         breadcrumbs={[{ name: "Partenaires", href: "/partenaires" }]}
       />
-      <section className="container-px mx-auto max-w-5xl py-20" aria-label="Nos partenaires">
-        <SectionHeading eyebrow="Partenaires" title={hero?.title || "Ils nous font confiance"} subtitle={hero?.subtitle || undefined} />
+      <section className="container-px mx-auto max-w-5xl py-16 sm:py-20" aria-label="Nos partenaires">
+        <SectionHeading as="h1" eyebrow="Partenaires" title={hero?.title || "Ils nous font confiance"} subtitle={hero?.subtitle || undefined} />
         <div className="mt-14 grid sm:grid-cols-2 gap-8">
           {partners.map((p) => (
             <article key={p.id} className="rounded-2xl border border-[var(--border)] bg-[var(--muted)] p-8">
