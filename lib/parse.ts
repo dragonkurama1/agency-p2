@@ -61,3 +61,8 @@ export function normalizeImageUrl(url: string | undefined | null): string {
 
   return trimmed;
 }
+
+export function shouldBypassImageOptimization(url: string | undefined | null): boolean {
+  const normalized = normalizeImageUrl(url);
+  return normalized.includes("supabase.co/storage") || normalized.includes("supabase.in/storage");
+}

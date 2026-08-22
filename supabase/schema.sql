@@ -74,6 +74,7 @@ CREATE TABLE IF NOT EXISTS projects (
   cover_image      text,
   gallery_json     jsonb DEFAULT '[]',
   video_url        text,
+  catalogue_json   jsonb,
   meta_title       text,
   meta_description text,
   active           boolean DEFAULT true,
@@ -343,8 +344,8 @@ CREATE POLICY "service_role all audit_log" ON audit_log FOR ALL USING (auth.role
 -- Bucket "media" déjà créé via l'API — ajouter les policies :
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 VALUES (
-  'media', 'media', true, 5242880,
-  ARRAY['image/jpeg','image/png','image/webp','image/gif','image/svg+xml']
+  'media', 'media', true, 104857600,
+  ARRAY['image/jpeg','image/png','image/webp','image/gif','image/svg+xml','video/mp4','video/webm','video/ogg','video/quicktime','video/x-msvideo']
 )
 ON CONFLICT (id) DO NOTHING;
 

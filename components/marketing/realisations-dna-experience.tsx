@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import type * as Three from "three";
 import type { Project } from "@/data/projects";
-import { normalizeImageUrl } from "@/lib/parse";
+import { normalizeImageUrl, shouldBypassImageOptimization } from "@/lib/parse";
 import { cn } from "@/lib/utils";
 
 type SectorTheme = {
@@ -698,6 +698,7 @@ function ProjectVisual({ project, theme }: { project: Project; theme: SectorThem
         alt={project.title}
         fill
         sizes="(max-width: 640px) 40vw, (max-width: 1024px) 220px, 250px"
+        unoptimized={shouldBypassImageOptimization(project.cover_image)}
         className="object-cover transition-transform duration-700 group-hover:scale-105"
       />
     );

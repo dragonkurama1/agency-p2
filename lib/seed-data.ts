@@ -350,7 +350,125 @@ export const homeFaq = [
   { question: "Puis-je vous confier uniquement la création de mon site, sans accompagnement marketing ?", answer: "Bien sûr, chaque service est disponible indépendamment ou combiné dans une stratégie globale." },
 ];
 
+export const catalogueProjects = [
+  {
+    id: "proj-prof-amouz",
+    slug: "prof-amouz-catalogue-etude-projet",
+    title: "Catalogue étude projet — Prof Amouz",
+    client_name: "Prof Amouz",
+    category: "Éducation",
+    sector: "Éducation",
+    description:
+      "Un catalogue d'étude projet en français pour présenter l'accompagnement complet : compréhension de la vision du professeur, production photo/vidéo, suivi éditorial et contenus utiles aux étudiants.",
+    services: ["Gestion complète", "Prise vidéo", "Prise photo", "Montage", "Calendrier de publication", "Suivi des performances"],
+    logo_url: "",
+    objective:
+      "Transformer la vision pédagogique du Prof Amouz en contenus clairs, réguliers et faciles à comprendre pour les étudiants.",
+    solution:
+      "Prestigia Agency cadre le besoin, prépare les scripts, organise la captation, produit les photos et vidéos, suit les publications et ajuste chaque format selon les retours du professeur et les attentes des étudiants.",
+    results:
+      "Catalogue prêt à présenter : publications prévues, indicateurs de vues à suivre, exemples de contenus, niveau de qualité vidéo et méthode de suivi éditorial.",
+    cover_image: "/uploads/projects/prof-amouz/prof-amouz-tournage.webp",
+    gallery: [
+      "/uploads/projects/prof-amouz/prof-amouz-tournage.webp",
+      "/uploads/projects/prof-amouz/prof-amouz-capsule.webp",
+      "/uploads/projects/prof-amouz/prof-amouz-suivi.webp",
+    ],
+    video_url: "/uploads/projects/prof-amouz/effects.mp4",
+    sections: [
+      {
+        title: "Compréhension de la vision pédagogique",
+        text:
+          "Le projet commence par un cadrage avec le professeur : objectifs de cours, ton souhaité, difficultés fréquentes des étudiants et exemples de contenus à reproduire ou améliorer.",
+        media: ["/uploads/projects/prof-amouz/prof-amouz-tournage.webp"],
+      },
+      {
+        title: "Production photo et vidéo",
+        text:
+          "Chaque séance est pensée comme une matière première complète : plans pédagogiques, extraits courts, photos de contexte, capsules verticales et contenus adaptés aux réseaux sociaux.",
+        media: ["/uploads/projects/prof-amouz/prof-amouz-capsule.webp", "/uploads/projects/prof-amouz/effects.mp4"],
+      },
+      {
+        title: "Suivi et amélioration continue",
+        text:
+          "Après publication, les performances sont suivies avec des indicateurs simples : nombre de publications, vues, formats les plus utiles et qualité perçue des vidéos par les étudiants.",
+        media: ["/uploads/projects/prof-amouz/prof-amouz-suivi.webp"],
+      },
+    ],
+    featured: true,
+    testimonial_quote:
+      "L'objectif est de respecter la vision du professeur tout en rendant le contenu plus clair, plus régulier et plus utile pour les étudiants.",
+    testimonial_author: "Prestigia Agency — note de cadrage projet",
+    meta_title: "Catalogue étude projet Prof Amouz | Prestigia Agency",
+    meta_description:
+      "Étude projet Prof Amouz : gestion complète, prise vidéo et photo, suivi éditorial, compréhension de la vision pédagogique et besoins des étudiants.",
+    active: true,
+    catalogue: {
+      eyebrow: "Catalogue étude projet",
+      title: "Prof Amouz — de la vision pédagogique au contenu publié",
+      summary:
+        "Un cadre de présentation qui rassemble la stratégie, la production, les exemples de contenus et les indicateurs à suivre pour piloter le projet sans perdre la vision du professeur.",
+      vision:
+        "Comprendre la méthode du professeur, son style d'explication et les exemples qu'il veut transmettre avant de produire le moindre contenu.",
+      audience:
+        "Aider les étudiants à réviser plus vite, revoir les points difficiles et accéder à des formats courts, clairs et réguliers.",
+      metrics: [
+        { label: "Publications prévues", value: "24", detail: "capsules, reels, photos et rappels pédagogiques" },
+        { label: "Formats de contenu", value: "4", detail: "cours court, extrait, photo, rappel avant examen" },
+        { label: "Vues à suivre", value: "KPI", detail: "taux de vues, rétention et sujets les plus regardés" },
+        { label: "Qualité vidéo", value: "4K", detail: "image nette, cadrage stable, audio propre" },
+      ],
+      workflow: [
+        {
+          title: "Cadrage",
+          text: "Écoute du professeur, définition des objectifs et compréhension des besoins étudiants.",
+        },
+        {
+          title: "Préparation",
+          text: "Plan de tournage, scripts courts, angles pédagogiques et planning de publication.",
+        },
+        {
+          title: "Production",
+          text: "Prise vidéo/photo, direction de séance, montage, sous-titres et habillage de marque.",
+        },
+        {
+          title: "Suivi",
+          text: "Lecture des vues, publications réalisées, retours étudiants et optimisation des prochains contenus.",
+        },
+      ],
+      examples: [
+        {
+          title: "Capsule notion clé",
+          format: "Vidéo verticale 60-90s",
+          description: "Une explication courte d'un point difficile, pensée pour être revue rapidement par les étudiants.",
+          proof: "Exemple de travail : script + tournage + sous-titres",
+        },
+        {
+          title: "Rappel avant examen",
+          format: "Reel pédagogique",
+          description: "Un format court qui résume les erreurs fréquentes et guide l'étudiant vers la bonne méthode.",
+          proof: "Exemple de travail : montage dynamique + appel à révision",
+        },
+        {
+          title: "Photo de séance",
+          format: "Photo éditoriale",
+          description: "Des photos propres du professeur, du tableau et de l'ambiance d'apprentissage.",
+          proof: "Exemple de travail : sélection + retouche + format réseaux",
+        },
+      ],
+      quality: [
+        "Cadrage stable et lisible sur mobile",
+        "Audio clair pour comprendre chaque explication",
+        "Sous-titres courts pour les passages importants",
+        "Habillage visuel cohérent avec l'image du professeur",
+        "Reporting simple : publications, vues, rétention et retours",
+      ],
+    },
+  },
+];
+
 export const projects = [
+  ...catalogueProjects,
   {
     id: "proj-1",
     slug: "arena-ville-verte-refonte-digitale",

@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowUpRight, Briefcase } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { normalizeImageUrl } from "@/lib/parse";
+import { normalizeImageUrl, shouldBypassImageOptimization } from "@/lib/parse";
 import type { Project } from "@/data/projects";
 
 const SECTOR_ICONS: Record<string, string> = {
@@ -73,6 +73,7 @@ export function PortfolioGrid({
                   alt={project.title}
                   fill
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  unoptimized={shouldBypassImageOptimization(project.cover_image)}
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
               ) : (

@@ -2,14 +2,265 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowUpRight, CheckCircle2, Quote } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowUpRight,
+  BookOpen,
+  Camera,
+  CheckCircle2,
+  ClipboardCheck,
+  Eye,
+  Film,
+  LineChart,
+  Quote,
+  Target,
+  Users,
+  Video,
+} from "lucide-react";
 import { getProjects, getProjectBySlug } from "@/data/projects";
+import type { Project, ProjectCatalogue } from "@/data/projects";
 import { CtaBanner } from "@/components/marketing/cta-banner";
 import { VideoPlayer } from "@/components/marketing/video-player";
-import { normalizeImageUrl, isVideoUrl } from "@/lib/parse";
+import { normalizeImageUrl, isVideoUrl, shouldBypassImageOptimization } from "@/lib/parse";
 import { WebPageJsonLd } from "@/components/seo/json-ld";
 
 type Props = { params: Promise<{ slug: string }> };
+
+function ProjectCatalogueFrame({
+  catalogue,
+  project,
+}: {
+  catalogue: ProjectCatalogue;
+  project: Project;
+}) {
+  const pillars = [
+    { label: "Vision du professeur", text: catalogue.vision, icon: Target },
+    { label: "Besoin des étudiants", text: catalogue.audience, icon: Users },
+  ].filter((item) => item.text);
+  const metricIcons = [LineChart, Eye, Film, ClipboardCheck];
+  const serviceIcons = [Camera, Video, BookOpen];
+  const mediaProofs = project.gallery
+    .filter(Boolean)
+    .slice(0, 3)
+    .map((url, index) => ({
+      url,
+      label: ["Tournage", "Capsule", "Suivi"][index] ?? `Preuve ${index + 1}`,
+    }));
+  const hasMedia = Boolean(project.video_url) || mediaProofs.length > 0;
+
+  return (
+    <section
+      aria-label={`Cadre catalogue ${project.title}`}
+      className="relative mt-12 overflow-hidden rounded-[2rem] border border-[var(--accent-gold)]/25 bg-black/[0.42] p-4 backdrop-blur-xl sm:p-6 lg:p-8"
+      style={{ boxShadow: "0 0 80px rgb(var(--accent-gold-rgb) / 0.14)" }}
+    >
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 opacity-50"
+        style={{
+          background:
+            "radial-gradient(circle at 16% 20%, rgb(var(--accent-gold-rgb) / 0.28), transparent 30%), radial-gradient(circle at 88% 18%, rgba(56, 189, 248, 0.14), transparent 28%), linear-gradient(to right, rgba(255,255,255,0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.045) 1px, transparent 1px)",
+          backgroundSize: "auto, auto, 48px 48px, 48px 48px",
+        }}
+      />
+
+      <div className="relative grid gap-6 lg:grid-cols-[minmax(0,1.12fr)_minmax(320px,0.88fr)]">
+        <div className="rounded-2xl border border-white/[0.1] bg-[#05040d]/70 p-5 sm:p-7">
+          <p className="text-xs uppercase tracking-[0.32em] text-[var(--accent-gold-text)]">
+            {catalogue.eyebrow}
+          </p>
+          <h2 className="mt-4 max-w-2xl font-serif text-4xl leading-none text-white sm:text-5xl">
+            {catalogue.title}
+          </h2>
+          <p className="mt-5 max-w-2xl text-sm leading-7 text-white/68 sm:text-base">
+            {catalogue.summary}
+          </p>
+
+          {pillars.length > 0 && (
+            <div className="mt-7 grid gap-3 sm:grid-cols-2">
+              {pillars.map((pillar) => {
+                const Icon = pillar.icon;
+
+                return (
+                  <div key={pillar.label} className="border-l border-[var(--accent-gold)]/50 bg-white/[0.035] p-4">
+                    <div className="mb-3 flex items-center gap-2 text-[var(--accent-gold-text)]">
+                      <Icon aria-hidden="true" className="size-4" />
+                      <p className="text-xs uppercase tracking-[0.18em]">{pillar.label}</p>
+                    </div>
+                    <p className="text-sm leading-6 text-white/70">{pillar.text}</p>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {catalogue.metrics.length > 0 && (
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+            {catalogue.metrics.map((metric, index) => {
+              const Icon = metricIcons[index % metricIcons.length];
+
+              return (
+                <div key={metric.label} className="group relative overflow-hidden rounded-2xl border border-white/[0.1] bg-[#05040d]/74 p-4">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="text-[11px] uppercase tracking-[0.2em] text-white/46">{metric.label}</p>
+                      <p className="mt-2 font-serif text-4xl leading-none text-white">{metric.value}</p>
+                    </div>
+                    <span className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-[var(--accent-gold)]/30 bg-[var(--accent-gold)]/10 text-[var(--accent-gold-text)]">
+                      <Icon aria-hidden="true" className="size-4" />
+                    </span>
+                  </div>
+                  {metric.detail && <p className="mt-3 text-sm leading-6 text-white/58">{metric.detail}</p>}
+                  <span className="absolute inset-x-0 bottom-0 h-px bg-[var(--accent-gold)]/70 opacity-60 transition-opacity group-hover:opacity-100" />
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {hasMedia && (
+        <div className="relative mt-6 rounded-2xl border border-white/[0.1] bg-[#05040d]/70 p-4 sm:p-5 lg:p-6">
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="text-xs uppercase tracking-[0.26em] text-[var(--accent-gold-text)]">Preuves de réalisation</p>
+              <h3 className="mt-2 font-serif text-2xl leading-none text-white sm:text-3xl">Vidéo, images et rendu final</h3>
+            </div>
+            <span className="rounded-full border border-white/[0.12] px-3 py-1 text-xs uppercase tracking-[0.18em] text-white/48">
+              Modifiable admin
+            </span>
+          </div>
+
+          <div className="grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
+            {project.video_url ? (
+              <div>
+                <VideoPlayer
+                  src={normalizeImageUrl(project.video_url)}
+                  className="aspect-video rounded-xl border border-[var(--accent-gold)]/20"
+                />
+                <p className="mt-3 text-sm leading-6 text-white/58">
+                  Extrait vidéo lié au projet pour montrer la prise de vue, l&apos;habillage et le rendu de production.
+                </p>
+              </div>
+            ) : (
+              mediaProofs[0] && (
+                <div className="relative aspect-video overflow-hidden rounded-xl border border-[var(--accent-gold)]/20 bg-black">
+                  <Image
+                    src={normalizeImageUrl(mediaProofs[0].url)}
+                    alt={`${project.title} — ${mediaProofs[0].label}`}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 58vw"
+                    unoptimized={shouldBypassImageOptimization(mediaProofs[0].url)}
+                    className="object-cover"
+                  />
+                </div>
+              )
+            )}
+
+            {mediaProofs.length > 0 && (
+              <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+                {mediaProofs.map((item) => (
+                  <div key={item.url} className="group grid grid-cols-[96px_1fr] gap-3 rounded-xl border border-white/[0.08] bg-white/[0.035] p-2 sm:grid-cols-1 lg:grid-cols-[112px_1fr]">
+                    <div className="relative aspect-square overflow-hidden rounded-lg bg-black">
+                      {isVideoUrl(item.url) ? (
+                        <VideoPlayer src={normalizeImageUrl(item.url)} className="absolute inset-0 rounded-lg" />
+                      ) : (
+                        <Image
+                          src={normalizeImageUrl(item.url)}
+                          alt={`${project.title} — ${item.label}`}
+                          fill
+                          sizes="160px"
+                          unoptimized={shouldBypassImageOptimization(item.url)}
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      )}
+                    </div>
+                    <div className="flex min-w-0 flex-col justify-center">
+                      <p className="text-[11px] uppercase tracking-[0.2em] text-[var(--accent-gold-text)]">{item.label}</p>
+                      <p className="mt-1 text-sm leading-5 text-white/62">
+                        Média relié au projet et remplaçable depuis le dashboard.
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      <div className="relative mt-6 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+        {catalogue.workflow.length > 0 && (
+          <div className="rounded-2xl border border-white/[0.1] bg-[#05040d]/70 p-5 sm:p-6">
+            <div className="mb-5 flex items-center justify-between gap-4">
+              <h3 className="font-serif text-2xl leading-none text-white">Gestion complète</h3>
+              <span className="text-xs uppercase tracking-[0.24em] text-white/38">Suivi projet</span>
+            </div>
+            <div className="space-y-4">
+              {catalogue.workflow.map((step, index) => (
+                <div key={step.title} className="grid grid-cols-[auto_1fr] gap-4">
+                  <span className="flex size-9 items-center justify-center rounded-lg border border-[var(--accent-gold)]/25 bg-[var(--accent-gold)]/10 font-serif text-lg text-[var(--accent-gold-text)]">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <div className="border-b border-white/[0.08] pb-4">
+                    <p className="font-medium text-white">{step.title}</p>
+                    <p className="mt-1 text-sm leading-6 text-white/62">{step.text}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {catalogue.examples.length > 0 && (
+          <div className="rounded-2xl border border-white/[0.1] bg-[#05040d]/70 p-5 sm:p-6">
+            <div className="mb-5 flex items-center justify-between gap-4">
+              <h3 className="font-serif text-2xl leading-none text-white">Exemples de travaux</h3>
+              <span className="text-xs uppercase tracking-[0.24em] text-white/38">Photo / vidéo</span>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-3">
+              {catalogue.examples.map((example, index) => {
+                const Icon = serviceIcons[index % serviceIcons.length];
+
+                return (
+                  <div key={example.title} className="min-h-56 rounded-xl border border-white/[0.09] bg-white/[0.035] p-4">
+                    <Icon aria-hidden="true" className="size-5 text-[var(--accent-gold-text)]" />
+                    <p className="mt-4 text-[11px] uppercase tracking-[0.18em] text-[var(--accent-gold-text)]">
+                      {example.format}
+                    </p>
+                    <p className="mt-2 font-serif text-2xl leading-none text-white">{example.title}</p>
+                    <p className="mt-3 text-sm leading-6 text-white/62">{example.description}</p>
+                    {example.proof && <p className="mt-4 text-xs leading-5 text-white/42">{example.proof}</p>}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {catalogue.quality.length > 0 && (
+        <div className="relative mt-6 rounded-2xl border border-white/[0.1] bg-[#05040d]/70 p-5 sm:p-6">
+          <div className="grid gap-5 lg:grid-cols-[240px_1fr] lg:items-start">
+            <div>
+              <p className="text-xs uppercase tracking-[0.26em] text-[var(--accent-gold-text)]">Qualité vidéo</p>
+              <h3 className="mt-3 font-serif text-3xl leading-none text-white">Critères de validation</h3>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {catalogue.quality.map((item) => (
+                <div key={item} className="flex items-start gap-3 text-sm leading-6 text-white/68">
+                  <CheckCircle2 aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-[var(--accent-gold-text)]" />
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
 
 export async function generateStaticParams() {
   const projects = await getProjects();
@@ -58,6 +309,8 @@ export default async function ProjectDetailPage({ params }: Props) {
   const others = related.length
     ? related
     : allProjects.filter((p) => p.slug !== slug).slice(0, 3);
+  const catalogue = project.catalogue;
+  const showHero = !catalogue || Boolean(project.cover_image);
 
   return (
     <>
@@ -72,31 +325,34 @@ export default async function ProjectDetailPage({ params }: Props) {
       />
 
       {/* ── HERO ──────────────────────────────────────────────────────── */}
-      <div className="relative w-full overflow-hidden">
-        {/* Image / Vidéo de couverture */}
-        <div className="relative w-full aspect-[21/9] min-h-[320px] max-h-[600px]">
-          {project.cover_image ? (
-            isVideoUrl(project.cover_image) ? (
-              <VideoPlayer src={normalizeImageUrl(project.cover_image)} className="absolute inset-0 w-full h-full" />
+      {showHero && (
+        <div className="relative w-full overflow-hidden">
+          {/* Image / Vidéo de couverture */}
+          <div className={catalogue ? "relative w-full aspect-[18/7] min-h-[220px] max-h-[380px]" : "relative w-full aspect-[21/9] min-h-[320px] max-h-[600px]"}>
+            {project.cover_image ? (
+              isVideoUrl(project.cover_image) ? (
+                <VideoPlayer src={normalizeImageUrl(project.cover_image)} className="absolute inset-0 w-full h-full" />
+              ) : (
+                <Image
+                  src={normalizeImageUrl(project.cover_image)}
+                  alt={project.title}
+                  fill
+                  sizes="100vw"
+                  unoptimized={shouldBypassImageOptimization(project.cover_image)}
+                  className="object-cover"
+                  priority
+                />
+              )
             ) : (
-              <Image
-                src={normalizeImageUrl(project.cover_image)}
-                alt={project.title}
-                fill
-                sizes="100vw"
-                className="object-cover"
-                priority
-              />
-            )
-          ) : (
-            <div className="absolute inset-0 bg-gradient-to-br from-[var(--accent-gold)]/20 to-[var(--muted)]" />
-          )}
-          {/* Overlay gradient */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[var(--background)] via-[var(--background)]/40 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-br from-[var(--accent-gold)]/20 to-[var(--muted)]" />
+            )}
+            {/* Overlay gradient */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[var(--background)] via-[var(--background)]/40 to-transparent" />
+          </div>
         </div>
-      </div>
+      )}
 
-      <article className="container-px mx-auto max-w-7xl pb-24 -mt-8">
+      <article className={`container-px mx-auto max-w-7xl pb-24 ${showHero ? "-mt-8" : "pt-28 sm:pt-32"}`}>
         {/* ── Breadcrumb ───────────────────────────────────────────────── */}
         <nav aria-label="Fil d'Ariane" className="mb-8">
           <Link
@@ -123,26 +379,30 @@ export default async function ProjectDetailPage({ params }: Props) {
               </p>
             )}
 
-            {/* ── Objectif / Solution / Résultats ─────────────────────── */}
-            <div className="mt-12 grid sm:grid-cols-3 gap-6">
-              {[
-                { label: "Objectif", content: project.objective },
-                { label: "Solution", content: project.solution },
-                { label: "Résultats", content: project.results },
-              ]
-                .filter((c) => c.content)
-                .map((card) => (
-                  <div
-                    key={card.label}
-                    className="rounded-2xl border border-[var(--border)] bg-[var(--muted)] p-6"
-                  >
-                    <p className="text-xs font-normal uppercase tracking-widest text-[var(--accent-gold-text)] mb-3">
-                      {card.label}
-                    </p>
-                    <p className="text-sm leading-relaxed">{card.content}</p>
-                  </div>
-                ))}
-            </div>
+            {catalogue ? (
+              <ProjectCatalogueFrame catalogue={catalogue} project={project} />
+            ) : (
+              /* ── Objectif / Solution / Résultats ─────────────────────── */
+              <div className="mt-12 grid gap-6 sm:grid-cols-3">
+                {[
+                  { label: "Objectif", content: project.objective },
+                  { label: "Solution", content: project.solution },
+                  { label: "Résultats", content: project.results },
+                ]
+                  .filter((c) => c.content)
+                  .map((card) => (
+                    <div
+                      key={card.label}
+                      className="rounded-2xl border border-[var(--border)] bg-[var(--muted)] p-6"
+                    >
+                      <p className="mb-3 text-xs font-normal uppercase tracking-widest text-[var(--accent-gold-text)]">
+                        {card.label}
+                      </p>
+                      <p className="text-sm leading-relaxed">{card.content}</p>
+                    </div>
+                  ))}
+              </div>
+            )}
 
             {/* ── Sections richtext ────────────────────────────────────── */}
             {project.sections.map((section, idx) => (
@@ -180,6 +440,7 @@ export default async function ProjectDetailPage({ params }: Props) {
                               alt={`${section.title} — visuel ${mIdx + 1}`}
                               fill
                               sizes="(max-width: 768px) 100vw, 50vw"
+                              unoptimized={shouldBypassImageOptimization(url)}
                               className="object-cover"
                             />
                           )}
@@ -209,6 +470,7 @@ export default async function ProjectDetailPage({ params }: Props) {
                           alt={`${project.title} — photo ${i + 1}`}
                           fill
                           sizes="(max-width: 640px) 50vw, 33vw"
+                          unoptimized={shouldBypassImageOptimization(url)}
                           className="object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                       )}
@@ -244,6 +506,7 @@ export default async function ProjectDetailPage({ params }: Props) {
                   alt={`Logo ${project.client_name}`}
                   width={160}
                   height={80}
+                  unoptimized={shouldBypassImageOptimization(project.logo_url)}
                   className="h-16 w-auto object-contain"
                 />
               </div>
@@ -316,6 +579,7 @@ export default async function ProjectDetailPage({ params }: Props) {
                         alt={p.title}
                         fill
                         sizes="(max-width: 640px) 100vw, 33vw"
+                        unoptimized={shouldBypassImageOptimization(p.cover_image)}
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     ) : (

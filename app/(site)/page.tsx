@@ -16,7 +16,7 @@ import { getProjects } from "@/data/projects";
 import { getFaqByPage } from "@/data/faq";
 import { getSectionByKey } from "@/data/sections";
 import { homeFaq } from "@/lib/seed-data";
-import { normalizeImageUrl } from "@/lib/parse";
+import { normalizeImageUrl, shouldBypassImageOptimization } from "@/lib/parse";
 import { WebPageJsonLd, FaqJsonLd } from "@/components/seo/json-ld";
 import Link from "next/link";
 import Image from "next/image";
@@ -100,6 +100,7 @@ export default async function HomePage() {
                     alt={project.title}
                     fill
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    unoptimized={shouldBypassImageOptimization(project.cover_image)}
                     className="object-cover transition-transform duration-500 group-hover:scale-108"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
