@@ -29,6 +29,8 @@ const nextConfig: NextConfig = {
     qualities: [75, 85, 90],
     // Autorise les SVG (logos partenaires) — sandboxé par la CSP ci-dessous
     dangerouslyAllowSVG: true,
+    // Supabase peut ressortir en IP privée selon le DNS local ; on garde l'optimisation Next active.
+    dangerouslyAllowLocalIP: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     // Limites de taille adaptées au contenu de l'agence
     minimumCacheTTL: 86400, // 24h de cache CDN pour les images optimisées
@@ -55,12 +57,17 @@ const nextConfig: NextConfig = {
           // HSTS : force HTTPS pour 1 an (à activer une fois le domaine stable)
           {
             key: "Strict-Transport-Security",
-            value: "max-age=31536000; includeSubDomains",
+            value: "max-age=31536000; includeSubDomains; preload",
           },
           // COOP : isole la fenêtre des cross-origin openeners (requis pour SharedArrayBuffer + Lighthouse BP)
           {
             key: "Cross-Origin-Opener-Policy",
             value: "same-origin",
+          },
+          {
+            key: "Content-Security-Policy",
+            value:
+              "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; img-src 'self' data: blob: https://*.supabase.co https://*.supabase.in https://drive.google.com https://lh3.googleusercontent.com https://images.unsplash.com https://images.pexels.com; media-src 'self' blob: https://*.supabase.co https://*.supabase.in; connect-src 'self' https://*.supabase.co https://*.supabase.in; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; form-action 'self'; upgrade-insecure-requests",
           },
         ],
       },
@@ -76,6 +83,12 @@ const nextConfig: NextConfig = {
         source: "/_next/image(.*)",
         headers: [
           { key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" },
+        ],
+      },
+      {
+        source: "/uploads/(.*)",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
         ],
       },
     ];

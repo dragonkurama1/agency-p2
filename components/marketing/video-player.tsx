@@ -14,10 +14,14 @@ export function VideoPlayer({
   src,
   className = "",
   videoClassName = "",
+  captionSrc,
+  captionLabel = "Sous-titres français",
 }: {
   src: string;
   className?: string;
   videoClassName?: string;
+  captionSrc?: string;
+  captionLabel?: string;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
@@ -30,8 +34,7 @@ export function VideoPlayer({
     const v = videoRef.current;
     if (!v) return;
     if (v.paused) {
-      v.play();
-      setPlaying(true);
+      void v.play().then(() => setPlaying(true)).catch(() => setPlaying(false));
     } else {
       v.pause();
       setPlaying(false);
@@ -82,9 +85,13 @@ export function VideoPlayer({
         onLoadedMetadata={onLoadedMetadata}
         onEnded={() => setPlaying(false)}
         onClick={toggle}
-        preload="metadata"
+        preload="none"
         playsInline
-      />
+      >
+        {captionSrc ? (
+          <track kind="captions" src={captionSrc} srcLang="fr" label={captionLabel} />
+        ) : null}
+      </video>
 
       {/* Overlay play au centre quand en pause */}
       {!playing && (

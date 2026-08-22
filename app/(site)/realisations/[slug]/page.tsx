@@ -27,6 +27,20 @@ import { cleanMetaTitle } from "@/lib/seo";
 
 type Props = { params: Promise<{ slug: string }> };
 
+const PROF_AMOUZ_CAPTIONS = "/uploads/projects/prof-amouz/effects.fr.vtt";
+
+function getVideoCaptionSrc(project: Project, url: string) {
+  const normalized = normalizeImageUrl(url);
+  if (
+    project.slug === "prof-amouz-catalogue-etude-projet" &&
+    normalized.endsWith("/uploads/projects/prof-amouz/effects.mp4")
+  ) {
+    return PROF_AMOUZ_CAPTIONS;
+  }
+
+  return undefined;
+}
+
 function ProjectCatalogueFrame({
   catalogue,
   project,
@@ -142,6 +156,7 @@ function ProjectCatalogueFrame({
                 <div className="flex justify-center lg:justify-start">
                   <VideoPlayer
                     src={normalizeImageUrl(project.video_url)}
+                    captionSrc={getVideoCaptionSrc(project, project.video_url)}
                     className="aspect-[9/16] w-full max-w-[320px] rounded-[1.25rem] border border-[var(--accent-gold)]/25 shadow-[0_0_44px_rgb(var(--accent-gold-rgb)/0.12)]"
                     videoClassName="object-cover"
                   />
@@ -175,7 +190,11 @@ function ProjectCatalogueFrame({
                   <div key={item.url} className="group grid grid-cols-[96px_1fr] gap-3 rounded-xl border border-white/[0.08] bg-white/[0.035] p-2 sm:grid-cols-1 lg:grid-cols-[112px_1fr]">
                     <div className="relative aspect-square overflow-hidden rounded-lg bg-black">
                       {isVideoUrl(item.url) ? (
-                        <VideoPlayer src={normalizeImageUrl(item.url)} className="absolute inset-0 rounded-lg" />
+                        <VideoPlayer
+                          src={normalizeImageUrl(item.url)}
+                          captionSrc={getVideoCaptionSrc(project, item.url)}
+                          className="absolute inset-0 rounded-lg"
+                        />
                       ) : (
                         <Image
                           src={normalizeImageUrl(item.url)}
@@ -342,7 +361,11 @@ export default async function ProjectDetailPage({ params }: Props) {
           <div className={catalogue ? "relative w-full aspect-[18/7] min-h-[220px] max-h-[380px]" : "relative w-full aspect-[21/9] min-h-[320px] max-h-[600px]"}>
             {project.cover_image ? (
               isVideoUrl(project.cover_image) ? (
-                <VideoPlayer src={normalizeImageUrl(project.cover_image)} className="absolute inset-0 w-full h-full" />
+                <VideoPlayer
+                  src={normalizeImageUrl(project.cover_image)}
+                  captionSrc={getVideoCaptionSrc(project, project.cover_image)}
+                  className="absolute inset-0 w-full h-full"
+                />
               ) : (
                 <Image
                   src={normalizeImageUrl(project.cover_image)}
@@ -351,7 +374,8 @@ export default async function ProjectDetailPage({ params }: Props) {
                   sizes="100vw"
                   unoptimized={shouldBypassImageOptimization(project.cover_image)}
                   className="object-cover"
-                  priority
+                  preload
+                  fetchPriority="high"
                 />
               )
             ) : (
@@ -420,7 +444,7 @@ export default async function ProjectDetailPage({ params }: Props) {
               <div key={idx} className="mt-16">
                 {/* Numéro de section */}
                 <div className="flex items-center gap-4 mb-6">
-                  <span className="text-4xl font-serif text-[var(--accent-gold)]/20 font-bold leading-none select-none">
+                  <span className="text-4xl font-serif text-[var(--accent-gold-text)]/60 font-bold leading-none select-none">
                     {String(idx + 1).padStart(2, "0")}
                   </span>
                   <h2 className="font-serif text-2xl sm:text-3xl leading-snug">
@@ -444,7 +468,11 @@ export default async function ProjectDetailPage({ params }: Props) {
                           className="relative rounded-xl overflow-hidden aspect-[16/9]"
                         >
                           {isVideoUrl(url) ? (
-                            <VideoPlayer src={normalizeImageUrl(url)} className="absolute inset-0 w-full h-full" />
+                            <VideoPlayer
+                              src={normalizeImageUrl(url)}
+                              captionSrc={getVideoCaptionSrc(project, url)}
+                              className="absolute inset-0 w-full h-full"
+                            />
                           ) : (
                             <Image
                               src={normalizeImageUrl(url)}
@@ -474,7 +502,11 @@ export default async function ProjectDetailPage({ params }: Props) {
                       className="relative aspect-square rounded-xl overflow-hidden group"
                     >
                       {isVideoUrl(url) ? (
-                        <VideoPlayer src={normalizeImageUrl(url)} className="absolute inset-0 w-full h-full" />
+                        <VideoPlayer
+                          src={normalizeImageUrl(url)}
+                          captionSrc={getVideoCaptionSrc(project, url)}
+                          className="absolute inset-0 w-full h-full"
+                        />
                       ) : (
                         <Image
                           src={normalizeImageUrl(url)}
